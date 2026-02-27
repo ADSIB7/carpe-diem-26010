@@ -697,6 +697,21 @@ body.dark-mode .climate-chart {
   color: var(--warn);
 }
 
+.risk-scroll {
+  max-height: 228px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.risk-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.risk-scroll::-webkit-scrollbar-thumb {
+  background: #c8d8cd;
+  border-radius: 999px;
+}
+
 .list-item {
   display: grid;
   grid-template-columns: 1fr 1fr auto;

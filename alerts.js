@@ -10,8 +10,8 @@
   const prefSound = document.getElementById("prefSound");
   const alertsList = document.getElementById("alertsList");
 
-  function getAlerts() {
-    const climate = window.WarehouseDB ? window.WarehouseDB.get("climateSnapshot") : null;
+  async function getAlerts() {
+    const climate = window.WarehouseDB ? await window.WarehouseDB.getAsync("climateSnapshot") : null;
     const alerts = [];
 
     if (climate && climate.states) {
@@ -30,8 +30,8 @@
     return alerts;
   }
 
-  function renderAlerts() {
-    const alerts = getAlerts();
+  async function renderAlerts() {
+    const alerts = await getAlerts();
     alertsList.innerHTML = "";
 
     alerts.forEach(function (a, idx) {
@@ -48,8 +48,8 @@
     });
   }
 
-  function loadPrefs() {
-    const settings = window.WarehouseDB ? (window.WarehouseDB.get("settings") || {}) : {};
+  async function loadPrefs() {
+    const settings = window.WarehouseDB ? ((await window.WarehouseDB.getAsync("settings")) || {}) : {};
     const prefs = settings.notifications || defaultPrefs();
     prefEmail.checked = Boolean(prefs.email);
     prefSms.checked = Boolean(prefs.sms);
@@ -57,7 +57,7 @@
     prefSound.checked = Boolean(prefs.sound);
   }
 
-  function savePrefs() {
+  async function savePrefs() {
     const prefs = {
       email: prefEmail.checked,
       sms: prefSms.checked,
@@ -66,14 +66,16 @@
     };
 
     if (window.WarehouseDB) {
-      const settings = window.WarehouseDB.get("settings") || {};
-      window.WarehouseDB.set("settings", Object.assign({}, settings, { notifications: prefs }));
+      const settings = (await window.WarehouseDB.getAsync("settings")) || {};
+      await window.WarehouseDB.setAsync("settings", Object.assign({}, settings, { notifications: prefs }));
     }
 
     saveMsg.textContent = "Notification preferences saved at " + new Date().toLocaleTimeString();
   }
 
-  document.getElementById("savePrefsBtn").addEventListener("click", savePrefs);
+  document.getElementById("savePrefsBtn").addEventListener("click", function () {
+    savePrefs();
+  });
   document.getElementById("resolveAllBtn").addEventListener("click", function () {
     saveMsg.textContent = "All alerts marked as resolved.";
     alertsList.innerHTML = "<article class='alert-item warning'><strong>No active alerts</strong><p>All current alerts are resolved.</p></article>";
@@ -93,7 +95,11 @@
     }
   });
 
-  loadPrefs();
-  renderAlerts();
-  setInterval(renderAlerts, 5000);
+  (async function init() {
+    await loadPrefs();
+    await renderAlerts();
+    setInterval(function () {
+      renderAlerts();
+    }, 5000);
+  })();
 })();

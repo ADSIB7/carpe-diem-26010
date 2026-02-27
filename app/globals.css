@@ -53,3 +53,18 @@ body {
   margin: 0.6rem 0 0;
   color: #486354;
 }
+
+.home-card form input,
+.home-card form button {
+  font: inherit;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #b8d3be;
+}
+
+.home-card form button {
+  background: #1f8d4d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}

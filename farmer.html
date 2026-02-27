@@ -3,28 +3,193 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Farmer Module Reset | AgriShield</title>
+  <title>Farmer Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="farmer-auth.css" />
 </head>
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
   <main class="role-layout container">
     <section class="role-card">
-      <p class="kicker">FARMER MODULE</p>
-      <h1>Reset complete. Farmer dashboard flow removed.</h1>
-      <p>This page is now a clean starting point so you can rebuild the farmer experience from scratch.</p>
-      <a class="btn btn-primary" href="index.html">Back to Home</a>
+      <p class="kicker">FARMER ACCESS</p>
+      <h1>Manage produce intake and track delivery readiness in one place.</h1>
+      <p>Register your farm profile, reserve storage support, and login to continue your crop flow.</p>
+
+      <div class="auth-switch" role="tablist" aria-label="Farmer access mode">
+        <button class="auth-tab active" id="showRegister" type="button" role="tab" aria-selected="true">Register</button>
+        <button class="auth-tab" id="showLogin" type="button" role="tab" aria-selected="false">Login</button>
+      </div>
+
+      <div class="auth-msg" id="authMsg" aria-live="polite"></div>
+
+      <div class="auth-forms">
+        <form class="login-form auth-panel active" id="registerForm" novalidate>
+          <label for="reg-name">Full Name</label>
+          <input id="reg-name" type="text" placeholder="Ramesh Patel" required />
+
+          <label for="reg-email">Email</label>
+          <input id="reg-email" type="email" placeholder="ramesh@farmmail.com" required />
+
+          <label for="reg-phone">Phone</label>
+          <input id="reg-phone" type="text" placeholder="+1 (555) 904-2214" required />
+
+          <label for="reg-farm">Farm Name</label>
+          <input id="reg-farm" type="text" placeholder="Patel Fresh Farms" required />
+
+          <label for="reg-location">Location</label>
+          <input id="reg-location" type="text" placeholder="Modesto, CA" required />
+
+          <label for="reg-crop">Primary Crop</label>
+          <input id="reg-crop" type="text" placeholder="Tomato" required />
+
+          <label for="reg-id">Farmer ID</label>
+          <input id="reg-id" type="text" placeholder="FRM-3402" required />
+
+          <label for="reg-pass">Password</label>
+          <input id="reg-pass" type="password" placeholder="Create password" required />
+
+          <label for="reg-confirm">Confirm Password</label>
+          <input id="reg-confirm" type="password" placeholder="Repeat password" required />
+
+          <button type="submit" class="btn btn-primary">Register Farmer</button>
+        </form>
+
+        <form class="login-form auth-panel" id="loginForm" novalidate>
+          <label for="farmer-id">Farmer ID</label>
+          <input id="farmer-id" type="text" placeholder="FRM-3402" required />
+
+          <label for="farmer-pass">Password</label>
+          <input id="farmer-pass" type="password" placeholder="Enter password" required />
+
+          <button type="submit" class="btn btn-primary">Login as Farmer</button>
+        </form>
+      </div>
+
+      <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
+
+  <script>
+    (function () {
+      const showRegister = document.getElementById("showRegister");
+      const showLogin = document.getElementById("showLogin");
+      const registerForm = document.getElementById("registerForm");
+      const loginForm = document.getElementById("loginForm");
+      const authMsg = document.getElementById("authMsg");
+      const storageKey = "farmerAuthUser";
+
+      function showMessage(message, isError) {
+        authMsg.textContent = message;
+        authMsg.classList.toggle("error", Boolean(isError));
+      }
+
+      function setPanel(mode) {
+        const isRegister = mode === "register";
+        registerForm.classList.toggle("active", isRegister);
+        loginForm.classList.toggle("active", !isRegister);
+        showRegister.classList.toggle("active", isRegister);
+        showLogin.classList.toggle("active", !isRegister);
+        showRegister.setAttribute("aria-selected", String(isRegister));
+        showLogin.setAttribute("aria-selected", String(!isRegister));
+        showMessage("");
+      }
+
+      showRegister.addEventListener("click", function () {
+        setPanel("register");
+      });
+
+      showLogin.addEventListener("click", function () {
+        setPanel("login");
+      });
+
+      registerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const phone = document.getElementById("reg-phone").value.trim();
+        const farm = document.getElementById("reg-farm").value.trim();
+        const location = document.getElementById("reg-location").value.trim();
+        const crop = document.getElementById("reg-crop").value.trim();
+        const farmerId = document.getElementById("reg-id").value.trim();
+        const password = document.getElementById("reg-pass").value;
+        const confirm = document.getElementById("reg-confirm").value;
+
+        if (!name || !email || !phone || !farm || !location || !crop || !farmerId || !password) {
+          showMessage("Please fill in all registration fields.", true);
+          return;
+        }
+
+        if (password !== confirm) {
+          showMessage("Password and confirm password do not match.", true);
+          return;
+        }
+
+        const user = {
+          name: name,
+          email: email,
+          phone: phone,
+          farm: farm,
+          location: location,
+          crop: crop,
+          farmerId: farmerId,
+          password: password
+        };
+
+        localStorage.setItem(storageKey, JSON.stringify(user));
+        localStorage.setItem("farmerName", user.name);
+        localStorage.setItem("farmerFarm", user.farm);
+        localStorage.setItem("farmerLocation", user.location);
+        localStorage.setItem("farmerCrop", user.crop);
+        document.getElementById("farmer-id").value = farmerId;
+
+        showMessage("Registration successful. Please login with your Farmer ID and password.", false);
+        setPanel("login");
+      });
+
+      loginForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const farmerId = document.getElementById("farmer-id").value.trim();
+        const password = document.getElementById("farmer-pass").value;
+        const rawUser = localStorage.getItem(storageKey);
+
+        if (!rawUser) {
+          showMessage("No account found. Please register first.", true);
+          setPanel("register");
+          return;
+        }
+
+        const savedUser = JSON.parse(rawUser);
+
+        if (farmerId !== savedUser.farmerId || password !== savedUser.password) {
+          showMessage("Invalid Farmer ID or password.", true);
+          return;
+        }
+
+        localStorage.setItem("farmerName", savedUser.name);
+        localStorage.setItem("farmerFarm", savedUser.farm);
+        localStorage.setItem("farmerLocation", savedUser.location);
+        localStorage.setItem("farmerCrop", savedUser.crop);
+        localStorage.setItem("farmerLoggedIn", "true");
+        window.location.href = "find-warehouses.html";
+      });
+
+      const existingUserRaw = localStorage.getItem(storageKey);
+      if (existingUserRaw) {
+        const existingUser = JSON.parse(existingUserRaw);
+        if (existingUser.farmerId) {
+          document.getElementById("farmer-id").value = existingUser.farmerId;
+        }
+        setPanel("login");
+      } else {
+        setPanel("register");
+      }
+    })();
+  </script>
 </body>
 </html>
-
-
-
-
-
 

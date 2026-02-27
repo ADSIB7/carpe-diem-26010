@@ -122,8 +122,8 @@
         </div>
         <div class="page-actions">
           <span class="badge" id="alertsBadge">0 Active Alerts</span>
-          <span class="badge">Inbound 0</span>
-          <span class="badge">Outbound 0</span>
+          <span class="badge" id="inboundBadge">Inbound 0</span>
+          <span class="badge" id="outboundBadge">Outbound 0</span>
         </div>
       </section>
 
@@ -132,7 +132,7 @@
           <div class="stat-icon">ST</div>
           <div>
             <span>Total Storage</span>
-            <strong>0</strong>
+            <strong id="totalStorageStat">0</strong>
             <small>tons</small>
           </div>
         </div>
@@ -140,7 +140,7 @@
           <div class="stat-icon">UT</div>
           <div>
             <span>Current Utilization</span>
-            <strong>0%</strong>
+            <strong id="currentUtilizationStat">0%</strong>
             <small>occupied</small>
           </div>
         </div>
@@ -148,7 +148,7 @@
           <div class="stat-icon">SK</div>
           <div>
             <span>Total Stock</span>
-            <strong>0</strong>
+            <strong id="totalStockStat">0</strong>
             <small>tons</small>
           </div>
         </div>
@@ -165,7 +165,7 @@
           <div class="stat-icon">IO</div>
           <div>
             <span>Inbound / Outbound</span>
-            <strong>0 / 0</strong>
+            <strong id="inboundOutboundStat">0 / 0</strong>
             <small>today</small>
           </div>
         </div>
@@ -235,8 +235,9 @@
         <article class="card risk" id="risk-spoilage">
           <div class="card-header">
             <h2>Spoilage and Risk Alerts</h2>
-            <button class="ghost-btn">View All</button>
+            <a class="ghost-btn" href="risk-spoilage.html">View All</a>
           </div>
+          <div id="riskItemsWrap" class="risk-scroll">
           <div class="risk-item">
             <div>
               <strong>#000</strong>
@@ -257,6 +258,7 @@
               <span>No active batch</span>
             </div>
             <div class="risk-days">0 Days Left</div>
+          </div>
           </div>
         </article>
 
@@ -265,6 +267,7 @@
             <h2>Storage and Utilization</h2>
             <button class="ghost-btn">View All</button>
           </div>
+          <div id="storageOverviewList">
           <div class="list-item">
             <span>#000</span>
             <span>No item</span>
@@ -279,6 +282,7 @@
             <span>#000</span>
             <span>No item</span>
             <span>0 days</span>
+          </div>
           </div>
         </article>
 
@@ -288,6 +292,7 @@
             <button class="ghost-btn">View All</button>
           </div>
 
+          <div id="marketRowsWrap">
           <div class="market-row rich">
             <span>Onion</span>
             <strong>0</strong>
@@ -306,7 +311,8 @@
             <svg class="sparkline" viewBox="0 0 100 32" aria-hidden="true"><polyline points="0,18 20,17 40,18 60,16 80,17 100,16"></polyline></svg>
             <button class="action-btn monitor">Monitor</button>
           </div>
-          <div class="market-callout">AI suggest: no market alert right now.</div>
+          </div>
+          <div class="market-callout" id="marketCallout">AI suggest: no market alert right now.</div>
         </article>
 
         <article class="card feed">
@@ -314,6 +320,7 @@
             <h2>Recent Activity Feed</h2>
             <button class="ghost-btn">View All</button>
           </div>
+          <div id="activityFeedWrap">
           <div class="feed-item">
             <span class="feed-dot"></span>
             <div>
@@ -335,12 +342,19 @@
               <span>0 mins ago</span>
             </div>
           </div>
+          </div>
         </article>
       </section>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="runtime-config.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="warehouse-auth.js"></script>
+  <script src="api-client.js"></script>
   <script src="warehouse-db.js"></script>
   <script>
     function hasValidWarehouseSession() {
@@ -373,7 +387,13 @@
     const alertCountCard = document.getElementById('alertCountCard');
     const bellCount = document.getElementById('bellCount');
     const alertsBadge = document.getElementById('alertsBadge');
+    const inboundBadge = document.getElementById('inboundBadge');
+    const outboundBadge = document.getElementById('outboundBadge');
     const alertPulse = document.getElementById('alertPulse');
+    const totalStorageStat = document.getElementById('totalStorageStat');
+    const currentUtilizationStat = document.getElementById('currentUtilizationStat');
+    const totalStockStat = document.getElementById('totalStockStat');
+    const inboundOutboundStat = document.getElementById('inboundOutboundStat');
     const avgTempValue = document.getElementById('avgTempValue');
     const avgHumidityValue = document.getElementById('avgHumidityValue');
     const avgHumidityBadge = document.getElementById('avgHumidityBadge');
@@ -387,6 +407,11 @@
     const storageWarnValue = document.getElementById('storageWarnValue');
     const storageCriticalValue = document.getElementById('storageCriticalValue');
     const availableSpaceValue = document.getElementById('availableSpaceValue');
+    const riskItemsWrap = document.getElementById('riskItemsWrap');
+    const storageOverviewList = document.getElementById('storageOverviewList');
+    const marketRowsWrap = document.getElementById('marketRowsWrap');
+    const marketCallout = document.getElementById('marketCallout');
+    const activityFeedWrap = document.getElementById('activityFeedWrap');
 
     menuBtn.addEventListener('click', () => {
       sidebar.classList.toggle('sidebar-open');
@@ -459,13 +484,19 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    const alertCount = 0;
-    alertCountCard.textContent = String(alertCount);
-    bellCount.textContent = String(alertCount);
-    alertsBadge.textContent = alertCount + ' Active Alerts';
-    if (alertCount > 0) {
-      alertPulse.classList.add('active');
+    let alertCount = 0;
+    function renderAlertCounts(count) {
+      alertCount = Number(count || 0);
+      alertCountCard.textContent = String(alertCount);
+      bellCount.textContent = String(alertCount);
+      alertsBadge.textContent = alertCount + ' Active Alerts';
+      if (alertCount > 0) {
+        alertPulse.classList.add('active');
+      } else {
+        alertPulse.classList.remove('active');
+      }
     }
+    renderAlertCounts(0);
 
     const climateChart = new Chart(document.getElementById('dashboardClimateChart').getContext('2d'), {
       type: 'line',
@@ -512,6 +543,151 @@
       if (state === 'critical') return 'critical';
       if (state === 'warn') return 'high';
       return 'safe';
+    }
+
+    function formatDays(days) {
+      if (!Number.isFinite(days)) return '--';
+      return days + ' day' + (Math.abs(days) === 1 ? '' : 's');
+    }
+
+    function renderRiskItems(items) {
+      if (!riskItemsWrap) return;
+      const rows = Array.isArray(items) ? items.slice(0, 12) : [];
+      if (!rows.length) {
+        riskItemsWrap.innerHTML = `
+          <div class="risk-item"><div><strong>#000</strong><span>No active batch</span></div><div class="risk-days">0 Days Left</div></div>
+        `;
+        return;
+      }
+      riskItemsWrap.innerHTML = rows.map((row) => `
+        <div class="risk-item">
+          <div><strong>${row.id}</strong><span>${row.product || 'Batch'}${row.status ? ` (${row.status})` : ''}</span></div>
+          <div class="risk-days">${formatDays(row.daysLeft)} Left</div>
+        </div>
+      `).join('');
+    }
+
+    function mapForecastToRiskItems(forecastRows) {
+      if (!Array.isArray(forecastRows)) return [];
+      return forecastRows
+        .slice()
+        .sort((a, b) => Number(a.days || 999) - Number(b.days || 999))
+        .map((row) => ({
+          id: row.id || '#N/A',
+          product: row.product || 'Batch',
+          status: row.status || '',
+          daysLeft: Number(row.days || 0)
+        }));
+    }
+
+    async function loadRiskAlertsData() {
+      if (!window.AgriApi || !window.AgriApi.getRiskSpoilageData) return [];
+      try {
+        const res = await window.AgriApi.getRiskSpoilageData();
+        const data = res && res.data ? res.data : null;
+        if (!data) return [];
+        return mapForecastToRiskItems(data.forecastData || []);
+      } catch (_error) {
+        return [];
+      }
+    }
+
+    function renderStorageOverview(rows) {
+      if (!storageOverviewList) return;
+      const list = Array.isArray(rows) ? rows.slice(0, 3) : [];
+      if (!list.length) {
+        storageOverviewList.innerHTML = `
+          <div class="list-item"><span>#000</span><span>No item</span><span>0 days</span></div>
+        `;
+        return;
+      }
+      storageOverviewList.innerHTML = list.map((row) => `
+        <div class="list-item">
+          <span>${row.id}</span>
+          <span>${row.product || 'Item'}</span>
+          <span>${Number.isFinite(row.daysLeft) ? formatDays(row.daysLeft) : `${Number(row.freeTons || 0)} tons free`}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderMarket(rows, callout) {
+      if (marketRowsWrap) {
+        const list = Array.isArray(rows) ? rows.slice(0, 3) : [];
+        marketRowsWrap.innerHTML = list.length ? list.map((row) => {
+          const up = Number(row.change || 0) >= 0;
+          const action = Number(row.change || 0) <= -1 ? 'Sell' : (Number(row.change || 0) >= 1 ? 'Hold' : 'Monitor');
+          const actionClass = action === 'Sell' ? 'sell' : (action === 'Monitor' ? 'monitor' : '');
+          return `
+            <div class="market-row rich">
+              <span>${row.name}</span>
+              <strong>${row.price}</strong>
+              <svg class="sparkline" viewBox="0 0 100 32" aria-hidden="true"><polyline points="${up ? '0,24 20,21 40,18 60,14 80,10 100,8' : '0,8 20,10 40,14 60,18 80,22 100,24'}"></polyline></svg>
+              <button class="action-btn ${actionClass}">${action}</button>
+            </div>
+          `;
+        }).join('') : `
+          <div class="market-row rich"><span>No market data</span><strong>0</strong><svg class="sparkline" viewBox="0 0 100 32"><polyline points="0,16 100,16"></polyline></svg><button class="action-btn monitor">Monitor</button></div>
+        `;
+      }
+      if (marketCallout) {
+        marketCallout.textContent = callout || 'AI suggest: no market alert right now.';
+      }
+    }
+
+    function renderActivity(rows) {
+      if (!activityFeedWrap) return;
+      const list = Array.isArray(rows) ? rows.slice(0, 3) : [];
+      if (!list.length) {
+        activityFeedWrap.innerHTML = `<div class="feed-item"><span class="feed-dot"></span><div><strong>No recent activity</strong><span>0 mins ago</span></div></div>`;
+        return;
+      }
+      activityFeedWrap.innerHTML = list.map((item, idx) => `
+        <div class="feed-item">
+          <span class="feed-dot ${idx === 0 ? 'alert' : ''}"></span>
+          <div>
+            <strong>${item.title}</strong>
+            <span>${item.whenMinutes} hr ago</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadDashboardData() {
+      if (!window.AgriApi || !window.AgriApi.getDashboardData) return;
+      try {
+        const res = await window.AgriApi.getDashboardData();
+        const data = res && res.data ? res.data : null;
+        if (!data) return;
+        const summary = data.summary || {};
+
+        if (totalStorageStat) totalStorageStat.textContent = String(summary.totalStorage || 0);
+        if (currentUtilizationStat) currentUtilizationStat.textContent = String(summary.currentUtilization || 0) + '%';
+        if (totalStockStat) totalStockStat.textContent = String(summary.totalStock || 0);
+        if (inboundOutboundStat) inboundOutboundStat.textContent = `${summary.inboundToday || 0} / ${summary.outboundToday || 0}`;
+        if (inboundBadge) inboundBadge.textContent = `Inbound ${summary.inboundToday || 0}`;
+        if (outboundBadge) outboundBadge.textContent = `Outbound ${summary.outboundToday || 0}`;
+        if (storageSafeValue) storageSafeValue.textContent = `Safe: ${summary.safePercent || 0}%`;
+        if (storageWarnValue) storageWarnValue.textContent = `High: ${summary.warnPercent || 0}%`;
+        if (storageCriticalValue) storageCriticalValue.textContent = `Critical: ${summary.criticalPercent || 0}%`;
+        if (availableSpaceValue) availableSpaceValue.textContent = String(summary.availableSpace || 0);
+        renderAlertCounts(summary.activeAlerts || 0);
+
+        const zoneMap = {};
+        (data.zoneStates || []).forEach((z) => { zoneMap[z.zone] = z.state; });
+        zoneCells.forEach((cell) => {
+          const state = statusClass(zoneMap[cell.dataset.zone] || 'safe');
+          cell.classList.remove('safe', 'high', 'critical');
+          cell.classList.add(state);
+        });
+
+        const riskRows = await loadRiskAlertsData();
+        renderRiskItems(riskRows.length ? riskRows : (data.topRiskItems || []));
+        renderStorageOverview(data.storageOverview || []);
+        renderMarket(data.marketRows || [], data.marketCallout);
+        renderActivity(data.recentActivity || []);
+      } catch (error) {
+        // Keep current UI if backend request fails.
+      }
     }
 
     function applyClimateSnapshot(snapshot) {
@@ -569,7 +745,8 @@
       storageSafeValue.textContent = 'Safe: ' + String(snapshot.summary.safePercent || 0) + '%';
       storageWarnValue.textContent = 'High: ' + String(snapshot.summary.warnPercent || 0) + '%';
       storageCriticalValue.textContent = 'Critical: ' + String(snapshot.summary.criticalPercent || 0) + '%';
-      availableSpaceValue.textContent = String(snapshot.summary.availableSpace || 0);
+      // Keep "Available space" sourced from backend storage totals (loadDashboardData),
+      // not from synthetic climate snapshot values.
     }
 
     function readSnapshotAndRender() {
@@ -613,6 +790,8 @@
 
     readSnapshotAndRender();
     setInterval(readSnapshotAndRender, 1000);
+    loadDashboardData();
+    setInterval(loadDashboardData, 15000);
   </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 const express = require("express");
 const { randomUUID } = require("crypto");
-const { getSupabase } = require("../lib/supabase");
+const supabaseLib = require("../lib/supabase");
 
 const router = express.Router();
 
@@ -53,10 +53,11 @@ function mapZone(row) {
 
 router.get("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { warehouseId, state } = req.query;
 
-    let query = supabase.from("storage_zones").select("*");
+    let query = supabase.from("storage_zones").select("*").eq("owner_user_id", ownerId);
     if (warehouseId) query = query.eq("warehouse_id", String(warehouseId));
     if (state) query = query.eq("state", String(state).toLowerCase());
 
@@ -72,10 +73,12 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("storage_zones")
       .select("*")
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .maybeSingle();
 
@@ -90,7 +93,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateStorage(req.body, false);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
@@ -99,8 +103,20 @@ router.post("/", async (req, res) => {
     const capacityTons = numberOrNaN(req.body.capacityTons, 0);
     const occupiedTons = numberOrNaN(req.body.occupiedTons, 0);
 
+    const warehouseRef = await supabase
+      .from("warehouses")
+      .select("id")
+      .eq("id", String(req.body.warehouseId))
+      .eq("owner_user_id", ownerId)
+      .maybeSingle();
+    if (warehouseRef.error) return res.status(500).json({ error: warehouseRef.error.message });
+    if (!warehouseRef.data) {
+      return res.status(400).json({ error: "warehouseId is invalid for current user" });
+    }
+
     const payload = {
       id: randomUUID(),
+      owner_user_id: ownerId,
       warehouse_id: String(req.body.warehouseId),
       zone_code: String(req.body.zoneCode).trim().toUpperCase(),
       state: req.body.state ? String(req.body.state).toLowerCase() : "safe",
@@ -125,7 +141,8 @@ router.post("/", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
 
     const errors = validateStorage(req.body, true);
     if (errors.length) {
@@ -135,6 +152,7 @@ router.patch("/:id", async (req, res) => {
     const currentRes = await supabase
       .from("storage_zones")
       .select("*")
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .maybeSingle();
 
@@ -151,6 +169,19 @@ router.patch("/:id", async (req, res) => {
         ? numberOrNaN(req.body.occupiedTons, current.occupied_tons)
         : current.occupied_tons;
 
+    if (req.body.warehouseId !== undefined) {
+      const warehouseRef = await supabase
+        .from("warehouses")
+        .select("id")
+        .eq("id", String(req.body.warehouseId))
+        .eq("owner_user_id", ownerId)
+        .maybeSingle();
+      if (warehouseRef.error) return res.status(500).json({ error: warehouseRef.error.message });
+      if (!warehouseRef.data) {
+        return res.status(400).json({ error: "warehouseId is invalid for current user" });
+      }
+    }
+
     const patch = {
       ...(req.body.warehouseId !== undefined ? { warehouse_id: String(req.body.warehouseId) } : {}),
       ...(req.body.zoneCode !== undefined
@@ -166,6 +197,7 @@ router.patch("/:id", async (req, res) => {
     const { data, error } = await supabase
       .from("storage_zones")
       .update(patch)
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("*")
       .single();
@@ -179,10 +211,12 @@ router.patch("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("storage_zones")
       .delete()
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("id");
 

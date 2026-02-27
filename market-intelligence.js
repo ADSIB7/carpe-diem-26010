@@ -1,5 +1,5 @@
 (() => {
-  const prices = [
+  const defaultPrices = [
     { crop: "Wheat", unit: 45, change: 5.0, region: "North" },
     { crop: "Rice", unit: 65, change: -2.3, region: "East" },
     { crop: "Maize", unit: 38, change: 3.1, region: "West" },
@@ -7,7 +7,7 @@
     { crop: "Tomato", unit: 28, change: 4.3, region: "South" }
   ];
 
-  const demands = [
+  const defaultDemands = [
     { crop: "Wheat", trend: "rising", region: "North", score: 86 },
     { crop: "Soybean", trend: "stable", region: "Central", score: 66 },
     { crop: "Tomato", trend: "rising", region: "South", score: 91 },
@@ -15,27 +15,38 @@
     { crop: "Maize", trend: "stable", region: "West", score: 63 }
   ];
 
-  const forecast = [
+  const defaultForecast = [
     { crop: "Wheat", status: "Rising", points: [40, 44, 46, 49, 53, 55, 60], region: "North" },
     { crop: "Rice", status: "Stable", points: [64, 65, 66, 65, 66, 67, 66], region: "East" },
     { crop: "Tomato", status: "Decline", points: [34, 33, 31, 30, 28, 27, 26], region: "South" }
   ];
 
-  const competitors = [
+  const defaultCompetitors = [
     { name: "Cultivar Agro", crop: "Wheat", price: 68, region: "North" },
     { name: "GreenHarvest", crop: "Rice", price: 67, region: "East" },
     { name: "FreshField", crop: "Tomato", price: 70, region: "South" }
   ];
 
-  let inbound = 74;
-  let arrival = 1320;
-  let surplus = 18;
+  const defaultSupply = {
+    inbound: 74,
+    arrival: 1320,
+    surplus: 18
+  };
 
-  const alerts = [
+  const defaultAlerts = [
     { icon: "!", text: "Government MSP update released for wheat", posted: "2 hrs ago" },
     { icon: "!", text: "Weather alert: heatwave may affect crop yields", posted: "1 day ago" },
     { icon: "!", text: "Transport strike risk on major inbound route", posted: "3 hrs ago" }
   ];
+
+  let prices = defaultPrices.slice();
+  let demands = defaultDemands.slice();
+  let forecast = defaultForecast.slice();
+  let competitors = defaultCompetitors.slice();
+  let inbound = defaultSupply.inbound;
+  let arrival = defaultSupply.arrival;
+  let surplus = defaultSupply.surplus;
+  let alerts = defaultAlerts.slice();
 
   const els = {
     liveClock: document.getElementById("liveClock"),
@@ -62,6 +73,37 @@
     crop: "All Crops",
     region: "All Regions"
   };
+
+  async function loadMarketIntelligenceData() {
+    if (!window.AgriApi || !window.AgriApi.getMarketIntelligenceData) return;
+    try {
+      const response = await window.AgriApi.getMarketIntelligenceData();
+      const payload = response && response.data ? response.data : null;
+      if (!payload) return;
+      if (Array.isArray(payload.prices) && payload.prices.length) {
+        prices = payload.prices.slice();
+      }
+      if (Array.isArray(payload.demands) && payload.demands.length) {
+        demands = payload.demands.slice();
+      }
+      if (Array.isArray(payload.forecast) && payload.forecast.length) {
+        forecast = payload.forecast.slice();
+      }
+      if (Array.isArray(payload.competitors) && payload.competitors.length) {
+        competitors = payload.competitors.slice();
+      }
+      if (payload.supply) {
+        inbound = Number(payload.supply.inbound || defaultSupply.inbound);
+        arrival = Number(payload.supply.arrival || defaultSupply.arrival);
+        surplus = Number(payload.supply.surplus || defaultSupply.surplus);
+        if (Array.isArray(payload.supply.alerts) && payload.supply.alerts.length) {
+          alerts = payload.supply.alerts.slice();
+        }
+      }
+    } catch (error) {
+      // Keep local defaults if backend fetch fails.
+    }
+  }
 
   const uniq = (arr) => [...new Set(arr)];
 
@@ -240,7 +282,8 @@
     }
   }
 
-  function init() {
+  async function init() {
+    await loadMarketIntelligenceData();
     const savedTheme = localStorage.getItem("market-theme") || "light";
     applyTheme(savedTheme);
     renderFilters();

@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmer Portal | Find Warehouses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-dashboard.css" />
+  <link rel="stylesheet" href="farmer-portal.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Farmer</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Farmer Portal</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="#">
+          <img id="sidebarAvatar" src="businessman-avatar-profile-picture-36775850.png" alt="Farmer" />
+          <div>
+            <strong id="sidebarName">Farmer</strong>
+            <span id="sidebarRole">Farmer</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
+      </div>
+
+      <div class="profile-menu" id="profileMenu">
+        <a href="#" id="profileMenuView">View Profile</a>
+        <a href="#" id="profileMenuUpdate">Update Profile</a>
+      </div>
+
+      <nav class="side-nav" aria-label="Farmer menu">
+        <button type="button" class="active" data-section="find">Find Warehouses</button>
+        <button type="button" data-section="produce">My Produce</button>
+        <button type="button" data-section="alerts">Alerts</button>
+        <button type="button" data-section="market">Market Prices</button>
+        <button type="button" data-section="contact">&#9993; Contact Warehouse</button>
+        <button type="button" data-section="profile">Profile</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html">Back to Home</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div class="search">
+          <input type="search" placeholder="Search warehouses, produce, or alerts" />
+        </div>
+        <div class="topbar-actions">
+          <div class="weather-pill">28 C | Clear</div>
+          <button class="icon-pill" id="themeToggle" aria-label="Toggle theme">Dark</button>
+          <div class="user-pill">
+            <img id="topAvatar" src="businessman-avatar-profile-picture-36775850.png" alt="User" />
+            <span id="topName">Farmer</span>
+            <span class="chev">&#9662;</span>
+          </div>
+        </div>
+      </header>
+
+      <section id="findSection">
+        <section class="page-title">
+          <div>
+            <h1>Find Warehouses</h1>
+            <p>Easily search and find warehouses to store your produce nearby.</p>
+          </div>
+          <div class="page-actions">
+            <span class="badge" id="countBadge">0 Warehouses</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="finder-toolbar">
+            <input id="locationFilter" class="finder-control" type="text" placeholder="Enter your village or city" />
+            <input id="priceFilter" class="finder-control" type="number" min="0" placeholder="Max Price Per Ton" />
+            <select id="timeFilter" class="finder-control">
+              <option value="">Storage Time</option>
+              <option value="30">30 days</option>
+              <option value="60">60 days</option>
+              <option value="90">90 days</option>
+            </select>
+            <button id="searchBtn" class="finder-btn" type="button">Search</button>
+          </div>
+        </section>
+
+        <section id="warehouseGrid" class="warehouse-grid" aria-live="polite"></section>
+      </section>
+
+      <section id="produceSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1>My Stored Crops</h1>
+            <p>Check your crop storage status</p>
+          </div>
+        </section>
+        <section id="produceGrid" class="produce-grid" aria-live="polite"></section>
+      </section>
+
+      <section id="alertsSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1>Alerts & Notifications</h1>
+            <p>Important updates about your crops</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="alerts-head">
+            <h2 style="margin:0;font-size:1.1rem;">Recent Alerts</h2>
+            <select id="alertsFilter" class="alerts-filter">
+              <option value="all">All</option>
+              <option value="spoilage">Spoilage</option>
+              <option value="expiry">Expiry</option>
+              <option value="market">Market</option>
+            </select>
+          </div>
+          <div id="alertsGrid" class="alerts-grid" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section id="marketSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1>Market Prices</h1>
+            <p>Check today's crop prices</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="market-head">
+            <h2 style="margin:0;font-size:1.1rem;">Today's Prices</h2>
+            <select id="marketFilter" class="market-filter">
+              <option value="all">All Crops</option>
+              <option value="Wheat">Wheat</option>
+              <option value="Tomato">Tomato</option>
+              <option value="Onion">Onion</option>
+              <option value="Maize">Maize</option>
+            </select>
+          </div>
+          <div id="marketGrid" class="market-grid" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section id="contactSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1>Contact Warehouse Owner</h1>
+            <p>Send message in case of emergency or issue</p>
+          </div>
+        </section>
+
+        <section class="contact-wrap">
+          <article class="contact-card">
+            <div class="contact-field">
+              <label for="contactWarehouse">Select Warehouse</label>
+              <select id="contactWarehouse" class="contact-input">
+                <option value="">Choose warehouse</option>
+                <option value="GreenCold">GreenCold</option>
+                <option value="AgriStore Hub">AgriStore Hub</option>
+                <option value="FreshCool Depot">FreshCool Depot</option>
+              </select>
+            </div>
+
+            <div class="contact-field">
+              <label for="contactSubject">Subject</label>
+              <select id="contactSubject" class="contact-input">
+                <option value="Spoilage Issue">Spoilage Issue</option>
+                <option value="Temperature Problem">Temperature Problem</option>
+                <option value="Humidity Issue">Humidity Issue</option>
+                <option value="Storage Extension">Storage Extension</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="contact-field">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" class="contact-textarea" placeholder="Write your issue here..."></textarea>
+            </div>
+
+            <div class="contact-field">
+              <label for="contactImage">Upload Image (Optional)</label>
+              <input id="contactImage" class="contact-input" type="file" accept="image/*" />
+            </div>
+
+            <label class="contact-check">
+              <input id="contactEmail" type="checkbox" checked />
+              <span>Also send email to warehouse owner</span>
+            </label>
+
+            <div class="contact-actions">
+              <button id="sendMessageBtn" class="contact-btn normal" type="button">Send Message</button>
+              <button id="sendEmergencyBtn" class="contact-btn emergency" type="button">Send Emergency Alert</button>
+            </div>
+
+            <p id="contactStatus" class="contact-status"></p>
+          </article>
+
+          <article class="contact-card">
+            <h2 style="margin:0;font-size:1.1rem;">Previous Messages</h2>
+            <div id="previousMessages" class="message-list"></div>
+          </article>
+        </section>
+      </section>
+
+      <section id="profileSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1>Profile</h1>
+            <p>View and update your farmer information.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="profile-head">
+            <h2 style="margin:0;font-size:1.1rem;">Farmer Details</h2>
+            <div class="profile-tabs">
+              <button id="viewProfileBtn" type="button" class="profile-tab active">View Profile</button>
+              <button id="updateProfileBtn" type="button" class="profile-tab">Update Profile</button>
+            </div>
+          </div>
+
+          <div id="profileViewMode">
+            <div class="profile-card-layout">
+              <img id="profilePhoto" class="profile-photo" src="businessman-avatar-profile-picture-36775850.png" alt="Profile photo" />
+              <div id="profileViewGrid" class="profile-grid"></div>
+            </div>
+          </div>
+
+          <form id="profileUpdateMode" class="profile-form section-hidden">
+            <label>
+              Full Name
+              <input class="finder-control" type="text" id="editName" required />
+            </label>
+            <label>
+              Email
+              <input class="finder-control" type="email" id="editEmail" required />
+            </label>
+            <label>
+              Phone Number
+              <input class="finder-control" type="text" id="editPhone" required />
+            </label>
+            <label>
+              Address
+              <input class="finder-control" type="text" id="editAddress" required />
+            </label>
+            <label>
+              Farm Name
+              <input class="finder-control" type="text" id="editFarmName" required />
+            </label>
+            <label>
+              Land Area
+              <input class="finder-control" type="text" id="editLandArea" required />
+            </label>
+            <label class="full">
+              Main Crops
+              <input class="finder-control" type="text" id="editMainCrops" required />
+            </label>
+
+            <div class="profile-actions">
+              <button type="submit" class="finder-btn">Save Changes</button>
+              <button type="button" class="profile-cancel" id="cancelProfileBtn">Cancel</button>
+            </div>
+          </form>
+        </section>
+      </section>
+
+      <section id="placeholderSection" class="section-hidden">
+        <section class="page-title">
+          <div>
+            <h1 id="placeholderTitle">Module</h1>
+            <p id="placeholderText">This section will be available soon.</p>
+          </div>
+        </section>
+        <section class="card">
+          <p class="placeholder-note">This section is ready for your next update.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="produceModal" class="produce-modal" role="dialog" aria-modal="true" aria-labelledby="produceModalTitle">
+    <div class="produce-modal-card">
+      <div class="produce-modal-head">
+        <h3 id="produceModalTitle">Crop Details</h3>
+        <button type="button" class="modal-close" id="closeProduceModal">Close</button>
+      </div>
+      <div class="produce-modal-grid">
+        <div class="produce-modal-item">
+          <span>Current Temperature</span>
+          <strong id="modalTemp">-</strong>
+        </div>
+        <div class="produce-modal-item">
+          <span>Current Humidity</span>
+          <strong id="modalHumidity">-</strong>
+        </div>
+        <div class="produce-modal-item">
+          <span>Storage Start Date</span>
+          <strong id="modalStartDate">-</strong>
+        </div>
+        <div class="produce-modal-item">
+          <span>Expected Safe Date</span>
+          <strong id="modalSafeDate">-</strong>
+        </div>
+      </div>
+      <p id="modalMessage" class="produce-message">-</p>
+    </div>
+  </div>
+
+  <div id="marketTrendModal" class="market-modal" role="dialog" aria-modal="true" aria-labelledby="marketTrendTitle">
+    <div class="market-modal-card">
+      <div class="market-modal-head">
+        <h3 id="marketTrendTitle">Weekly Trend</h3>
+        <button type="button" class="modal-close" id="closeMarketModal">Close</button>
+      </div>
+      <div class="trend-chart-wrap">
+        <svg id="trendChart" class="trend-chart" viewBox="0 0 100 70" aria-label="Last 7 days price trend">
+          <line x1="0" y1="62" x2="100" y2="62" stroke="#8dbca0" stroke-width="1.2"></line>
+          <polyline id="trendLine" fill="none" stroke="#1f7a46" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+        </svg>
+        <div class="trend-labels">
+          <span>D1</span>
+          <span>D2</span>
+          <span>D3</span>
+          <span>D4</span>
+          <span>D5</span>
+          <span>D6</span>
+          <span>D7</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const data = [
+        { name: "GreenCold Warehouse", location: "Nashik", price: 1100, storageTime: 60, availableSpace: 20 },
+        { name: "FreshCool Depot", location: "Pune", price: 900, storageTime: 90, availableSpace: 39 },
+        { name: "FarmFresh Storage", location: "Aurangabad", price: 800, storageTime: 30, availableSpace: 80 },
+        { name: "AgriStore Hub", location: "Satara", price: 950, storageTime: 60, availableSpace: 10 },
+        { name: "ColdStack Warehouse", location: "Nashik", price: 920, storageTime: 90, availableSpace: 55 },
+        { name: "Kisan SafeStore", location: "Pune", price: 870, storageTime: 30, availableSpace: 48 }
+      ];
+
+      const produceData = [
+        {
+          cropName: "Wheat",
+          warehouseName: "GreenCold",
+          quantity: "5 tons",
+          storedDays: "20 days stored",
+          remainingDays: "40 days left",
+          status: "Safe",
+          currentTemperature: "8 C",
+          currentHumidity: "68%",
+          storageStartDate: "2026-01-08",
+          expectedSafeDate: "2026-03-08",
+          message: "Your crop is safe."
+        },
+        {
+          cropName: "Onion",
+          warehouseName: "AgriStore Hub",
+          quantity: "8 tons",
+          storedDays: "50 days stored",
+          remainingDays: "5 days left",
+          status: "Risk of Spoilage",
+          currentTemperature: "13 C",
+          currentHumidity: "84%",
+          storageStartDate: "2025-12-30",
+          expectedSafeDate: "2026-03-06",
+          message: "Please sell or move within 5 days."
+        },
+        {
+          cropName: "Tomato",
+          warehouseName: "FreshCool",
+          quantity: "6 tons",
+          storedDays: "25 days stored",
+          remainingDays: "10 days left",
+          status: "Check Soon",
+          currentTemperature: "10 C",
+          currentHumidity: "78%",
+          storageStartDate: "2026-01-20",
+          expectedSafeDate: "2026-03-02",
+          message: "Please check this crop daily."
+        }
+      ];
+
+      const alertsData = [
+        {
+          id: 1,
+          type: "spoilage",
+          typeLabel: "Spoilage Risk",
+          icon: "⚠",
+          cropName: "Onion",
+          warehouseName: "AgriStore Hub",
+          message: "Onion at AgriStore Hub may spoil in 3 days. High humidity detected.",
+          time: "2 hours ago",
+          priority: "Immediate Action"
+        },
+        {
+          id: 2,
+          type: "expiry",
+          typeLabel: "Storage Expiry",
+          icon: "📅",
+          cropName: "Wheat",
+          warehouseName: "GreenCold",
+          message: "Wheat storage ending in 5 days.",
+          time: "5 hours ago",
+          priority: "Check Soon"
+        },
+        {
+          id: 3,
+          type: "market",
+          typeLabel: "Market Opportunity",
+          icon: "📈",
+          cropName: "Wheat",
+          warehouseName: "GreenCold",
+          message: "Wheat price increased by 6%. Good time to sell.",
+          time: "1 day ago",
+          priority: "Good News"
+        }
+      ];
+
+      const marketData = [
+        {
+          id: 1,
+          cropName: "Wheat",
+          todayPrice: 42,
+          changePercent: 5,
+          message: "Good time to sell",
+          updatedAt: "30 minutes ago",
+          weeklyTrend: [36, 37, 38, 39, 40, 41, 42]
+        },
+        {
+          id: 2,
+          cropName: "Tomato",
+          todayPrice: 26,
+          changePercent: -2,
+          message: "Price is low, you may wait",
+          updatedAt: "15 minutes ago",
+          weeklyTrend: [30, 29, 28, 27, 27, 26, 26]
+        },
+        {
+          id: 3,
+          cropName: "Onion",
+          todayPrice: 38,
+          changePercent: 3,
+          message: "Good time to sell",
+          updatedAt: "1 hour ago",
+          weeklyTrend: [34, 35, 35, 36, 37, 37, 38]
+        },
+        {
+          id: 4,
+          cropName: "Maize",
+          todayPrice: 39,
+          changePercent: 1,
+          message: "Stable price",
+          updatedAt: "20 minutes ago",
+          weeklyTrend: [38, 38, 39, 39, 39, 39, 39]
+        }
+      ];
+
+      const profileData = {
+        photo: "businessman-avatar-profile-picture-36775850.png",
+        fullName: localStorage.getItem("farmerName") || "Rajesh Patil",
+        email: localStorage.getItem("farmerEmail") || "rajesh.patil@farmmail.com",
+        phoneNumber: localStorage.getItem("farmerPhone") || "+91 98765 43210",
+        address: localStorage.getItem("farmerAddress") || "Nashik, Maharashtra",
+        farmName: localStorage.getItem("farmerFarm") || "Patil Fresh Farms",
+        landArea: localStorage.getItem("farmerLandArea") || "12 Acres",
+        mainCrops: localStorage.getItem("farmerCrop") || "Tomato"
+      };
+
+      const menuBtn = document.getElementById("menuBtn");
+      const sidebar = document.getElementById("sidebar");
+      const profileCard = document.getElementById("profileCard");
+      const profileToggle = document.getElementById("profileToggle");
+      const profileMenu = document.getElementById("profileMenu");
+      const themeToggle = document.getElementById("themeToggle");
+
+      const sidebarName = document.getElementById("sidebarName");
+      const topName = document.getElementById("topName");
+      const countBadge = document.getElementById("countBadge");
+
+      const locationFilter = document.getElementById("locationFilter");
+      const priceFilter = document.getElementById("priceFilter");
+      const timeFilter = document.getElementById("timeFilter");
+      const searchBtn = document.getElementById("searchBtn");
+      const warehouseGrid = document.getElementById("warehouseGrid");
+
+      const sectionButtons = Array.from(document.querySelectorAll(".side-nav button"));
+      const findSection = document.getElementById("findSection");
+      const produceSection = document.getElementById("produceSection");
+      const alertsSection = document.getElementById("alertsSection");
+      const marketSection = document.getElementById("marketSection");
+      const contactSection = document.getElementById("contactSection");
+      const profileSection = document.getElementById("profileSection");
+      const placeholderSection = document.getElementById("placeholderSection");
+      const placeholderTitle = document.getElementById("placeholderTitle");
+      const placeholderText = document.getElementById("placeholderText");
+      const produceGrid = document.getElementById("produceGrid");
+      const alertsGrid = document.getElementById("alertsGrid");
+      const alertsFilter = document.getElementById("alertsFilter");
+      const marketGrid = document.getElementById("marketGrid");
+      const marketFilter = document.getElementById("marketFilter");
+      const produceModal = document.getElementById("produceModal");
+      const closeProduceModal = document.getElementById("closeProduceModal");
+      const modalTitle = document.getElementById("produceModalTitle");
+      const modalTemp = document.getElementById("modalTemp");
+      const modalHumidity = document.getElementById("modalHumidity");
+      const modalStartDate = document.getElementById("modalStartDate");
+      const modalSafeDate = document.getElementById("modalSafeDate");
+      const modalMessage = document.getElementById("modalMessage");
+      const marketTrendModal = document.getElementById("marketTrendModal");
+      const closeMarketModal = document.getElementById("closeMarketModal");
+      const marketTrendTitle = document.getElementById("marketTrendTitle");
+      const trendLine = document.getElementById("trendLine");
+      const contactWarehouse = document.getElementById("contactWarehouse");
+      const contactSubject = document.getElementById("contactSubject");
+      const contactMessage = document.getElementById("contactMessage");
+      const contactImage = document.getElementById("contactImage");
+      const contactEmail = document.getElementById("contactEmail");
+      const sendMessageBtn = document.getElementById("sendMessageBtn");
+      const sendEmergencyBtn = document.getElementById("sendEmergencyBtn");
+      const contactStatus = document.getElementById("contactStatus");
+      const previousMessages = document.getElementById("previousMessages");
+
+      const profileViewMode = document.getElementById("profileViewMode");
+      const profileUpdateMode = document.getElementById("profileUpdateMode");
+      const profileViewGrid = document.getElementById("profileViewGrid");
+      const profilePhoto = document.getElementById("profilePhoto");
+      const viewProfileBtn = document.getElementById("viewProfileBtn");
+      const updateProfileBtn = document.getElementById("updateProfileBtn");
+      const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+
+      const editName = document.getElementById("editName");
+      const editEmail = document.getElementById("editEmail");
+      const editPhone = document.getElementById("editPhone");
+      const editAddress = document.getElementById("editAddress");
+      const editFarmName = document.getElementById("editFarmName");
+      const editLandArea = document.getElementById("editLandArea");
+      const editMainCrops = document.getElementById("editMainCrops");
+      const readAlertIds = {};
+      const contactStorageKey = "farmerContactMessages";
+
+      sidebarName.textContent = profileData.fullName;
+      topName.textContent = profileData.fullName;
+      profilePhoto.src = profileData.photo;
+
+      menuBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("sidebar-open");
+      });
+
+      function closeProfileMenu() {
+        profileMenu.classList.remove("open");
+        profileToggle.setAttribute("aria-expanded", "false");
+      }
+
+      profileToggle.addEventListener("click", function () {
+        const isOpen = profileMenu.classList.toggle("open");
+        profileToggle.setAttribute("aria-expanded", String(isOpen));
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!profileCard.contains(event.target) && !profileMenu.contains(event.target)) {
+          closeProfileMenu();
+        }
+      });
+
+      function applyTheme(theme) {
+        document.body.classList.toggle("dark-mode", theme === "dark");
+        document.body.classList.toggle("light-mode", theme !== "dark");
+        themeToggle.textContent = theme === "dark" ? "Light" : "Dark";
+      }
+
+      const storedTheme = localStorage.getItem("dashboardTheme") || "light";
+      applyTheme(storedTheme);
+
+      themeToggle.addEventListener("click", function () {
+        const dark = !document.body.classList.contains("dark-mode");
+        const nextTheme = dark ? "dark" : "light";
+        applyTheme(nextTheme);
+        localStorage.setItem("dashboardTheme", nextTheme);
+      });
+
+      function renderWarehouseList(list) {
+        warehouseGrid.innerHTML = "";
+        countBadge.textContent = list.length + " Warehouses";
+
+        if (!list.length) {
+          const empty = document.createElement("article");
+          empty.className = "card";
+          empty.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No warehouse found for selected filters.</p>";
+          warehouseGrid.appendChild(empty);
+          return;
+        }
+
+        list.forEach(function (item) {
+          const capacityPercent = Math.min(100, Math.round((item.availableSpace / 100) * 100));
+
+          const card = document.createElement("article");
+          card.className = "card warehouse-card";
+          card.innerHTML =
+            "<div class='warehouse-head'>" +
+            "<h3>" + item.name + "</h3>" +
+            "<span class='storage-pill'>" + item.storageTime + " days</span>" +
+            "</div>" +
+            "<p class='warehouse-meta'>" + item.location + "</p>" +
+            "<div class='warehouse-line'><span>Price</span><strong>\u20B9 " + item.price + " <small style='font-size:1rem;color:var(--muted);font-weight:700;'>/ton</small></strong></div>" +
+            "<div class='space-row'><span>Available: " + item.availableSpace + " tons</span><div class='space-track'><div class='space-fill' style='width:" + capacityPercent + "%'></div></div></div>" +
+            "<button class='request-btn' type='button'>Request Storage</button>";
+
+          warehouseGrid.appendChild(card);
+        });
+      }
+
+      function filterData() {
+        const location = locationFilter.value.trim().toLowerCase();
+        const maxPrice = Number(priceFilter.value || 0);
+        const storage = Number(timeFilter.value || 0);
+
+        const filtered = data.filter(function (item) {
+          const matchLocation = !location || item.location.toLowerCase().includes(location);
+          const matchPrice = !maxPrice || item.price <= maxPrice;
+          const matchStorage = !storage || item.storageTime === storage;
+          return matchLocation && matchPrice && matchStorage;
+        });
+
+        renderWarehouseList(filtered);
+      }
+
+      function badgeClass(status) {
+        if (status === "Safe") return "status-badge status-safe";
+        if (status === "Check Soon") return "status-badge status-check";
+        return "status-badge status-risk";
+      }
+
+      function openProduceModal(item) {
+        modalTitle.textContent = item.cropName + " Details";
+        modalTemp.textContent = item.currentTemperature;
+        modalHumidity.textContent = item.currentHumidity;
+        modalStartDate.textContent = item.storageStartDate;
+        modalSafeDate.textContent = item.expectedSafeDate;
+        modalMessage.textContent = item.message;
+        produceModal.classList.add("open");
+      }
+
+      function renderProduceList() {
+        produceGrid.innerHTML = "";
+
+        produceData.forEach(function (item) {
+          const card = document.createElement("article");
+          card.className = "produce-card";
+          card.innerHTML =
+            "<div class='produce-top'>" +
+              "<div>" +
+                "<h2 class='produce-title'>" + item.cropName + "</h2>" +
+                "<p class='produce-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
+              "</div>" +
+              "<span class='" + badgeClass(item.status) + "'>" + item.status + "</span>" +
+            "</div>" +
+            "<div class='produce-meta'>" +
+              "<div class='produce-chip'><span>Quantity</span><strong>" + item.quantity + "</strong></div>" +
+              "<div class='produce-chip'><span>Stored</span><strong>" + item.storedDays + "</strong></div>" +
+              "<div class='produce-chip'><span>Remaining</span><strong>" + item.remainingDays + "</strong></div>" +
+              "<div class='produce-chip'><span>Status</span><strong>" + item.status + "</strong></div>" +
+            "</div>" +
+            "<button class='details-btn' type='button'>View Details</button>";
+
+          card.querySelector(".details-btn").addEventListener("click", function () {
+            openProduceModal(item);
+          });
+
+          produceGrid.appendChild(card);
+        });
+      }
+
+      function alertClassByType(type) {
+        if (type === "spoilage") return "alert-card spoilage";
+        if (type === "expiry") return "alert-card expiry";
+        return "alert-card market";
+      }
+
+      function priorityClass(priority) {
+        if (priority === "Immediate Action") return "priority-badge priority-red";
+        if (priority === "Check Soon") return "priority-badge priority-yellow";
+        return "priority-badge priority-green";
+      }
+
+      function renderAlerts() {
+        alertsGrid.innerHTML = "";
+
+        const filter = alertsFilter.value;
+        const items = alertsData.filter(function (item) {
+          return filter === "all" ? true : item.type === filter;
+        });
+
+        if (!items.length) {
+          const empty = document.createElement("article");
+          empty.className = "card";
+          empty.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No alerts found for this filter.</p>";
+          alertsGrid.appendChild(empty);
+          return;
+        }
+
+        items.forEach(function (item) {
+          const card = document.createElement("article");
+          card.className = alertClassByType(item.type) + (readAlertIds[item.id] ? " read" : "");
+          card.innerHTML =
+            "<div class='alert-top'>" +
+              "<div>" +
+                "<p class='alert-type'>" + item.icon + " " + item.typeLabel + "</p>" +
+                "<h3 class='alert-title'>" + item.cropName + "</h3>" +
+                "<p class='alert-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
+              "</div>" +
+              "<span class='" + priorityClass(item.priority) + "'>" + item.priority + "</span>" +
+            "</div>" +
+            "<p class='alert-message'>" + item.message + "</p>" +
+            "<div class='alert-actions'>" +
+              "<span class='alert-time'>" + item.time + "</span>" +
+              "<button class='mark-read-btn' type='button'>" + (readAlertIds[item.id] ? "Read" : "Mark as Read") + "</button>" +
+            "</div>";
+
+          const actionBtn = card.querySelector(".mark-read-btn");
+          if (readAlertIds[item.id]) {
+            actionBtn.disabled = true;
+          }
+
+          actionBtn.addEventListener("click", function () {
+            readAlertIds[item.id] = true;
+            renderAlerts();
+          });
+
+          alertsGrid.appendChild(card);
+        });
+      }
+
+      function marketChangeClass(change) {
+        return change >= 0 ? "market-change up" : "market-change down";
+      }
+
+      function marketChangeText(change) {
+        const sign = change > 0 ? "+" : "";
+        return sign + String(change) + "%";
+      }
+
+      function marketBadgeText(change) {
+        return change >= 0 ? "&uarr; " + marketChangeText(change) : "&darr; " + marketChangeText(change);
+      }
+
+      function marketSuggestion(change) {
+        if (change >= 0) {
+          return {
+            icon: "&#128200;",
+            text: "Good time to sell"
+          };
+        }
+        return {
+          icon: "&#9203;",
+          text: "Price is low. You may wait."
+        };
+      }
+
+      function openTrendModal(item) {
+        marketTrendTitle.textContent = item.cropName + " Weekly Trend";
+
+        const values = item.weeklyTrend;
+        const max = Math.max.apply(null, values);
+        const min = Math.min.apply(null, values);
+        const range = Math.max(max - min, 1);
+
+        const points = values.map(function (value, index) {
+          const x = (index / (values.length - 1)) * 100;
+          const y = 62 - (((value - min) / range) * 48);
+          return x.toFixed(2) + "," + y.toFixed(2);
+        }).join(" ");
+
+        trendLine.setAttribute("points", points);
+        marketTrendModal.classList.add("open");
+      }
+
+      function renderMarketPrices() {
+        marketGrid.innerHTML = "";
+
+        const filter = marketFilter.value;
+        const list = marketData.filter(function (item) {
+          return filter === "all" ? true : item.cropName === filter;
+        });
+
+        if (!list.length) {
+          const empty = document.createElement("article");
+          empty.className = "card";
+          empty.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No crop found for this filter.</p>";
+          marketGrid.appendChild(empty);
+          return;
+        }
+
+        list.forEach(function (item) {
+          const suggestion = marketSuggestion(item.changePercent);
+          const card = document.createElement("article");
+          card.className = "market-card";
+          card.innerHTML =
+            "<h3 class='market-crop'>" + item.cropName + "</h3>" +
+            "<p class='market-price'>" + String.fromCharCode(8377) + item.todayPrice + "/kg</p>" +
+            "<span class='" + marketChangeClass(item.changePercent) + "'>" +
+              marketBadgeText(item.changePercent) +
+            "</span>" +
+            "<p class='market-note'><span class='note-icon'>" + suggestion.icon + "</span><span>" + suggestion.text + "</span></p>" +
+            "<p class='market-updated'>Updated " + item.updatedAt + "</p>" +
+            "<button class='trend-btn' type='button'>View Weekly Trend</button>";
+
+          card.querySelector(".trend-btn").addEventListener("click", function () {
+            openTrendModal(item);
+          });
+
+          marketGrid.appendChild(card);
+        });
+      }
+
+      function renderProfileView() {
+        const fields = [
+          ["Full Name", profileData.fullName],
+          ["Email", profileData.email],
+          ["Phone Number", profileData.phoneNumber],
+          ["Address", profileData.address],
+          ["Farm Name", profileData.farmName],
+          ["Land Area", profileData.landArea],
+          ["Main Crops", profileData.mainCrops]
+        ];
+
+        profileViewGrid.innerHTML = "";
+
+        fields.forEach(function (field) {
+          const block = document.createElement("div");
+          block.className = "profile-field";
+          block.innerHTML = "<span>" + field[0] + "</span><strong>" + field[1] + "</strong>";
+          profileViewGrid.appendChild(block);
+        });
+
+        sidebarName.textContent = profileData.fullName;
+        topName.textContent = profileData.fullName;
+      }
+
+      function getStoredContactMessages() {
+        const raw = localStorage.getItem(contactStorageKey);
+        if (!raw) return [];
+        try {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveStoredContactMessages(items) {
+        localStorage.setItem(contactStorageKey, JSON.stringify(items));
+      }
+
+      function renderPreviousMessages() {
+        const rows = getStoredContactMessages();
+        previousMessages.innerHTML = "";
+
+        if (!rows.length) {
+          previousMessages.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No messages yet.</p>";
+          return;
+        }
+
+        rows.slice().reverse().forEach(function (item) {
+          const row = document.createElement("article");
+          row.className = "message-item";
+          row.innerHTML =
+            "<div class='message-top'>" +
+              "<span class='message-meta'>" + item.createdAt + " | " + item.warehouseId + "</span>" +
+              "<span class='message-status " + (item.status === "Replied" ? "replied" : "pending") + "'>" + item.status + "</span>" +
+            "</div>" +
+            "<div class='message-meta'>" + item.subject + " | Priority: " + item.priority + "</div>" +
+            "<button class='view-conv-btn' type='button'>View conversation</button>";
+          previousMessages.appendChild(row);
+        });
+      }
+
+      function sendContactMessage(priority) {
+        const warehouse = contactWarehouse.value;
+        const subject = contactSubject.value;
+        const message = contactMessage.value.trim();
+
+        if (!warehouse || !subject || !message) {
+          contactStatus.textContent = "Please select warehouse, subject, and write your message.";
+          contactStatus.classList.add("error");
+          return;
+        }
+
+        const messages = getStoredContactMessages();
+        const now = new Date();
+        const payload = {
+          farmerId: localStorage.getItem("farmerId") || "farmer-001",
+          warehouseId: warehouse,
+          subject: subject,
+          message: message,
+          priority: priority,
+          createdAt: now.toLocaleString(),
+          status: "Pending",
+          alsoEmail: contactEmail.checked,
+          attachmentName: contactImage.files && contactImage.files[0] ? contactImage.files[0].name : ""
+        };
+
+        messages.push(payload);
+        saveStoredContactMessages(messages);
+        renderPreviousMessages();
+
+        contactStatus.textContent = priority === "emergency" ? "Emergency alert sent." : "Message sent successfully.";
+        contactStatus.classList.remove("error");
+
+        contactSubject.value = "Spoilage Issue";
+        contactMessage.value = "";
+        contactImage.value = "";
+      }
+
+      function fillProfileForm() {
+        editName.value = profileData.fullName;
+        editEmail.value = profileData.email;
+        editPhone.value = profileData.phoneNumber;
+        editAddress.value = profileData.address;
+        editFarmName.value = profileData.farmName;
+        editLandArea.value = profileData.landArea;
+        editMainCrops.value = profileData.mainCrops;
+      }
+
+      function setProfileMode(mode) {
+        const isView = mode === "view";
+        profileViewMode.classList.toggle("section-hidden", !isView);
+        profileUpdateMode.classList.toggle("section-hidden", isView);
+        viewProfileBtn.classList.toggle("active", isView);
+        updateProfileBtn.classList.toggle("active", !isView);
+      }
+
+      function setMainSection(section) {
+        sectionButtons.forEach(function (button) {
+          button.classList.toggle("active", button.getAttribute("data-section") === section);
+        });
+
+        findSection.classList.toggle("section-hidden", section !== "find");
+        produceSection.classList.toggle("section-hidden", section !== "produce");
+        alertsSection.classList.toggle("section-hidden", section !== "alerts");
+        marketSection.classList.toggle("section-hidden", section !== "market");
+        contactSection.classList.toggle("section-hidden", section !== "contact");
+        profileSection.classList.toggle("section-hidden", section !== "profile");
+        placeholderSection.classList.toggle("section-hidden", section === "find" || section === "profile" || section === "produce" || section === "alerts" || section === "market" || section === "contact");
+
+        if (section === "profile") {
+          setProfileMode("view");
+          renderProfileView();
+        }
+
+        if (section === "produce") {
+          placeholderTitle.textContent = "My Produce";
+          placeholderText.textContent = "Track produce lots and storage status here.";
+        }
+
+        if (section === "contact") {
+          renderPreviousMessages();
+        }
+      }
+
+      sectionButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const section = button.getAttribute("data-section");
+          setMainSection(section);
+          closeProfileMenu();
+        });
+      });
+
+      viewProfileBtn.addEventListener("click", function () {
+        setProfileMode("view");
+        renderProfileView();
+      });
+
+      updateProfileBtn.addEventListener("click", function () {
+        fillProfileForm();
+        setProfileMode("update");
+      });
+
+      cancelProfileBtn.addEventListener("click", function () {
+        setProfileMode("view");
+        renderProfileView();
+      });
+
+      profileUpdateMode.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        profileData.fullName = editName.value.trim();
+        profileData.email = editEmail.value.trim();
+        profileData.phoneNumber = editPhone.value.trim();
+        profileData.address = editAddress.value.trim();
+        profileData.farmName = editFarmName.value.trim();
+        profileData.landArea = editLandArea.value.trim();
+        profileData.mainCrops = editMainCrops.value.trim();
+
+        localStorage.setItem("farmerName", profileData.fullName);
+        localStorage.setItem("farmerEmail", profileData.email);
+        localStorage.setItem("farmerPhone", profileData.phoneNumber);
+        localStorage.setItem("farmerAddress", profileData.address);
+        localStorage.setItem("farmerFarm", profileData.farmName);
+        localStorage.setItem("farmerLandArea", profileData.landArea);
+        localStorage.setItem("farmerCrop", profileData.mainCrops);
+
+        renderProfileView();
+        setProfileMode("view");
+      });
+
+      document.getElementById("profileMenuView").addEventListener("click", function (event) {
+        event.preventDefault();
+        setMainSection("profile");
+        setProfileMode("view");
+        closeProfileMenu();
+      });
+
+      document.getElementById("profileMenuUpdate").addEventListener("click", function (event) {
+        event.preventDefault();
+        setMainSection("profile");
+        fillProfileForm();
+        setProfileMode("update");
+        closeProfileMenu();
+      });
+
+      closeProduceModal.addEventListener("click", function () {
+        produceModal.classList.remove("open");
+      });
+
+      produceModal.addEventListener("click", function (event) {
+        if (event.target === produceModal) {
+          produceModal.classList.remove("open");
+        }
+      });
+
+      closeMarketModal.addEventListener("click", function () {
+        marketTrendModal.classList.remove("open");
+      });
+
+      marketTrendModal.addEventListener("click", function (event) {
+        if (event.target === marketTrendModal) {
+          marketTrendModal.classList.remove("open");
+        }
+      });
+
+      searchBtn.addEventListener("click", filterData);
+      locationFilter.addEventListener("input", filterData);
+      priceFilter.addEventListener("input", filterData);
+      timeFilter.addEventListener("change", filterData);
+      alertsFilter.addEventListener("change", renderAlerts);
+      marketFilter.addEventListener("change", renderMarketPrices);
+      sendMessageBtn.addEventListener("click", function () {
+        sendContactMessage("normal");
+      });
+      sendEmergencyBtn.addEventListener("click", function () {
+        sendContactMessage("emergency");
+      });
+
+      fillProfileForm();
+      renderProfileView();
+      renderWarehouseList(data);
+      renderProduceList();
+      renderAlerts();
+      renderMarketPrices();
+      renderPreviousMessages();
+      setMainSection("find");
+    })();
+  </script>
+</body>
+</html>
+

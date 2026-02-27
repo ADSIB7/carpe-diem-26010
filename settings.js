@@ -24,8 +24,8 @@
   const saveMsg = document.getElementById("saveMsg");
   const resetBtn = document.getElementById("resetBtn");
 
-  function getSettings() {
-    const existing = window.WarehouseDB ? window.WarehouseDB.get("settings") : null;
+  async function getSettings() {
+    const existing = window.WarehouseDB ? await window.WarehouseDB.getAsync("settings") : null;
     return Object.assign({}, defaultSettings, existing || {});
   }
 
@@ -69,15 +69,15 @@
     };
   }
 
-  function save(settings) {
+  async function save(settings) {
     if (window.WarehouseDB) {
-      window.WarehouseDB.set("settings", settings);
+      await window.WarehouseDB.setAsync("settings", settings);
     }
     localStorage.setItem("dashboardTheme", settings.preferences.defaultTheme === "dark" ? "dark" : "light");
     saveMsg.textContent = "Settings saved successfully at " + new Date().toLocaleTimeString();
   }
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
     const settings = readFromForm();
 
@@ -91,13 +91,16 @@
       return;
     }
 
-    save(settings);
+    await save(settings);
   });
 
-  resetBtn.addEventListener("click", function () {
+  resetBtn.addEventListener("click", async function () {
     applyToForm(defaultSettings);
-    save(defaultSettings);
+    await save(defaultSettings);
   });
 
-  applyToForm(getSettings());
+  (async function init() {
+    const settings = await getSettings();
+    applyToForm(settings);
+  })();
 })();

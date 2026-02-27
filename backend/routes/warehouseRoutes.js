@@ -1,45 +1,9 @@
 const express = require("express");
 const { randomUUID } = require("crypto");
-const { getSupabase } = require("../lib/supabase");
+const supabaseLib = require("../lib/supabase");
+const { toNumber, validateWarehouse } = require("../validation/warehouseValidation");
 
 const router = express.Router();
-
-function toNumber(value) {
-  if (value === undefined || value === null || value === "") return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : NaN;
-}
-
-function validateWarehouse(payload, isPatch) {
-  const errors = [];
-  const required = ["name", "location"];
-
-  if (!isPatch) {
-    required.forEach((field) => {
-      if (!payload[field]) errors.push(`${field} is required`);
-    });
-  }
-
-  if (payload.name !== undefined && String(payload.name).trim().length < 2) {
-    errors.push("name must be at least 2 characters");
-  }
-
-  if (payload.capacityTons !== undefined) {
-    const capacity = toNumber(payload.capacityTons);
-    if (Number.isNaN(capacity) || capacity < 0) {
-      errors.push("capacityTons must be a non-negative number");
-    }
-  }
-
-  if (payload.currentStockTons !== undefined) {
-    const stock = toNumber(payload.currentStockTons);
-    if (Number.isNaN(stock) || stock < 0) {
-      errors.push("currentStockTons must be a non-negative number");
-    }
-  }
-
-  return errors;
-}
 
 function mapWarehouse(row) {
   return {
@@ -56,9 +20,10 @@ function mapWarehouse(row) {
 
 router.get("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { location, q } = req.query;
-    let query = supabase.from("warehouses").select("*");
+    let query = supabase.from("warehouses").select("*").eq("owner_user_id", ownerId);
 
     if (location) {
       query = query.ilike("location", `%${String(location).trim()}%`);
@@ -81,10 +46,12 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("warehouses")
       .select("*")
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .maybeSingle();
 
@@ -99,7 +66,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateWarehouse(req.body, false);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
@@ -107,6 +75,7 @@ router.post("/", async (req, res) => {
 
     const payload = {
       id: randomUUID(),
+      owner_user_id: ownerId,
       name: String(req.body.name).trim(),
       location: String(req.body.location).trim(),
       manager_name: req.body.managerName ? String(req.body.managerName).trim() : null,
@@ -123,6 +92,7 @@ router.post("/", async (req, res) => {
       .single();
 
     if (error) return res.status(400).json({ error: error.message });
+
     return res.status(201).json({ data: mapWarehouse(data) });
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -131,7 +101,8 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateWarehouse(req.body, false);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
@@ -149,6 +120,7 @@ router.put("/:id", async (req, res) => {
     const { data, error } = await supabase
       .from("warehouses")
       .update(payload)
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("*")
       .maybeSingle();
@@ -164,7 +136,8 @@ router.put("/:id", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateWarehouse(req.body, true);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
@@ -188,6 +161,7 @@ router.patch("/:id", async (req, res) => {
     const { data, error } = await supabase
       .from("warehouses")
       .update(patch)
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("*")
       .maybeSingle();
@@ -203,10 +177,12 @@ router.patch("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("warehouses")
       .delete()
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("id");
 
