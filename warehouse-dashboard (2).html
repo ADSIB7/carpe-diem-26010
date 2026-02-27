@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warehouse Owner Dashboard | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-owner-dashboard.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Warehouse</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Warehouse Owner</div>
+
+      <a class="owner-card" href="profile.html">
+        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=80&q=80" alt="Owner" />
+        <div>
+          <strong>Ravi Sharmadawkudk</strong>
+          <span>Warehouse Owner</span>
+        </div>
+        <span class="owner-action">?</span>
+      </a>
+
+      <nav class="side-nav">
+        <a class="active" href="#">Dashboard</a>
+        <a href="#">Climate Monitoring</a>
+        <a href="#">Storage &amp; Capacity</a>
+        <a href="#">Batch Tracking</a>
+        <a href="#">Risk &amp; Spoilage</a>
+        <a href="#">Market Intelligence</a>
+        <a href="#">Reports</a>
+        <a href="#">Alerts</a>
+        <a href="#">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div class="search">
+          <input type="search" placeholder="Search inventory, orders, or reports" />
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-pill" aria-label="Help">??</button>
+          <div class="user-pill">
+            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=60&q=80" alt="User" />
+            <span>Ravi Sharmadawkudk</span>
+            <span class="chev">?</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="page-title">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Quick view of active sections, stock levels, and shipment status.</p>
+        </div>
+        <div class="page-actions">
+          <span class="badge">2 Active Alerts</span>
+          <span class="badge">Inbound 4</span>
+          <span class="badge">Outbound 3</span>
+        </div>
+      </section>
+
+      <section class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon">?
+          </div>
+          <div>
+            <span>Total Storage</span>
+            <strong>96,000</strong>
+            <small>tons</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">?
+          </div>
+          <div>
+            <span>Current</span>
+            <strong>84%</strong>
+            <small>utilization</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">?
+          </div>
+          <div>
+            <span>Total Stock</span>
+            <strong>80,700</strong>
+            <small>tons</small>
+          </div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-icon">!
+          </div>
+          <div>
+            <span>Active Alerts</span>
+            <strong>2</strong>
+            <small>alerts</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">?
+          </div>
+          <div>
+            <span>Inbound / Outbound</span>
+            <strong>4 / 3</strong>
+            <small>today</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card climate">
+          <div class="card-header">
+            <h2>Climate Status</h2>
+          </div>
+          <div class="climate-top">
+            <div>
+              <span>Avg. Temperature</span>
+              <strong>4.2°c</strong>
+            </div>
+            <div>
+              <span>Avg. Humidity</span>
+              <strong>78%</strong>
+            </div>
+          </div>
+          <div class="climate-chart">
+            <div class="wave"></div>
+          </div>
+          <div class="climate-footer">
+            <span class="safe">3 Zones in Safe</span>
+            <span class="warn">2 Zones in Warning</span>
+          </div>
+          <div class="mini-chart">
+            <span>24 hour line graph</span>
+            <div class="spark"></div>
+          </div>
+        </article>
+
+        <article class="card storage">
+          <div class="card-header">
+            <h2>Storage &amp; Utilization</h2>
+          </div>
+          <div class="storage-grid">
+            <div class="storage-row header">
+              <span>Zone</span>
+              <span>A1</span>
+              <span>A2</span>
+              <span>A3</span>
+              <span>A4</span>
+              <span>A4</span>
+            </div>
+            <div class="storage-row">
+              <span>B1</span>
+              <span class="pill">B1</span>
+              <span class="pill">B2</span>
+              <span class="pill">B5</span>
+              <span class="pill">D4</span>
+              <span class="pill">D6</span>
+            </div>
+            <div class="storage-row">
+              <span>C2</span>
+              <span class="pill">C1</span>
+              <span class="pill">C2</span>
+              <span class="pill">C3</span>
+              <span class="pill">D4</span>
+              <span class="pill">D6</span>
+            </div>
+            <div class="storage-row">
+              <span>D1</span>
+              <span class="pill">D1</span>
+              <span class="pill warn">D4</span>
+              <span class="pill warn">D2</span>
+              <span class="pill">C3</span>
+              <span class="pill">D6</span>
+            </div>
+          </div>
+          <div class="storage-meta">
+            <span>5% critical</span>
+            <span>16% warning</span>
+            <span>12% free</span>
+          </div>
+          <div class="storage-foot">Available space <strong>8,315</strong> tons</div>
+        </article>
+
+        <article class="card risk">
+          <div class="card-header">
+            <h2>Spoilage &amp; Risk Alerts</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#A105</strong>
+              <span>Onions</span>
+            </div>
+            <div class="risk-days">4 Days Left</div>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#C202</strong>
+              <span>Tomatoes</span>
+            </div>
+            <div class="risk-days">5 Days Left</div>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#D410</strong>
+              <span>Rice</span>
+            </div>
+            <div class="risk-days">7 Days Left</div>
+          </div>
+        </article>
+
+        <article class="card list">
+          <div class="card-header">
+            <h2>Storage &amp; Utilization</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="list-item">
+            <span>#A105</span>
+            <span>Onions</span>
+            <span>4 days</span>
+          </div>
+          <div class="list-item">
+            <span>#C202</span>
+            <span>Tomatoes</span>
+            <span>5 days</span>
+          </div>
+          <div class="list-item">
+            <span>#D410</span>
+            <span>Rice</span>
+            <span>7 days</span>
+          </div>
+        </article>
+
+        <article class="card market">
+          <div class="card-header">
+            <h2>Market Intelligence</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="market-row">
+            <span>Onion</span>
+            <strong>$28/kg</strong>
+            <span class="up">+12%</span>
+          </div>
+          <div class="market-row">
+            <span>Tomato</span>
+            <strong>$16/kg</strong>
+            <span class="down">-6%</span>
+          </div>
+          <div class="market-row">
+            <span>Rice</span>
+            <strong>$32/kg</strong>
+            <span class="up">+8%</span>
+          </div>
+          <div class="market-callout">AI suggest: Onion price rising — Hold stock</div>
+        </article>
+
+        <article class="card feed">
+          <div class="card-header">
+            <h2>Recent Activity Feed</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot"></span>
+            <div>
+              <strong>Batch #A106</strong> moved to Zone B2
+              <span>20 mins ago</span>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot"></span>
+            <div>
+              <strong>Humidity alert</strong> resolved in Zone C1
+              <span>1 hour ago</span>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot alert"></span>
+            <div>
+              <strong>Tomato price</strong> increased by 8%
+              <span>2 hours ago</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

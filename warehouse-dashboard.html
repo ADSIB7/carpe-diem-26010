@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="warehouse-dashboard.css" />
 </head>
 <body>
-  <div class="dash">
+  <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <span class="brand-mark"></span>
+        <div class="brand-icon"></div>
         <div>
           <strong>AgriShield</strong>
           <span>Warehouse</span>
@@ -26,7 +26,7 @@
         <a class="profile-main" href="profile.html">
           <img id="sidebarAvatar" src="warehouse-owner-profile.png" alt="Owner" />
           <div>
-            <strong id="sidebarName">Ravi Sharma</strong>
+            <strong id="sidebarName">Warehouse Owner</strong>
             <span id="sidebarRole">Warehouse Owner</span>
           </div>
         </a>
@@ -37,16 +37,18 @@
         <a href="profile.html#edit">Edit Profile</a>
       </div>
 
-      <nav class="menu" aria-label="Dashboard">
+      <nav class="side-nav" aria-label="Dashboard">
         <a class="active" href="#">Dashboard</a>
-        <a href="#">Warehouses</a>
-        <a href="#">Orders</a>
-        <a href="#">Shipments</a>
-        <a href="#">Inventory</a>
-        <a href="#">Tracking</a>
+        <a href="#">Climate Monitoring</a>
+        <a href="#">Storage and Capacity</a>
+        <a href="#">Batch Tracking</a>
+        <a href="#">Risk and Spoilage</a>
+        <a href="#">Market Intelligence</a>
         <a href="#">Reports</a>
+        <a href="#">Alerts</a>
         <a href="#">Settings</a>
       </nav>
+
       <div class="sidebar-footer">
         <a href="index.html">Back to Home</a>
       </div>
@@ -58,114 +60,245 @@
         <div class="search">
           <input type="search" placeholder="Search inventory, orders, or reports" />
         </div>
-        <div class="top-actions">
-          <button class="icon-btn" aria-label="Notifications">Bell</button>
-          <div class="user">
-            <img id="topAvatar" src="warehouse-owner-profile.png" alt="Manager" />
-            <span id="topName">Warehouse Lead</span>
+        <div class="topbar-actions">
+          <button class="icon-pill" aria-label="Help">Help</button>
+          <div class="user-pill">
+            <img id="topAvatar" src="warehouse-owner-profile.png" alt="User" />
+            <span id="topName">Warehouse Owner</span>
+            <span class="chev">v</span>
           </div>
         </div>
       </header>
 
-      <section class="hero">
+      <section class="page-title">
         <div>
-          <h1>Warehouses (0)</h1>
+          <h1>Dashboard</h1>
           <p>Quick view of active sections, stock levels, and shipment status.</p>
         </div>
-        <div class="hero-actions">
-          <button class="btn">Add Request</button>
-          <button class="btn ghost">Edit Section</button>
-          <button class="btn ghost">Delete Section</button>
+        <div class="page-actions">
+          <span class="badge">0 Active Alerts</span>
+          <span class="badge">Inbound 0</span>
+          <span class="badge">Outbound 0</span>
+        </div>
+      </section>
+
+      <section class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon">S</div>
+          <div>
+            <span>Total Storage</span>
+            <strong>0</strong>
+            <small>tons</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">U</div>
+          <div>
+            <span>Current</span>
+            <strong>0%</strong>
+            <small>utilization</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">T</div>
+          <div>
+            <span>Total Stock</span>
+            <strong>0</strong>
+            <small>tons</small>
+          </div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-icon">!</div>
+          <div>
+            <span>Active Alerts</span>
+            <strong>0</strong>
+            <small>alerts</small>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">F</div>
+          <div>
+            <span>Inbound / Outbound</span>
+            <strong>0 / 0</strong>
+            <small>today</small>
+          </div>
         </div>
       </section>
 
       <section class="grid">
-        <div class="card large">
+        <article class="card climate">
           <div class="card-header">
-            <h2>Section Overview</h2>
-            <span class="pill">0 Sections</span>
+            <h2>Climate Status</h2>
           </div>
-          <div class="section-grid">
-            <div class="section">
-              <h3>A - Electronics</h3>
-              <div class="slots">
-                <span class="slot green">A1</span>
-                <span class="slot green">A2</span>
-                <span class="slot">A3</span>
-                <span class="slot">A4</span>
-              </div>
+          <div class="climate-top">
+            <div>
+              <span>Avg. Temperature</span>
+              <strong>0.0 C</strong>
             </div>
-            <div class="section">
-              <h3>B - Appliances</h3>
-              <div class="slots">
-                <span class="slot yellow">B1</span>
-                <span class="slot">B2</span>
-                <span class="slot">B3</span>
-                <span class="slot">B4</span>
-              </div>
-            </div>
-            <div class="section">
-              <h3>C - Home Decor</h3>
-              <div class="slots">
-                <span class="slot purple">C1</span>
-                <span class="slot">C2</span>
-                <span class="slot">C3</span>
-                <span class="slot">C4</span>
-              </div>
-            </div>
-            <div class="section">
-              <h3>D - Sports</h3>
-              <div class="slots">
-                <span class="slot blue">D1</span>
-                <span class="slot blue">D2</span>
-                <span class="slot">D3</span>
-                <span class="slot">D4</span>
-              </div>
+            <div>
+              <span>Avg. Humidity</span>
+              <strong>0%</strong>
             </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h2>Section Usage</h2>
-            <span class="pill">B-Section</span>
+          <div class="climate-chart">
+            <div class="wave"></div>
           </div>
-          <div class="usage">
-            <div class="donut">
-              <span>0%</span>
-              <small>In Use</small>
-            </div>
-            <div class="usage-list">
-              <div><strong>0</strong><span>Total Slots</span></div>
-              <div><strong>0</strong><span>Used</span></div>
-              <div><strong>0</strong><span>Free</span></div>
-            </div>
+          <div class="climate-footer">
+            <span class="safe">0 Zones in Safe</span>
+            <span class="warn">0 Zones in Warning</span>
           </div>
-        </div>
+          <div class="mini-chart">
+            <span>24 hour line graph</span>
+            <div class="spark"></div>
+          </div>
+        </article>
 
-        <div class="card">
+        <article class="card storage">
           <div class="card-header">
-            <h2>Inventory Overview</h2>
-            <span class="pill">Today</span>
+            <h2>Storage and Utilization</h2>
           </div>
-          <div class="stats">
-            <div class="stat">
-              <strong>0</strong>
-              <span>Orders Received</span>
+          <div class="storage-grid">
+            <div class="storage-row header">
+              <span>Zone</span>
+              <span>A1</span>
+              <span>A2</span>
+              <span>A3</span>
+              <span>A4</span>
+              <span>A5</span>
             </div>
-            <div class="stat">
-              <strong>0</strong>
-              <span>Orders Shipped</span>
+            <div class="storage-row">
+              <span>B1</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
             </div>
-            <div class="stat">
-              <strong>0</strong>
-              <span>Returns</span>
+            <div class="storage-row">
+              <span>C2</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
             </div>
-            <div class="stat">
-              <strong>0</strong>
-              <span>Issues</span>
+            <div class="storage-row">
+              <span>D1</span>
+              <span class="pill">0</span>
+              <span class="pill warn">0</span>
+              <span class="pill warn">0</span>
+              <span class="pill">0</span>
+              <span class="pill">0</span>
             </div>
           </div>
-        </div>
+          <div class="storage-meta">
+            <span>0% critical</span>
+            <span>0% warning</span>
+            <span>0% free</span>
+          </div>
+          <div class="storage-foot">Available space <strong>0</strong> tons</div>
+        </article>
+
+        <article class="card risk">
+          <div class="card-header">
+            <h2>Spoilage and Risk Alerts</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#000</strong>
+              <span>No active batch</span>
+            </div>
+            <div class="risk-days">0 Days Left</div>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#000</strong>
+              <span>No active batch</span>
+            </div>
+            <div class="risk-days">0 Days Left</div>
+          </div>
+          <div class="risk-item">
+            <div>
+              <strong>#000</strong>
+              <span>No active batch</span>
+            </div>
+            <div class="risk-days">0 Days Left</div>
+          </div>
+        </article>
+
+        <article class="card list">
+          <div class="card-header">
+            <h2>Storage and Utilization</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="list-item">
+            <span>#000</span>
+            <span>No item</span>
+            <span>0 days</span>
+          </div>
+          <div class="list-item">
+            <span>#000</span>
+            <span>No item</span>
+            <span>0 days</span>
+          </div>
+          <div class="list-item">
+            <span>#000</span>
+            <span>No item</span>
+            <span>0 days</span>
+          </div>
+        </article>
+
+        <article class="card market">
+          <div class="card-header">
+            <h2>Market Intelligence</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="market-row">
+            <span>Onion</span>
+            <strong>0</strong>
+            <span class="up">0%</span>
+          </div>
+          <div class="market-row">
+            <span>Tomato</span>
+            <strong>0</strong>
+            <span class="down">0%</span>
+          </div>
+          <div class="market-row">
+            <span>Rice</span>
+            <strong>0</strong>
+            <span class="up">0%</span>
+          </div>
+          <div class="market-callout">AI suggest: no market alert right now.</div>
+        </article>
+
+        <article class="card feed">
+          <div class="card-header">
+            <h2>Recent Activity Feed</h2>
+            <button class="ghost-btn">View All</button>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot"></span>
+            <div>
+              <strong>No recent activity</strong>
+              <span>0 mins ago</span>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot"></span>
+            <div>
+              <strong>No recent activity</strong>
+              <span>0 mins ago</span>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot alert"></span>
+            <div>
+              <strong>No recent activity</strong>
+              <span>0 mins ago</span>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
   </div>
@@ -208,7 +341,7 @@
     });
 
     const profile = {
-      name: localStorage.getItem('profileName') || 'Ravi Sharma',
+      name: localStorage.getItem('profileName') || 'Warehouse Owner',
       role: localStorage.getItem('profileRole') || 'Warehouse Owner',
       avatar: localStorage.getItem('profileImage') || 'warehouse-owner-profile.png'
     };
