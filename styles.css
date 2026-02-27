@@ -541,12 +541,26 @@ h1 {
   color: #b0372b;
 }
 
+.auth-forms {
+  margin-top: 0.25rem;
+}
+
 .auth-panel {
   display: none;
+  width: 100%;
+  margin-top: 0;
+  padding: 0.95rem;
+  border: 1px solid #d9ebdc;
+  border-radius: 12px;
+  background: #fbfffb;
 }
 
 .auth-panel.active {
   display: grid;
+}
+
+.auth-panel .btn {
+  width: 100%;
 }
 
 .back-link {
