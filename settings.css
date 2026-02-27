@@ -1,0 +1,109 @@
+.settings-page {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  font-family: "Manrope", sans-serif;
+}
+
+.settings-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 12% 7%, rgba(79, 137, 255, 0.09), transparent 30%),
+    radial-gradient(circle at 88% 14%, rgba(72, 199, 125, 0.1), transparent 30%);
+}
+
+.settings-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.panel-block {
+  border-radius: 16px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.6rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.panel-block:hover {
+  transform: translateY(-2px);
+  border-color: rgba(72, 199, 125, 0.4);
+}
+
+.panel-block h2 {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.panel-block label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.panel-block input[type="number"],
+.panel-block select {
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--ink);
+  border-radius: 10px;
+  min-height: 36px;
+  padding: 0 0.56rem;
+  font: inherit;
+}
+
+.panel-block input[type="number"]:focus,
+.panel-block select:focus {
+  outline: 2px solid rgba(72, 199, 125, 0.28);
+  border-color: rgba(72, 199, 125, 0.5);
+}
+
+.panel-block input[type="checkbox"] {
+  margin-right: 0.35rem;
+  accent-color: #2f7a54;
+}
+
+.action-panel {
+  align-content: start;
+}
+
+.action-panel .ghost-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.action-panel .ghost-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(72, 199, 125, 0.45);
+  background: color-mix(in srgb, var(--panel-soft) 72%, rgba(72, 199, 125, 0.18));
+}
+
+.save-msg {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}

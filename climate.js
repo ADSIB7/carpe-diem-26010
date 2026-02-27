@@ -526,6 +526,9 @@
       }
     };
     localStorage.setItem("climateLiveSnapshot", JSON.stringify(snapshot));
+    if (window.WarehouseDB) {
+      window.WarehouseDB.set("climateSnapshot", snapshot);
+    }
   }
 
   resolveBtn.addEventListener("click", function () {

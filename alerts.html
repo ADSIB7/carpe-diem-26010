@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alerts | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-dashboard.css" />
+  <link rel="stylesheet" href="alerts.css" />
+</head>
+<body data-page="alerts">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-icon"></div><div><strong>AgriShield</strong><span>Warehouse</span></div></div>
+      <div class="owner-label">Warehouse Owner</div>
+      <div class="profile-card" id="profileCard"><a class="profile-main" href="profile.html"><img id="sidebarAvatar" src="warehouse-owner-profile.png" alt="Owner" /><div><strong id="sidebarName">Warehouse Owner</strong><span id="sidebarRole">Warehouse Owner</span></div></a><button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button></div>
+      <div class="profile-menu" id="profileMenu"><a href="profile.html">View Profile</a><a href="profile.html#edit">Edit Profile</a></div>
+
+      <nav class="side-nav" aria-label="Dashboard">
+        <a data-nav="dashboard" href="warehouse-dashboard.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"/></svg></span>Dashboard</a>
+        <a data-nav="climate" href="climate.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg></span>Climate Monitoring</a>
+        <a data-nav="storage" href="warehouse-dashboard.html#storage-capacity"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 10h18M10 3v18"/></svg></span>Storage and Capacity</a>
+        <a data-nav="batch" href="batch-tracking.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h8M15 6h5M10 6v0M4 12h5M12 12h8M9 12v0M4 18h10M17 18h3M14 18v0"/></svg></span>Batch Tracking</a>
+        <a data-nav="risk" href="warehouse-dashboard.html#risk-spoilage"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg></span>Risk and Spoilage</a>
+        <a data-nav="market" href="warehouse-dashboard.html#market-intelligence"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-6M15 8h5v5"/></svg></span>Market Intelligence</a>
+        <a data-nav="reports" href="reports.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg></span>Reports</a>
+        <a data-nav="alerts" href="alerts.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg></span>Alerts</a>
+        <a data-nav="settings" href="settings.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 3h5l.8 2.3 2.2.9 2.1-1.3 2.5 4.3-1.9 1.6.2 2.4 1.8 1.7-2.7 4.2-2.1-1.1-2.2.9-.7 2.5H9.7l-.8-2.3-2.2-.9-2.2 1.2-2.5-4.3 1.9-1.6-.2-2.4-1.8-1.7L4.6 5l2.1 1.1 2.2-.9zM12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/></svg></span>Settings</a>
+      </nav>
+      <div class="sidebar-footer"><a href="index.html">Back to Home</a></div>
+    </aside>
+
+    <main class="content alerts-page">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div class="search"><input type="search" placeholder="Search alerts" /></div>
+        <div class="topbar-actions">
+          <div class="weather-pill" id="weatherSummary">Weather: --</div>
+          <div class="clock-pill" id="liveClock">--:--:--</div>
+          <button class="icon-pill" id="themeToggle" aria-label="Toggle dark mode">Dark</button>
+          <div class="user-pill"><img id="topAvatar" src="warehouse-owner-profile.png" alt="User" /><span id="topName">Warehouse Owner</span><span class="chev">v</span></div>
+        </div>
+      </header>
+
+      <section class="page-title"><div><h1>Alerts</h1><p>Centralized alert handling for climate, capacity, and spoilage risk.</p></div></section>
+
+      <section class="card panel-block">
+        <div class="card-header">
+          <h2>Active Alerts</h2>
+          <button class="ghost-btn" id="resolveAllBtn" type="button">Resolve All</button>
+        </div>
+        <div class="alerts-list" id="alertsList"></div>
+      </section>
+
+      <section class="prefs-grid">
+        <article class="card panel-block">
+          <div class="card-header"><h2>Notification Preferences</h2><button class="ghost-btn" id="savePrefsBtn" type="button">Save Preferences</button></div>
+          <label><input type="checkbox" id="prefEmail" /> Email alerts</label>
+          <label><input type="checkbox" id="prefSms" /> SMS alerts</label>
+          <label><input type="checkbox" id="prefInApp" checked /> In-app alerts</label>
+          <label><input type="checkbox" id="prefSound" /> Sound alerts</label>
+        </article>
+
+        <article class="card panel-block">
+          <div class="card-header"><h2>Quick Links</h2></div>
+          <div class="quick-links">
+            <a class="ghost-btn" href="climate.html">Go to Climate Monitoring</a>
+            <a class="ghost-btn" href="batch-tracking.html">Go to Batch Tracking</a>
+            <a class="ghost-btn" href="reports.html">Go to Reports</a>
+            <a class="ghost-btn" href="settings.html">Go to Settings</a>
+          </div>
+        </article>
+      </section>
+
+      <p class="save-msg" id="saveMsg" aria-live="polite"></p>
+    </main>
+  </div>
+
+  <script src="warehouse-db.js"></script>
+  <script src="warehouse-common.js"></script>
+  <script src="alerts.js"></script>
+</body>
+</html>

@@ -74,19 +74,19 @@
           </span>
           Market Intelligence
         </a>
-        <a href="warehouse-dashboard.html#reports-section">
+        <a href="reports.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg>
           </span>
           Reports
         </a>
-        <a href="warehouse-dashboard.html#alertsCard">
+        <a href="alerts.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg>
           </span>
           Alerts
         </a>
-        <a href="profile.html#edit">
+        <a href="settings.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M9.5 3h5l.8 2.3 2.2.9 2.1-1.3 2.5 4.3-1.9 1.6.2 2.4 1.8 1.7-2.7 4.2-2.1-1.1-2.2.9-.7 2.5H9.7l-.8-2.3-2.2-.9-2.2 1.2-2.5-4.3 1.9-1.6-.2-2.4-1.8-1.7L4.6 5l2.1 1.1 2.2-.9zM12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/></svg>
           </span>
@@ -347,7 +347,27 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="warehouse-db.js"></script>
   <script>
+    function hasValidWarehouseSession() {
+      if (localStorage.getItem('warehouseLoggedIn') !== 'true') return false;
+      const role = localStorage.getItem('profileRole');
+      if (role && role !== 'Warehouse Owner') return false;
+      const rawUser = localStorage.getItem('warehouseAuthUser');
+      const sessionOperatorId = localStorage.getItem('warehouseSessionOperatorId');
+      if (!rawUser || !sessionOperatorId) return false;
+      try {
+        const parsed = JSON.parse(rawUser);
+        return Boolean(parsed && parsed.operatorId && parsed.operatorId === sessionOperatorId);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    if (!hasValidWarehouseSession()) {
+      window.location.href = 'warehouse.html';
+    }
+
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const profileCard = document.getElementById('profileCard');
@@ -551,14 +571,20 @@
     }
 
     function readSnapshotAndRender() {
-      const raw = localStorage.getItem('climateLiveSnapshot');
-      if (!raw) return;
-      try {
-        const parsed = JSON.parse(raw);
-        applyClimateSnapshot(parsed);
-      } catch (error) {
-        // ignore invalid storage payload
+      let parsed = null;
+      if (window.WarehouseDB) {
+        parsed = window.WarehouseDB.get('climateSnapshot');
       }
+      if (!parsed) {
+        const raw = localStorage.getItem('climateLiveSnapshot');
+        if (!raw) return;
+        try {
+          parsed = JSON.parse(raw);
+        } catch (error) {
+          return;
+        }
+      }
+      applyClimateSnapshot(parsed);
     }
 
     if (localStorage.getItem('warehouseLoggedIn') === 'true') {
@@ -588,4 +614,6 @@
   </script>
 </body>
 </html>
+
+
 
