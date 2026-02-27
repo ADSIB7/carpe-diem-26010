@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgriShield | Farmer</title>
+  <title>Farmer Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="role-page">
-    <section class="placeholder-card">
-      <h2>Farmer Portal</h2>
-      <p>This is a placeholder page for Farmer role access.</p>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <main class="role-layout container">
+    <section class="role-card">
+      <p class="kicker">FARMER ACCESS</p>
+      <h1>Deliver produce with guaranteed slot visibility.</h1>
+      <p>Plan arrivals, upload lot details, and monitor quality checks from intake to storage.</p>
+      <form class="login-form" action="#" method="post">
+        <label for="farmer-id">Farmer ID</label>
+        <input id="farmer-id" name="farmer-id" type="text" placeholder="FARM-2910" required />
+
+        <label for="farmer-pass">Password</label>
+        <input id="farmer-pass" name="farmer-pass" type="password" placeholder="Enter password" required />
+
+        <button type="submit" class="btn btn-primary">Login as Farmer</button>
+      </form>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
-  <footer class="site-footer">© 2026 AgriShield</footer>
 </body>
 </html>
+

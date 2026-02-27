@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgriShield | Merchant</title>
+  <title>Merchant Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="role-page">
-    <section class="placeholder-card">
-      <h2>Merchant Portal</h2>
-      <p>This is a placeholder page for Merchant role access.</p>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <main class="role-layout container">
+    <section class="role-card">
+      <p class="kicker">MERCHANT ACCESS</p>
+      <h1>Source inventory based on live freshness and availability.</h1>
+      <p>Place high-confidence orders with quality intelligence and dispatch-ready ETAs.</p>
+      <form class="login-form" action="#" method="post">
+        <label for="merchant-id">Merchant ID</label>
+        <input id="merchant-id" name="merchant-id" type="text" placeholder="MRC-6201" required />
+
+        <label for="merchant-pass">Password</label>
+        <input id="merchant-pass" name="merchant-pass" type="password" placeholder="Enter password" required />
+
+        <button type="submit" class="btn btn-primary">Login as Merchant</button>
+      </form>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
-  <footer class="site-footer">© 2026 AgriShield</footer>
 </body>
 </html>
+
