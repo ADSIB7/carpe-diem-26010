@@ -379,7 +379,7 @@
 
     els.themeToggle.addEventListener("click", () => {
       const next = document.body.classList.contains("dark") || document.body.classList.contains("dark-mode") ? "light" : "dark";
-      localStorage.setItem("batch-theme", next);
+      localStorage.setItem("dashboardTheme", next);
       applyTheme(next);
     });
 
@@ -398,6 +398,10 @@
     }
 
     window.addEventListener("storage", (event) => {
+      if (event.key === "dashboardTheme") {
+        applyTheme(event.newValue === "dark" ? "dark" : "light");
+        return;
+      }
       if (event.key === "climateLiveSnapshot" || event.key === (window.WarehouseDB && window.WarehouseDB.key)) {
         renderSummary();
         renderTable();
@@ -420,7 +424,7 @@
     if (els.topAvatar) els.topAvatar.src = profile.avatar;
     if (els.weatherSummary) els.weatherSummary.textContent = profile.location + " | Batch Operations";
 
-    const saved = localStorage.getItem("batch-theme") || (document.body.classList.contains("dark") || document.body.classList.contains("dark-mode") ? "dark" : "light");
+    const saved = localStorage.getItem("dashboardTheme") || (document.body.classList.contains("dark") || document.body.classList.contains("dark-mode") ? "dark" : "light");
     applyTheme(saved);
     bindEvents();
     renderSummary();

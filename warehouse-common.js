@@ -78,10 +78,12 @@
   }
 
   const themeToggle = document.getElementById('themeToggle');
-  const storedTheme = localStorage.getItem('dashboardTheme') || 'light';
-  if (storedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
+  function applyTheme(theme) {
+    const dark = theme === 'dark';
+    document.body.classList.toggle('dark-mode', dark);
   }
+  const storedTheme = localStorage.getItem('dashboardTheme') || 'light';
+  applyTheme(storedTheme);
 
   function syncThemeButton() {
     if (!themeToggle) return;
@@ -91,11 +93,18 @@
 
   if (themeToggle) {
     themeToggle.addEventListener('click', function () {
-      const isDark = document.body.classList.toggle('dark-mode');
+      const isDark = !document.body.classList.contains('dark-mode');
+      applyTheme(isDark ? 'dark' : 'light');
       localStorage.setItem('dashboardTheme', isDark ? 'dark' : 'light');
       syncThemeButton();
     });
   }
+
+  window.addEventListener('storage', function (event) {
+    if (event.key !== 'dashboardTheme') return;
+    applyTheme(event.newValue === 'dark' ? 'dark' : 'light');
+    syncThemeButton();
+  });
 
   function tickClock() {
     if (!liveClock) return;

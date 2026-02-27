@@ -1,0 +1,463 @@
+.risk-page {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  font-family: "Manrope", sans-serif;
+}
+
+.risk-page .card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.metric-card {
+  padding: 0.9rem;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 40px rgba(22, 62, 41, 0.2);
+}
+
+.metric-card h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.94rem;
+}
+
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.metric-row strong {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.high-risk {
+  border-left: 3px solid #d14b3f;
+}
+
+.spoilage {
+  border-left: 3px solid #ca6d62;
+}
+
+.saved {
+  border-left: 3px solid #2f7a54;
+}
+
+.suggestions {
+  border-left: 3px solid #c6a449;
+}
+
+.high-risk .metric-icon,
+.spoilage .metric-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.saved .metric-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.suggestions .metric-icon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.score-card .gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.gauge {
+  width: 118px;
+  height: 70px;
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.gauge-value {
+  fill: none;
+  stroke: #eab308;
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-dasharray: 252;
+  stroke-dashoffset: 32;
+}
+
+.gauge-needle {
+  stroke: #1f5f3f;
+  stroke-width: 3;
+  transform-origin: 100px 100px;
+  transform: rotate(-16deg);
+}
+
+.gauge-core {
+  fill: #1f5f3f;
+}
+
+.score-text strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.score-text span {
+  color: #92400e;
+  background: #fef9c3;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-weight: 700;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.forecast-card {
+  padding: 1rem;
+}
+
+.forecast-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+}
+
+.forecast-head h2,
+.insight-panel h2,
+.trend-head h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-family: "Sora", sans-serif;
+}
+
+.forecast-controls {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.forecast-controls input,
+.forecast-controls select {
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.45rem 0.78rem;
+  font: inherit;
+}
+
+.filter-group {
+  display: inline-flex;
+  gap: 0.35rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.22rem;
+}
+
+.filter-group button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.34rem 0.6rem;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filter-group button.active {
+  background: #ddf3e6;
+  color: #166534;
+}
+
+.table-wrap {
+  overflow-x: hidden;
+}
+
+.forecast-card table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.forecast-card th,
+.forecast-card td {
+  padding: 0.78rem 0.72rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.forecast-card th {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: 0.24rem 0.62rem;
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.status-pill.safe {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.warning {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.status-pill.critical {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.action-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.action-pills button {
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.22rem 0.58rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.insight-panel {
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+}
+
+.insight-card {
+  border-radius: 12px;
+  padding: 0.68rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.insight-card strong {
+  display: block;
+  margin-bottom: 0.24rem;
+}
+
+.insight-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.insight-card button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.44rem 0.6rem;
+  background: #14532d;
+  color: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.insight-card.climate {
+  background: #fff6dd;
+  border: 1px solid #f1d89e;
+}
+
+.insight-card.movement {
+  background: #ddf3e6;
+  border: 1px solid #afddc1;
+}
+
+.insight-card.inspection {
+  background: #fee2e2;
+  border: 1px solid #f4b7b7;
+}
+
+.insight-card.sale {
+  background: #fef3c7;
+  border: 1px solid #f0da94;
+}
+
+.trend-card {
+  padding: 1rem;
+}
+
+.trend-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.trend-head p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+}
+
+.trend-head span {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  padding: 0.24rem 0.62rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.trend-chart {
+  margin-top: 0.7rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--panel-soft);
+}
+
+.trend-chart svg {
+  width: 100%;
+  height: 260px;
+}
+
+.axis {
+  stroke: #c8d7cc;
+}
+
+.grid {
+  stroke: #e4eee8;
+}
+
+.trend-line {
+  fill: none;
+  stroke: #2f7a54;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trend-area {
+  fill: rgba(47, 122, 84, 0.13);
+}
+
+@media (max-width: 1300px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .score-card .gauge-wrap {
+    flex-wrap: wrap;
+  }
+
+  .forecast-card table,
+  .forecast-card thead,
+  .forecast-card tbody,
+  .forecast-card tr,
+  .forecast-card th,
+  .forecast-card td {
+    display: block;
+    width: 100%;
+  }
+
+  .forecast-card thead {
+    display: none;
+  }
+
+  .forecast-card tr {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.55rem 0.65rem;
+    margin-bottom: 0.6rem;
+    background: var(--panel-soft);
+  }
+
+  .forecast-card td {
+    border-bottom: 0;
+    padding: 0.35rem 0;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0.45rem;
+    align-items: start;
+  }
+
+  .forecast-card td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 640px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .forecast-controls {
+    width: 100%;
+    align-items: stretch;
+  }
+}
