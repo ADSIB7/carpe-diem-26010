@@ -53,6 +53,12 @@ body {
   transition: transform 240ms ease;
 }
 
+body.dark-mode .sidebar,
+body.light-mode .sidebar {
+  background: linear-gradient(180deg, #154d36, #0f3a2a);
+  color: #e8f3ec;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -195,6 +201,8 @@ body {
 
 .nav-icon {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 22px;
   height: 22px;
   flex: 0 0 22px;
@@ -207,13 +215,23 @@ body {
 }
 
 .nav-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   fill: none;
-  stroke-width: 1.9;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.nav-icon svg path,
+.nav-icon svg circle,
+.nav-icon svg line,
+.nav-icon svg polyline,
+.nav-icon svg rect {
+  fill: none;
+  stroke: currentColor;
 }
 
 .sidebar-footer a {
@@ -542,6 +560,12 @@ body.dark-mode .climate-chart {
 .climate-chart svg {
   width: 100%;
   height: 200px;
+}
+
+.climate-chart canvas {
+  width: 100% !important;
+  height: 200px !important;
+  display: block;
 }
 
 .grid-line {

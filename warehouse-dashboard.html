@@ -44,7 +44,7 @@
           </span>
           Dashboard
         </a>
-        <a href="#">
+        <a href="climate.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg>
           </span>
@@ -186,39 +186,29 @@
           <div class="climate-top">
             <div class="metric-block">
               <span>Avg Temp</span>
-              <strong>4.2 C</strong>
+              <strong id="avgTempValue">4.2 C</strong>
               <span class="status-badge safe">SAFE</span>
             </div>
             <div class="metric-block">
               <span>Avg Humidity</span>
-              <strong>78%</strong>
-              <span class="status-badge warn">WARNING</span>
+              <strong id="avgHumidityValue">78%</strong>
+              <span class="status-badge safe" id="avgHumidityBadge">SAFE</span>
             </div>
             <div class="metric-block">
               <span>Critical Zones</span>
-              <strong>0</strong>
-              <span class="status-badge critical">CRITICAL</span>
+              <strong id="criticalZonesValue">0</strong>
+              <span class="status-badge safe" id="criticalZonesBadge">SAFE</span>
             </div>
           </div>
 
-          <div class="climate-chart" role="img" aria-label="24-hour temperature and humidity chart">
-            <svg viewBox="0 0 640 220" preserveAspectRatio="none">
-              <line x1="40" y1="30" x2="620" y2="30" class="grid-line"></line>
-              <line x1="40" y1="95" x2="620" y2="95" class="grid-line"></line>
-              <line x1="40" y1="160" x2="620" y2="160" class="grid-line"></line>
-              <polyline class="temp-line" points="40,140 120,132 200,128 280,124 360,118 440,112 520,120 620,126"></polyline>
-              <polyline class="humid-line" points="40,92 120,88 200,82 280,86 360,76 440,70 520,84 620,90"></polyline>
-              <text x="40" y="206" class="axis-label">00:00</text>
-              <text x="220" y="206" class="axis-label">06:00</text>
-              <text x="400" y="206" class="axis-label">12:00</text>
-              <text x="565" y="206" class="axis-label">18:00</text>
-            </svg>
+          <div class="climate-chart">
+            <canvas id="dashboardClimateChart" width="640" height="220" aria-label="24-hour temperature and humidity chart"></canvas>
           </div>
 
           <div class="climate-footer">
-            <span class="safe">3 Zones in Safe</span>
-            <span class="warn">2 Zones in Warning</span>
-            <span class="critical">0 Zones Critical</span>
+            <span class="safe" id="safeZonesValue">3 Zones in Safe</span>
+            <span class="warn" id="warnZonesValue">2 Zones in Warning</span>
+            <span class="critical" id="criticalZonesFooter">0 Zones Critical</span>
           </div>
         </article>
 
@@ -228,26 +218,24 @@
           </div>
 
           <div class="warehouse-map" aria-label="Warehouse utilization map">
-            <span class="zone-cell safe">A1</span>
-            <span class="zone-cell safe">A2</span>
-            <span class="zone-cell high">A3</span>
-            <span class="zone-cell safe">A4</span>
-            <span class="zone-cell high">B1</span>
-            <span class="zone-cell critical">B2</span>
-            <span class="zone-cell safe">B3</span>
-            <span class="zone-cell safe">C1</span>
-            <span class="zone-cell high">C2</span>
-            <span class="zone-cell safe">C3</span>
-            <span class="zone-cell safe">D1</span>
-            <span class="zone-cell safe">D2</span>
+            <span class="zone-cell safe" data-zone="A1">A1</span>
+            <span class="zone-cell safe" data-zone="A2">A2</span>
+            <span class="zone-cell safe" data-zone="B1">B1</span>
+            <span class="zone-cell safe" data-zone="B2">B2</span>
+            <span class="zone-cell safe" data-zone="D1">D1</span>
+            <span class="zone-cell safe" data-zone="C1">C1</span>
+            <span class="zone-cell safe" data-zone="C2">C2</span>
+            <span class="zone-cell safe" data-zone="C3">C3</span>
+            <span class="zone-cell safe" data-zone="D2">D2</span>
+            <span class="zone-cell safe" data-zone="D4">D4</span>
           </div>
 
           <div class="storage-meta">
-            <span class="safe">Safe: 0%</span>
-            <span class="warn">High: 0%</span>
-            <span class="critical">Critical: 0%</span>
+            <span class="safe" id="storageSafeValue">Safe: 0%</span>
+            <span class="warn" id="storageWarnValue">High: 0%</span>
+            <span class="critical" id="storageCriticalValue">Critical: 0%</span>
           </div>
-          <div class="storage-foot">Available space <strong>0</strong> tons</div>
+          <div class="storage-foot">Available space <strong id="availableSpaceValue">0</strong> tons</div>
         </article>
 
         <article class="card risk">
@@ -358,6 +346,7 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
@@ -371,6 +360,19 @@
     const bellCount = document.getElementById('bellCount');
     const alertsBadge = document.getElementById('alertsBadge');
     const alertPulse = document.getElementById('alertPulse');
+    const avgTempValue = document.getElementById('avgTempValue');
+    const avgHumidityValue = document.getElementById('avgHumidityValue');
+    const avgHumidityBadge = document.getElementById('avgHumidityBadge');
+    const criticalZonesValue = document.getElementById('criticalZonesValue');
+    const criticalZonesBadge = document.getElementById('criticalZonesBadge');
+    const safeZonesValue = document.getElementById('safeZonesValue');
+    const warnZonesValue = document.getElementById('warnZonesValue');
+    const criticalZonesFooter = document.getElementById('criticalZonesFooter');
+    const zoneCells = Array.from(document.querySelectorAll('.warehouse-map .zone-cell'));
+    const storageSafeValue = document.getElementById('storageSafeValue');
+    const storageWarnValue = document.getElementById('storageWarnValue');
+    const storageCriticalValue = document.getElementById('storageCriticalValue');
+    const availableSpaceValue = document.getElementById('availableSpaceValue');
 
     menuBtn.addEventListener('click', () => {
       sidebar.classList.toggle('sidebar-open');
@@ -442,6 +444,147 @@
     if (alertCount > 0) {
       alertPulse.classList.add('active');
     }
+
+    const climateChart = new Chart(document.getElementById('dashboardClimateChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Temperature (C)',
+            data: [],
+            borderColor: '#1f8d4d',
+            borderWidth: 3.5,
+            pointRadius: 0,
+            tension: 0.35
+          },
+          {
+            label: 'Humidity (%)',
+            data: [],
+            borderColor: '#b67708',
+            borderWidth: 3.5,
+            pointRadius: 0,
+            tension: 0.35
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 420, easing: 'easeOutCubic' },
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: { color: '#6f8478' },
+            grid: { color: 'rgba(152, 187, 168, 0.22)' }
+          },
+          y: {
+            ticks: { display: false },
+            grid: { color: 'rgba(152, 187, 168, 0.22)' }
+          }
+        }
+      }
+    });
+
+    function statusClass(state) {
+      if (state === 'critical') return 'critical';
+      if (state === 'warn') return 'high';
+      return 'safe';
+    }
+
+    function applyClimateSnapshot(snapshot) {
+      if (!snapshot || !snapshot.series || !snapshot.zones || !snapshot.summary) {
+        return;
+      }
+
+      climateChart.data.labels = snapshot.series.labels || [];
+      climateChart.data.datasets[0].data = snapshot.series.temperature || [];
+      climateChart.data.datasets[1].data = snapshot.series.humidity || [];
+      climateChart.update();
+
+      const avgHumidity = Number(snapshot.zones.averageHumidity || 0);
+      avgTempValue.textContent = (snapshot.zones.averageTemp || 0).toFixed(1) + ' C';
+      avgHumidityValue.textContent = String(avgHumidity) + '%';
+
+      if (avgHumidity >= 90) {
+        avgHumidityBadge.textContent = 'CRITICAL';
+        avgHumidityBadge.className = 'status-badge critical';
+      } else if (avgHumidity > 85) {
+        avgHumidityBadge.textContent = 'WARNING';
+        avgHumidityBadge.className = 'status-badge warn';
+      } else {
+        avgHumidityBadge.textContent = 'SAFE';
+        avgHumidityBadge.className = 'status-badge safe';
+      }
+      criticalZonesValue.textContent = String(snapshot.zones.critical || 0);
+      const totalZoneCount = (snapshot.zones.zoneStates && snapshot.zones.zoneStates.length) || (snapshot.zones.safe + snapshot.zones.warn + snapshot.zones.critical) || 1;
+      const criticalZonePct = (Number(snapshot.zones.critical || 0) / totalZoneCount) * 100;
+      if (criticalZonePct >= 40) {
+        criticalZonesBadge.textContent = 'CRITICAL';
+        criticalZonesBadge.className = 'status-badge critical';
+      } else if (criticalZonePct > 30) {
+        criticalZonesBadge.textContent = 'WARNING';
+        criticalZonesBadge.className = 'status-badge warn';
+      } else {
+        criticalZonesBadge.textContent = 'SAFE';
+        criticalZonesBadge.className = 'status-badge safe';
+      }
+      safeZonesValue.textContent = String(snapshot.zones.safe || 0) + ' Zones in Safe';
+      warnZonesValue.textContent = String(snapshot.zones.warn || 0) + ' Zones in Warning';
+      criticalZonesFooter.textContent = String(snapshot.zones.critical || 0) + ' Zones Critical';
+
+      const zoneMap = {};
+      (snapshot.zones.zoneStates || []).forEach((zone) => {
+        zoneMap[zone.id] = zone.state;
+      });
+
+      zoneCells.forEach((cell) => {
+        const state = statusClass(zoneMap[cell.dataset.zone] || 'safe');
+        cell.classList.remove('safe', 'high', 'critical');
+        cell.classList.add(state);
+      });
+
+      storageSafeValue.textContent = 'Safe: ' + String(snapshot.summary.safePercent || 0) + '%';
+      storageWarnValue.textContent = 'High: ' + String(snapshot.summary.warnPercent || 0) + '%';
+      storageCriticalValue.textContent = 'Critical: ' + String(snapshot.summary.criticalPercent || 0) + '%';
+      availableSpaceValue.textContent = String(snapshot.summary.availableSpace || 0);
+    }
+
+    function readSnapshotAndRender() {
+      const raw = localStorage.getItem('climateLiveSnapshot');
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        applyClimateSnapshot(parsed);
+      } catch (error) {
+        // ignore invalid storage payload
+      }
+    }
+
+    if (localStorage.getItem('warehouseLoggedIn') === 'true') {
+      const bgFrame = document.createElement('iframe');
+      bgFrame.src = 'climate.html?background=1';
+      bgFrame.id = 'climateBackgroundRunner';
+      bgFrame.setAttribute('title', 'Climate background runner');
+      bgFrame.setAttribute('aria-hidden', 'true');
+      bgFrame.tabIndex = -1;
+      bgFrame.style.position = 'absolute';
+      bgFrame.style.width = '1px';
+      bgFrame.style.height = '1px';
+      bgFrame.style.opacity = '0';
+      bgFrame.style.pointerEvents = 'none';
+      bgFrame.style.border = '0';
+      document.body.appendChild(bgFrame);
+    }
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'climateLiveSnapshot') {
+        readSnapshotAndRender();
+      }
+    });
+
+    readSnapshotAndRender();
+    setInterval(readSnapshotAndRender, 1000);
   </script>
 </body>
 </html>

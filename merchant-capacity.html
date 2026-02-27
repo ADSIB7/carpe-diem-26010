@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merchant Storage Capacity | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="merchant-capacity.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <h1>Storage and Utilization</h1>
+      <p>Quick view of purchased storage across warehouses.</p>
+    </header>
+
+    <section class="cards" aria-label="Storage Summary Cards">
+      <article class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 7h18v10H3zM3 11h18M9 7v10"/></svg>
+        </div>
+        <p>Total Purchased Storage</p>
+        <h2 id="totalPurchased">0 Tons</h2>
+        <small id="totalPurchasedMeta">Across 0 Warehouses</small>
+      </article>
+
+      <article class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16M4 8h16M4 16h10"/></svg>
+        </div>
+        <p>Used Capacity</p>
+        <h2 id="usedCapacity">0%</h2>
+        <div class="progress" aria-label="Used Capacity Progress">
+          <span id="usedCapacityBar"></span>
+        </div>
+        <small id="usedCapacityMeta">0 of 0 Tons used</small>
+      </article>
+
+      <article class="card">
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16M12 4v16"/></svg>
+        </div>
+        <p>Available Capacity</p>
+        <h2 id="availableCapacity">0 Tons</h2>
+        <small><span class="green-dot" aria-hidden="true"></span><span id="availableCapacityMeta">Ready for booking</span></small>
+      </article>
+    </section>
+
+    <section class="table-panel" aria-label="Warehouse Capacity Table">
+      <h3>Warehouse Capacity Table</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Warehouse Name</th>
+              <th>Location</th>
+              <th>Commodity Stored</th>
+              <th>Quantity Stored</th>
+              <th>Total Capacity</th>
+              <th>Capacity Used (%)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="capacityRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bars-panel" aria-label="Warehouse Capacity Usage">
+      <h3>Warehouse Capacity Usage</h3>
+      <div class="bars" id="capacityBars"></div>
+    </section>
+  </main>
+
+  <script src="merchant-capacity.js"></script>
+</body>
+</html>

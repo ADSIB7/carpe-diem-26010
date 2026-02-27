@@ -190,6 +190,7 @@
 
         saveProfileData(savedUser);
         localStorage.setItem("warehouseLoggedIn", "true");
+        localStorage.setItem("warehouseSessionOperatorId", savedUser.operatorId);
         window.location.href = "warehouse-dashboard.html";
       });
 

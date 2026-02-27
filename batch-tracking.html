@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch Tracking | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-dashboard.css" />
+  <link rel="stylesheet" href="batch-tracking.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Warehouse</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Warehouse Owner</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="profile.html">
+          <img id="sidebarAvatar" src="warehouse-owner-profile.png" alt="Owner" />
+          <div>
+            <strong id="sidebarName">Shailesh Girnare</strong>
+            <span id="sidebarRole">Warehouse Owner</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button>
+      </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="profile.html">View Profile</a>
+        <a href="profile.html#edit">Edit Profile</a>
+      </div>
+
+      <nav class="side-nav" aria-label="Dashboard">
+        <a href="warehouse-dashboard.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"/></svg>
+          </span>
+          Dashboard
+        </a>
+        <a href="climate-control.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg>
+          </span>
+          Climate Monitoring
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 10h18M10 3v18"/></svg>
+          </span>
+          Storage and Capacity
+        </a>
+        <a class="active" href="batch-tracking.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 6h8M15 6h5M10 6v0M4 12h5M12 12h8M9 12v0M4 18h10M17 18h3M14 18v0"/></svg>
+          </span>
+          Batch Tracking
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg>
+          </span>
+          Risk and Spoilage
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-6M15 8h5v5"/></svg>
+          </span>
+          Market Intelligence
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg>
+          </span>
+          Reports
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg>
+          </span>
+          Alerts
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M9.5 3h5l.8 2.3 2.2.9 2.1-1.3 2.5 4.3-1.9 1.6.2 2.4 1.8 1.7-2.7 4.2-2.1-1.1-2.2.9-.7 2.5H9.7l-.8-2.3-2.2-.9-2.2 1.2-2.5-4.3 1.9-1.6-.2-2.4-1.8-1.7L4.6 5l2.1 1.1 2.2-.9zM12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/></svg>
+          </span>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html">Back to Home</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div class="search">
+          <input id="tableSearch" type="search" placeholder="Search by Batch ID, farmer, product" />
+        </div>
+        <div class="topbar-actions">
+          <div class="weather-pill">Warehouse: Zone A1, Stable</div>
+          <div class="clock-pill" id="liveClock">--:--:--</div>
+          <button class="icon-pill bell-btn" aria-label="Notifications">Bell <span class="badge-dot">6</span></button>
+          <button class="icon-pill" id="themeToggle" aria-label="Toggle dark mode">Dark</button>
+          <div class="user-pill">
+            <img src="warehouse-owner-profile.png" alt="User" />
+            <span>Shailesh Girnare</span>
+            <span class="chev">v</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="batch-tracking-container">
+        <section class="title-row">
+          <div>
+            <h1>Batch Tracking</h1>
+            <p>Track produce batches, expiry status, and movements across warehouse zones.</p>
+          </div>
+          <div class="header-filters">
+            <select id="statusFilter" aria-label="Filter by status">
+              <option value="all">All</option>
+              <option value="fresh">Fresh</option>
+              <option value="warning">Near Expiry</option>
+              <option value="critical">Critical</option>
+            </select>
+            <select id="sortFilter" aria-label="Sort by expiry">
+              <option value="expiry-asc">Sort by Expiry Date (Soonest)</option>
+              <option value="expiry-desc">Sort by Expiry Date (Latest)</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="summaryCards">
+          <article class="summary-card neutral">
+            <div class="icon-dot">#</div>
+            <div><small>Total Active Batches</small><strong id="totalActive">0</strong></div>
+          </article>
+          <article class="summary-card fresh">
+            <div class="icon-dot">F</div>
+            <div><small>Fresh Batches</small><strong id="totalFresh">0</strong></div>
+          </article>
+          <article class="summary-card warning">
+            <div class="icon-dot">N</div>
+            <div><small>Near Expiry</small><strong id="totalWarning">0</strong></div>
+          </article>
+          <article class="summary-card critical">
+            <div class="icon-dot">R</div>
+            <div><small>Expired / High Risk</small><strong id="totalCritical">0</strong></div>
+          </article>
+          <article class="summary-card transit">
+            <div class="icon-dot">T</div>
+            <div><small>In Transit</small><strong id="totalTransit">0</strong></div>
+          </article>
+        </section>
+
+        <section class="card table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Batch ID</th>
+                  <th>Product Name</th>
+                  <th>Farmer Name</th>
+                  <th>Quantity</th>
+                  <th>Storage Zone</th>
+                  <th>Entry Date</th>
+                  <th>Expiry Date</th>
+                  <th>Days Left</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="batchTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="card timeline-card">
+            <h2>Expiry Timeline</h2>
+            <div id="timelineRows"></div>
+          </article>
+
+          <article class="card movement-card">
+            <h2>Batch Movement Tracker</h2>
+            <div class="tabs">
+              <button class="tab active" data-tab="recent">Recently Moved</button>
+              <button class="tab" data-tab="incoming">Incoming Batches</button>
+              <button class="tab" data-tab="outgoing">Outgoing Batches</button>
+            </div>
+            <div class="table-wrap movement-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Batch ID</th>
+                    <th>From Zone</th>
+                    <th>To Zone</th>
+                    <th>Time</th>
+                    <th>Updated By</th>
+                  </tr>
+                </thead>
+                <tbody id="movementBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <div id="batchModal" class="modal" aria-hidden="true">
+          <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+              <h3 id="modalTitle">Batch Details</h3>
+              <button id="closeModal" class="modal-close" aria-label="Close">X</button>
+            </div>
+            <div id="modalContent" class="modal-content"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="batch-tracking.js"></script>
+</body>
+</html>
