@@ -2,12 +2,14 @@
   "name": "carpe-diem-26010",
   "private": true,
   "scripts": {
+    "next": "next",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
-    "@clerk/nextjs": "latest",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.56.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"

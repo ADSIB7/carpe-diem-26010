@@ -1,6 +1,6 @@
 const express = require("express");
 const { randomUUID } = require("crypto");
-const { getSupabase } = require("../lib/supabase");
+const supabaseLib = require("../lib/supabase");
 
 const router = express.Router();
 
@@ -63,12 +63,17 @@ function mapBatch(row) {
   };
 }
 
+function pick(arr, index) {
+  return arr[index % arr.length];
+}
+
 router.get("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { warehouseId, zoneCode, risk } = req.query;
 
-    let query = supabase.from("batches").select("*");
+    let query = supabase.from("batches").select("*").eq("owner_user_id", ownerId);
     if (warehouseId) query = query.eq("warehouse_id", String(warehouseId));
     if (zoneCode) query = query.eq("zone_code", String(zoneCode).trim().toUpperCase());
 
@@ -86,10 +91,12 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("batches")
       .select("*")
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .maybeSingle();
 
@@ -102,16 +109,90 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.post("/seed", async (req, res) => {
+  try {
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
+    const countInput = Number(req.body && req.body.count);
+    const count = Number.isFinite(countInput) ? Math.min(50, Math.max(1, Math.floor(countInput))) : 10;
+
+    const [warehouseRes, zonesRes] = await Promise.all([
+      supabase.from("warehouses").select("id").eq("owner_user_id", ownerId).order("created_at", { ascending: true }).limit(1).maybeSingle(),
+      supabase.from("storage_zones").select("zone_code").eq("owner_user_id", ownerId).order("zone_code", { ascending: true })
+    ]);
+    if (warehouseRes.error) return res.status(500).json({ error: warehouseRes.error.message });
+    if (zonesRes.error) return res.status(500).json({ error: zonesRes.error.message });
+    if (!warehouseRes.data) return res.status(400).json({ error: "Create a warehouse before seeding batches." });
+
+    const warehouseId = warehouseRes.data.id;
+    const zoneCodes = (zonesRes.data || []).map((z) => String(z.zone_code || "").toUpperCase()).filter(Boolean);
+    const fallbackZones = ["A1", "A2", "B1", "B2", "D1", "C1", "C2", "C3", "D2", "D4"];
+    const availableZones = zoneCodes.length ? zoneCodes : fallbackZones;
+
+    const products = ["Potatoes", "Rice", "Tomatoes", "Onions", "Wheat", "Maize", "Cabbage", "Apples", "Grapes", "Carrots"];
+    const farmers = ["Ravi Singh", "Aman Verma", "Neha Patel", "Suresh Rao", "Anita Das", "Vikram Joshi", "Pooja Shah", "Manoj Yadav"];
+    const statuses = ["active", "active", "active", "in_transit", "active", "outgoing"];
+    const now = Date.now();
+
+    const rows = [];
+    let addedStock = 0;
+    for (let i = 0; i < count; i += 1) {
+      const quantity = Number((0.8 + (i % 5) * 0.35 + Math.random() * 0.4).toFixed(1));
+      const entryOffsetDays = 1 + (i % 12);
+      const expiryOffsetDays = 3 + (i % 20);
+      rows.push({
+        id: randomUUID(),
+        owner_user_id: ownerId,
+        warehouse_id: warehouseId,
+        product_name: pick(products, i),
+        farmer_name: pick(farmers, i * 2),
+        quantity_tons: quantity,
+        zone_code: pick(availableZones, i),
+        status: pick(statuses, i),
+        entry_date: new Date(now - entryOffsetDays * 24 * 60 * 60 * 1000).toISOString(),
+        expiry_date: new Date(now + expiryOffsetDays * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      addedStock += quantity;
+    }
+
+    const insertRes = await supabase.from("batches").insert(rows).select("*");
+    if (insertRes.error) return res.status(400).json({ error: insertRes.error.message });
+
+    return res.status(201).json({
+      message: `Seeded ${rows.length} batches`,
+      count: rows.length,
+      data: (insertRes.data || []).map(mapBatch)
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateBatch(req.body, false);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
     }
 
+    const warehouseRef = await supabase
+      .from("warehouses")
+      .select("id")
+      .eq("id", String(req.body.warehouseId))
+      .eq("owner_user_id", ownerId)
+      .maybeSingle();
+    if (warehouseRef.error) return res.status(500).json({ error: warehouseRef.error.message });
+    if (!warehouseRef.data) {
+      return res.status(400).json({ error: "warehouseId is invalid for current user" });
+    }
+
     const payload = {
       id: randomUUID(),
+      owner_user_id: ownerId,
       warehouse_id: String(req.body.warehouseId),
       product_name: String(req.body.productName).trim(),
       farmer_name: String(req.body.farmerName).trim(),
@@ -137,10 +218,24 @@ router.post("/", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const errors = validateBatch(req.body, true);
     if (errors.length) {
       return res.status(400).json({ error: "Validation failed", details: errors });
+    }
+
+    if (req.body.warehouseId !== undefined) {
+      const warehouseRef = await supabase
+        .from("warehouses")
+        .select("id")
+        .eq("id", String(req.body.warehouseId))
+        .eq("owner_user_id", ownerId)
+        .maybeSingle();
+      if (warehouseRef.error) return res.status(500).json({ error: warehouseRef.error.message });
+      if (!warehouseRef.data) {
+        return res.status(400).json({ error: "warehouseId is invalid for current user" });
+      }
     }
 
     const patch = {
@@ -170,6 +265,7 @@ router.patch("/:id", async (req, res) => {
     const { data, error } = await supabase
       .from("batches")
       .update(patch)
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("*")
       .maybeSingle();
@@ -185,10 +281,12 @@ router.patch("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const supabase = getSupabase();
+    const supabase = supabaseLib.getSupabase();
+    const ownerId = req.user.id;
     const { data, error } = await supabase
       .from("batches")
       .delete()
+      .eq("owner_user_id", ownerId)
       .eq("id", req.params.id)
       .select("id");
 
