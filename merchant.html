@@ -17,18 +17,167 @@
       <p class="kicker">MERCHANT ACCESS</p>
       <h1>Order inventory with live freshness and stock data.</h1>
       <p>Place orders with clear quality status and ready dispatch times.</p>
-      <form class="login-form" action="#" method="post">
-        <label for="merchant-id">Merchant ID</label>
-        <input id="merchant-id" name="merchant-id" type="text" placeholder="MRC-6201" required />
+      <div class="auth-switch" role="tablist" aria-label="Merchant access mode">
+        <button class="auth-tab active" id="showRegister" type="button" role="tab" aria-selected="true">Register</button>
+        <button class="auth-tab" id="showLogin" type="button" role="tab" aria-selected="false">Login</button>
+      </div>
 
-        <label for="merchant-pass">Password</label>
-        <input id="merchant-pass" name="merchant-pass" type="password" placeholder="Enter password" required />
+      <div class="auth-msg" id="authMsg" aria-live="polite"></div>
 
-        <button type="submit" class="btn btn-primary">Login as Merchant</button>
-      </form>
+      <div class="auth-forms">
+        <form class="login-form auth-panel active" id="registerForm" novalidate>
+          <label for="reg-name">Full Name</label>
+          <input id="reg-name" type="text" placeholder="Aryan Deepak" required />
+
+          <label for="reg-email">Email</label>
+          <input id="reg-email" type="email" placeholder="aryan@merchant.com" required />
+
+          <label for="reg-phone">Phone</label>
+          <input id="reg-phone" type="text" placeholder="+1 (555) 210-1040" required />
+
+          <label for="reg-company">Company Name</label>
+          <input id="reg-company" type="text" placeholder="FreshRoute Merchants" required />
+
+          <label for="reg-location">Location</label>
+          <input id="reg-location" type="text" placeholder="San Jose, CA" required />
+
+          <label for="reg-id">Merchant ID</label>
+          <input id="reg-id" type="text" placeholder="MRC-6201" required />
+
+          <label for="reg-pass">Password</label>
+          <input id="reg-pass" type="password" placeholder="Create password" required />
+
+          <label for="reg-confirm">Confirm Password</label>
+          <input id="reg-confirm" type="password" placeholder="Repeat password" required />
+
+          <button type="submit" class="btn btn-primary">Register Merchant</button>
+        </form>
+
+        <form class="login-form auth-panel" id="loginForm" novalidate>
+          <label for="merchant-id">Merchant ID</label>
+          <input id="merchant-id" type="text" placeholder="MRC-6201" required />
+
+          <label for="merchant-pass">Password</label>
+          <input id="merchant-pass" type="password" placeholder="Enter password" required />
+
+          <button type="submit" class="btn btn-primary">Login as Merchant</button>
+        </form>
+      </div>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
+  <script>
+    (function () {
+      const showRegister = document.getElementById("showRegister");
+      const showLogin = document.getElementById("showLogin");
+      const registerForm = document.getElementById("registerForm");
+      const loginForm = document.getElementById("loginForm");
+      const authMsg = document.getElementById("authMsg");
+      const storageKey = "merchantAuthUser";
+
+      function showMessage(message, isError) {
+        authMsg.textContent = message;
+        authMsg.classList.toggle("error", Boolean(isError));
+      }
+
+      function setPanel(mode) {
+        const isRegister = mode === "register";
+        registerForm.classList.toggle("active", isRegister);
+        loginForm.classList.toggle("active", !isRegister);
+        showRegister.classList.toggle("active", isRegister);
+        showLogin.classList.toggle("active", !isRegister);
+        showRegister.setAttribute("aria-selected", String(isRegister));
+        showLogin.setAttribute("aria-selected", String(!isRegister));
+        showMessage("");
+      }
+
+      showRegister.addEventListener("click", function () {
+        setPanel("register");
+      });
+
+      showLogin.addEventListener("click", function () {
+        setPanel("login");
+      });
+
+      registerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const phone = document.getElementById("reg-phone").value.trim();
+        const company = document.getElementById("reg-company").value.trim();
+        const location = document.getElementById("reg-location").value.trim();
+        const merchantId = document.getElementById("reg-id").value.trim();
+        const password = document.getElementById("reg-pass").value;
+        const confirm = document.getElementById("reg-confirm").value;
+
+        if (!name || !email || !phone || !company || !location || !merchantId || !password) {
+          showMessage("Please fill in all registration fields.", true);
+          return;
+        }
+
+        if (password !== confirm) {
+          showMessage("Password and confirm password do not match.", true);
+          return;
+        }
+
+        const user = {
+          name: name,
+          email: email,
+          phone: phone,
+          company: company,
+          location: location,
+          merchantId: merchantId,
+          password: password
+        };
+
+        localStorage.setItem(storageKey, JSON.stringify(user));
+        localStorage.setItem("merchantName", user.name);
+        localStorage.setItem("merchantCompany", user.company);
+        localStorage.setItem("merchantLocation", user.location);
+        document.getElementById("merchant-id").value = merchantId;
+        showMessage("Registration successful. Please login with your Merchant ID and password.", false);
+        setPanel("login");
+      });
+
+      loginForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const merchantId = document.getElementById("merchant-id").value.trim();
+        const password = document.getElementById("merchant-pass").value;
+        const rawUser = localStorage.getItem(storageKey);
+
+        if (!rawUser) {
+          showMessage("No account found. Please register first.", true);
+          setPanel("register");
+          return;
+        }
+
+        const savedUser = JSON.parse(rawUser);
+        if (merchantId !== savedUser.merchantId || password !== savedUser.password) {
+          showMessage("Invalid Merchant ID or password.", true);
+          return;
+        }
+
+        localStorage.setItem("merchantName", savedUser.name);
+        localStorage.setItem("merchantCompany", savedUser.company);
+        localStorage.setItem("merchantLocation", savedUser.location);
+        localStorage.setItem("merchantLoggedIn", "true");
+        window.location.href = "merchant-dashboard.html";
+      });
+
+      const existingUserRaw = localStorage.getItem(storageKey);
+      if (existingUserRaw) {
+        const existingUser = JSON.parse(existingUserRaw);
+        if (existingUser.merchantId) {
+          document.getElementById("merchant-id").value = existingUser.merchantId;
+        }
+        setPanel("login");
+      } else {
+        setPanel("register");
+      }
+    })();
+  </script>
 </body>
 </html>
 

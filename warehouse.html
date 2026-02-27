@@ -24,9 +24,10 @@
 
       <div class="auth-msg" id="authMsg" aria-live="polite"></div>
 
-      <form class="login-form auth-panel active" id="registerForm" novalidate>
-        <label for="reg-name">Full Name</label>
-        <input id="reg-name" type="text" placeholder="Ravi Sharma" required />
+      <div class="auth-forms">
+        <form class="login-form auth-panel active" id="registerForm" novalidate>
+          <label for="reg-name">Full Name</label>
+          <input id="reg-name" type="text" placeholder="Ravi Sharma" required />
 
         <label for="reg-email">Email</label>
         <input id="reg-email" type="email" placeholder="ravi.sharma@agrishield.com" required />
@@ -55,18 +56,19 @@
         <label for="reg-confirm">Confirm Password</label>
         <input id="reg-confirm" type="password" placeholder="Repeat password" required />
 
-        <button type="submit" class="btn btn-primary">Register Warehouse Owner</button>
-      </form>
+          <button type="submit" class="btn btn-primary">Register Warehouse Owner</button>
+        </form>
 
-      <form class="login-form auth-panel" id="loginForm" novalidate>
-        <label for="warehouse-id">Operator ID</label>
-        <input id="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
+        <form class="login-form auth-panel" id="loginForm" novalidate>
+          <label for="warehouse-id">Operator ID</label>
+          <input id="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
 
         <label for="warehouse-pass">Password</label>
         <input id="warehouse-pass" type="password" placeholder="Enter password" required />
 
-        <button type="submit" class="btn btn-primary">Login as Warehouse</button>
-      </form>
+          <button type="submit" class="btn btn-primary">Login as Warehouse</button>
+        </form>
+      </div>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>

@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merchant Dashboard | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="merchant-dashboard.css" />
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar" aria-label="Merchant navigation">
+      <div class="brand-row">
+        <div class="brand-mark">A</div>
+        <div class="brand-text">
+          <strong>AgriShield</strong>
+          <span>Merchant Hub</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a class="active" href="#"><span>&#127968;</span><b>Dashboard</b></a>
+        <a href="#orders"><span>&#128230;</span><b>My Orders</b></a>
+        <a href="#warehouses"><span>&#127970;</span><b>Available Warehouses</b></a>
+        <a href="#conditions"><span>&#127777;</span><b>Storage Conditions</b></a>
+        <a href="#market"><span>&#128202;</span><b>Market Insights</b></a>
+        <a href="#traceability"><span>&#128269;</span><b>Traceability</b></a>
+        <a href="#forecast"><span>&#128200;</span><b>Demand Forecast</b></a>
+        <a href="#payments"><span>&#128176;</span><b>Payments and Invoices</b></a>
+        <a href="#notifications"><span>&#128276;</span><b>Notifications</b></a>
+        <a href="#profile"><span>&#128100;</span><b>Profile</b></a>
+      </nav>
+
+      <button class="logout-link" id="logoutBtn" type="button"><span>&#128682;</span><b>Logout</b></button>
+    </aside>
+
+    <main class="main-panel">
+      <header class="top-header glass">
+        <div class="header-left">
+          <button class="icon-btn" id="menuBtn" type="button" aria-label="Toggle sidebar">?</button>
+          <div class="merchant-welcome">
+            <p>Merchant Dashboard</p>
+            <h1 id="merchantName">Merchant User</h1>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <label class="search-wrap" for="searchInput">
+            <span>&#128269;</span>
+            <input id="searchInput" type="search" placeholder="Search orders, batches, warehouses..." />
+          </label>
+
+          <button class="icon-btn notify-btn" type="button" id="notifyBtn" aria-label="Notifications">
+            &#128276;
+            <span class="badge" id="notifCount">0</span>
+          </button>
+
+          <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme">&#127769;</button>
+
+          <div class="profile-menu-wrap" id="profileMenuWrap">
+            <button class="profile-trigger" id="profileTrigger" type="button" aria-expanded="false">
+              <img src="warehouse-owner-profile.png" alt="Profile avatar" />
+              <span id="merchantShortName">Merchant</span>
+            </button>
+            <div class="profile-menu" id="profileMenu">
+              <a href="#profile">View Profile</a>
+              <a href="#payments">Billing</a>
+              <button type="button" id="logoutBtnMenu">Logout</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="kpi-grid" id="orders">
+        <article class="kpi-card glass">
+          <p class="kpi-head">&#128230; Active Orders</p>
+          <h2 class="count" data-target="128">0</h2>
+          <small>+12% from last week</small>
+        </article>
+        <article class="kpi-card glass">
+          <p class="kpi-head">&#127970; Stored Inventory</p>
+          <h2 class="count" data-target="540">0</h2>
+          <small>tons currently in warehouse</small>
+        </article>
+        <article class="kpi-card glass">
+          <p class="kpi-head">&#127777; Avg Storage Temperature</p>
+          <h2><span id="avgTemp">4.2</span> C</h2>
+          <small>stable zone, no critical drift</small>
+        </article>
+        <article class="kpi-card glass">
+          <p class="kpi-head">&#128200; Market Price Trend</p>
+          <h2><span id="trendValue">+3.4%</span></h2>
+          <small id="trendSub">Wheat up in last 7 days</small>
+        </article>
+      </section>
+
+      <section class="market-layout" id="market">
+        <article class="panel-card glass trend-card">
+          <div class="panel-head">
+            <h3>Market Price Trend</h3>
+            <div class="controls">
+              <select id="commoditySelect">
+                <option>Wheat</option>
+                <option>Rice</option>
+                <option>Onion</option>
+                <option>Tomato</option>
+              </select>
+              <select id="rangeSelect">
+                <option value="7">Last 7 Days</option>
+                <option value="30">Last 30 Days</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="trendChart" width="900" height="280"></canvas>
+          <p class="panel-sub">Use commodity and date range filters to decide when to sell.</p>
+        </article>
+
+        <aside class="panel-card glass" id="notifications">
+          <div class="panel-head">
+            <h3>Smart Notifications</h3>
+          </div>
+          <div class="notif-list" id="notifList"></div>
+        </aside>
+      </section>
+
+      <section class="warehouse-grid" id="warehouses">
+        <article class="panel-card glass warehouse-card">
+          <h3>North Valley Warehouse</h3>
+          <p>Location: Fresno, CA</p>
+          <p>Available Capacity: 2,800 tons</p>
+          <p>Temperature Control: Yes</p>
+          <p>Humidity Control: Yes</p>
+          <p>Distance: 24 km</p>
+          <button class="book-btn" type="button">Book Storage</button>
+        </article>
+        <article class="panel-card glass warehouse-card">
+          <h3>Pacific Cold Storage</h3>
+          <p>Location: Modesto, CA</p>
+          <p>Available Capacity: 1,950 tons</p>
+          <p>Temperature Control: Yes</p>
+          <p>Humidity Control: No</p>
+          <p>Distance: 41 km</p>
+          <button class="book-btn" type="button">Book Storage</button>
+        </article>
+        <article class="panel-card glass warehouse-card">
+          <h3>AgriDock Hub</h3>
+          <p>Location: Bakersfield, CA</p>
+          <p>Available Capacity: 3,420 tons</p>
+          <p>Temperature Control: Yes</p>
+          <p>Humidity Control: Yes</p>
+          <p>Distance: 58 km</p>
+          <button class="book-btn" type="button">Book Storage</button>
+        </article>
+      </section>
+
+      <section class="split-grid">
+        <article class="panel-card glass" id="conditions">
+          <div class="panel-head">
+            <h3>Storage Conditions Monitoring</h3>
+          </div>
+          <div class="conditions-grid">
+            <div>
+              <p class="meta-label">Current Temperature</p>
+              <h4 id="currentTemp">4.2 C</h4>
+            </div>
+            <div>
+              <p class="meta-label">Humidity Level</p>
+              <h4 id="currentHumidity">78%</h4>
+            </div>
+            <div>
+              <p class="meta-label">Risk Indicator</p>
+              <h4 id="riskState" class="safe">Safe</h4>
+            </div>
+          </div>
+          <div class="gauge-wrap">
+            <div class="gauge"><span id="gaugeFill">62%</span></div>
+          </div>
+          <div class="alert-banner" id="tempAlert">&#9888; Temperature rising beyond safe limit!</div>
+        </article>
+
+        <article class="panel-card glass" id="traceability">
+          <div class="panel-head">
+            <h3>Traceability Panel</h3>
+          </div>
+          <div class="trace-input-row">
+            <input id="batchInput" type="text" placeholder="Enter Batch ID (e.g. BATCH-2039)" />
+            <button type="button" id="trackBtn">Track</button>
+          </div>
+          <div class="timeline" id="timeline">
+            <div class="event"><b>Farm Source:</b> Green Acres Farm</div>
+            <div class="event"><b>Entry Date:</b> 2026-02-20</div>
+            <div class="event"><b>Storage Log:</b> 4.1 C | 76% humidity stable</div>
+            <div class="event"><b>Movement:</b> Zone A2 -> Zone C1 -> Dispatch Bay 3</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="split-grid">
+        <article class="panel-card glass" id="forecast">
+          <div class="panel-head">
+            <h3>Demand Forecast</h3>
+          </div>
+          <p class="meta-label">Predicted Demand (Wheat)</p>
+          <h4 class="big">+28% next 5 days</h4>
+          <p class="suggestion" id="suggestion">Suggested action: High demand expected</p>
+          <div class="forecast-bars">
+            <span style="height:46%"></span>
+            <span style="height:58%"></span>
+            <span style="height:66%"></span>
+            <span style="height:78%"></span>
+            <span style="height:88%"></span>
+          </div>
+        </article>
+
+        <article class="panel-card glass" id="payments">
+          <div class="panel-head">
+            <h3>Payments and Invoices</h3>
+          </div>
+          <div class="pay-list">
+            <div><span>Pending Payments</span><b>$24,850</b></div>
+            <div><span>Completed Transactions</span><b>$182,400</b></div>
+            <div><span>Total Storage Cost</span><b>$41,230</b></div>
+            <div><span>Transport Cost</span><b>$11,680</b></div>
+          </div>
+          <button class="book-btn" type="button">Download Invoice</button>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="confirm-modal" id="logoutModal">
+    <form method="dialog" class="modal-card">
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to logout from Merchant Dashboard?</p>
+      <div class="modal-actions">
+        <button value="cancel" type="submit">Cancel</button>
+        <button value="confirm" type="submit" class="danger">Logout</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (function () {
+      const appShell = document.getElementById("appShell");
+      const sidebar = document.getElementById("sidebar");
+      const menuBtn = document.getElementById("menuBtn");
+      const themeToggle = document.getElementById("themeToggle");
+      const profileTrigger = document.getElementById("profileTrigger");
+      const profileMenu = document.getElementById("profileMenu");
+      const profileMenuWrap = document.getElementById("profileMenuWrap");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const logoutBtnMenu = document.getElementById("logoutBtnMenu");
+      const logoutModal = document.getElementById("logoutModal");
+      const notifList = document.getElementById("notifList");
+      const notifCount = document.getElementById("notifCount");
+      const currentTemp = document.getElementById("currentTemp");
+      const currentHumidity = document.getElementById("currentHumidity");
+      const riskState = document.getElementById("riskState");
+      const tempAlert = document.getElementById("tempAlert");
+      const gaugeFill = document.getElementById("gaugeFill");
+      const commoditySelect = document.getElementById("commoditySelect");
+      const rangeSelect = document.getElementById("rangeSelect");
+      const trendCanvas = document.getElementById("trendChart");
+      const trendValue = document.getElementById("trendValue");
+      const trendSub = document.getElementById("trendSub");
+      const batchInput = document.getElementById("batchInput");
+      const trackBtn = document.getElementById("trackBtn");
+      const timeline = document.getElementById("timeline");
+
+      if (localStorage.getItem("merchantLoggedIn") !== "true") {
+        window.location.href = "merchant.html";
+        return;
+      }
+
+      const merchantName = localStorage.getItem("merchantName") || "Merchant User";
+      document.getElementById("merchantName").textContent = merchantName;
+      document.getElementById("merchantShortName").textContent = merchantName;
+
+      menuBtn.addEventListener("click", function () {
+        appShell.classList.toggle("sidebar-open");
+      });
+
+      profileTrigger.addEventListener("click", function () {
+        const isOpen = profileMenu.classList.toggle("open");
+        profileTrigger.setAttribute("aria-expanded", String(isOpen));
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!profileMenuWrap.contains(event.target)) {
+          profileMenu.classList.remove("open");
+          profileTrigger.setAttribute("aria-expanded", "false");
+        }
+      });
+
+      const theme = localStorage.getItem("merchantTheme") || "dark";
+      if (theme === "light") {
+        document.body.classList.add("light-mode");
+      }
+
+      function syncThemeButton() {
+        themeToggle.textContent = document.body.classList.contains("light-mode") ? "\uD83C\uDF19" : "\u2600";
+      }
+      syncThemeButton();
+
+      themeToggle.addEventListener("click", function () {
+        document.body.classList.toggle("light-mode");
+        localStorage.setItem("merchantTheme", document.body.classList.contains("light-mode") ? "light" : "dark");
+        syncThemeButton();
+      });
+
+      const counters = document.querySelectorAll(".count");
+      counters.forEach(function (el) {
+        const target = Number(el.getAttribute("data-target") || "0");
+        let value = 0;
+        const step = Math.max(1, Math.ceil(target / 36));
+        const timer = setInterval(function () {
+          value += step;
+          if (value >= target) {
+            value = target;
+            clearInterval(timer);
+          }
+          el.textContent = String(value);
+        }, 26);
+      });
+
+      const baseNotifications = [
+        "Storage conditions unsafe in Zone C1",
+        "Warehouse capacity low in Pacific Cold Storage",
+        "Price spike detected for Onion",
+        "Payment due in 2 days"
+      ];
+
+      function renderNotifications(items) {
+        notifList.innerHTML = "";
+        items.forEach(function (text) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "notif-item";
+          btn.textContent = text;
+          notifList.appendChild(btn);
+        });
+        notifCount.textContent = String(items.length);
+      }
+      renderNotifications(baseNotifications);
+
+      function updateConditions() {
+        const temp = (3.4 + Math.random() * 3.5).toFixed(1);
+        const humidity = Math.round(68 + Math.random() * 18);
+        currentTemp.textContent = temp + " C";
+        currentHumidity.textContent = humidity + "%";
+
+        let state = "Safe";
+        let gauge = 58;
+        if (Number(temp) > 6 || humidity > 84) {
+          state = "Critical";
+          gauge = 88;
+        } else if (Number(temp) > 5.2 || humidity > 79) {
+          state = "Warning";
+          gauge = 72;
+        }
+
+        riskState.textContent = state;
+        riskState.className = state === "Critical" ? "critical" : state === "Warning" ? "warn" : "safe";
+        gaugeFill.textContent = gauge + "%";
+        tempAlert.classList.toggle("show", state !== "Safe");
+      }
+      updateConditions();
+      setInterval(updateConditions, 5500);
+
+      const chartData = {
+        Wheat: [28, 30, 27, 29, 33, 35, 34, 36, 38, 37],
+        Rice: [32, 31, 30, 29, 31, 33, 34, 35, 34, 33],
+        Onion: [16, 18, 17, 19, 25, 22, 24, 27, 29, 28],
+        Tomato: [20, 19, 21, 18, 17, 16, 18, 19, 17, 16]
+      };
+
+      function drawTrend() {
+        const ctx = trendCanvas.getContext("2d");
+        const commodity = commoditySelect.value;
+        const range = Number(rangeSelect.value);
+        const src = chartData[commodity];
+        const points = range === 7 ? src.slice(-7) : src;
+
+        const w = trendCanvas.width;
+        const h = trendCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const min = Math.min.apply(null, points) - 2;
+        const max = Math.max.apply(null, points) + 2;
+        const pad = 34;
+
+        ctx.strokeStyle = document.body.classList.contains("light-mode") ? "#7d8f83" : "#4f685a";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 4; i += 1) {
+          const y = pad + (i * (h - pad * 2)) / 3;
+          ctx.beginPath();
+          ctx.moveTo(pad, y);
+          ctx.lineTo(w - pad, y);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#2db86f";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        points.forEach(function (val, idx) {
+          const x = pad + (idx * (w - pad * 2)) / Math.max(1, points.length - 1);
+          const y = h - pad - ((val - min) / (max - min || 1)) * (h - pad * 2);
+          if (idx === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.stroke();
+
+        const delta = points[points.length - 1] - points[0];
+        const pct = ((delta / Math.max(1, points[0])) * 100).toFixed(1);
+        const sign = delta >= 0 ? "+" : "";
+        trendValue.textContent = sign + pct + "%";
+        trendSub.textContent = commodity + " trend over last " + range + " days";
+      }
+
+      commoditySelect.addEventListener("change", drawTrend);
+      rangeSelect.addEventListener("change", drawTrend);
+      drawTrend();
+
+      trackBtn.addEventListener("click", function () {
+        const id = batchInput.value.trim() || "BATCH-2039";
+        timeline.innerHTML = ""
+          + "<div class='event'><b>Batch ID:</b> " + id + "</div>"
+          + "<div class='event'><b>Farm Source:</b> Sunrise Agro Farms</div>"
+          + "<div class='event'><b>Entry Date:</b> 2026-02-21</div>"
+          + "<div class='event'><b>Storage Conditions Log:</b> 4.4 C | 77% humidity</div>"
+          + "<div class='event'><b>Movement:</b> Gate 2 -> Zone B3 -> Dispatch Lane 1</div>";
+      });
+
+      function openLogoutModal() {
+        if (typeof logoutModal.showModal === "function") {
+          logoutModal.showModal();
+        }
+      }
+
+      logoutBtn.addEventListener("click", openLogoutModal);
+      logoutBtnMenu.addEventListener("click", openLogoutModal);
+
+      logoutModal.addEventListener("close", function () {
+        if (logoutModal.returnValue === "confirm") {
+          localStorage.removeItem("merchantLoggedIn");
+          window.location.href = "merchant.html";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
