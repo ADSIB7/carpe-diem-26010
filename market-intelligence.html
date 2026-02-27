@@ -6,11 +6,11 @@
   <title>Market Intelligence | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="warehouse-dashboard.css" />
   <link rel="stylesheet" href="market-intelligence.css" />
 </head>
-<body data-page="market">
+<body>
   <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
@@ -25,13 +25,13 @@
 
       <div class="profile-card" id="profileCard">
         <a class="profile-main" href="profile.html">
-          <img id="sidebarAvatar" src="warehouse-owner-profile.png" alt="Owner" />
+          <img src="warehouse-owner-profile.png" alt="Owner" />
           <div>
-            <strong id="sidebarName">Warehouse Owner</strong>
-            <span id="sidebarRole">Warehouse Owner</span>
+            <strong>Shailesh Girnare</strong>
+            <span>Warehouse Owner</span>
           </div>
         </a>
-        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button>
       </div>
       <div class="profile-menu" id="profileMenu">
         <a href="profile.html">View Profile</a>
@@ -39,28 +39,50 @@
       </div>
 
       <nav class="side-nav" aria-label="Dashboard">
-        <a data-nav="dashboard" href="warehouse-dashboard.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"/></svg></span>Dashboard</a>
-        <a data-nav="climate" href="climate.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg></span>Climate Monitoring</a>
-        <a data-nav="storage" href="storage-capacity.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 10h18M10 3v18"/></svg></span>Storage and Capacity</a>
-        <a data-nav="batch" href="batch-tracking.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h8M15 6h5M10 6v0M4 12h5M12 12h8M9 12v0M4 18h10M17 18h3M14 18v0"/></svg></span>Batch Tracking</a>
-        <a data-nav="risk" href="risk-spoilage.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg></span>Risk and Spoilage</a>
-        <a data-nav="market" href="market-intelligence.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-6M15 8h5v5"/></svg></span>Market Intelligence</a>
-        <a data-nav="alerts" href="alerts.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg></span>Alerts</a>
-        <a data-nav="settings" href="settings.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 3h5l.8 2.3 2.2.9 2.1-1.3 2.5 4.3-1.9 1.6.2 2.4 1.8 1.7-2.7 4.2-2.1-1.1-2.2.9-.7 2.5H9.7l-.8-2.3-2.2-.9-2.2 1.2-2.5-4.3 1.9-1.6-.2-2.4-1.8-1.7L4.6 5l2.1 1.1 2.2-.9zM12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/></svg></span>Settings</a>
+        <a href="warehouse-dashboard.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"/></svg></span>
+          Dashboard
+        </a>
+        <a href="climate.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg></span>
+          Climate Monitoring
+        </a>
+        <a href="storage-capacity.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 10h18M10 3v18"/></svg></span>
+          Storage and Capacity
+        </a>
+        <a href="batch-tracking.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h8M15 6h5M10 6v0M4 12h5M12 12h8M9 12v0M4 18h10M17 18h3M14 18v0"/></svg></span>
+          Batch Tracking
+        </a>
+        <a href="risk-spoilage.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg></span>
+          Risk and Spoilage
+        </a>
+        <a class="active" href="market-intelligence.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-6M15 8h5v5"/></svg></span>
+          Market Intelligence
+        </a>
+        <a href="warehouse-dashboard.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg></span>
+          Reports
+        </a>
+        <a href="warehouse-dashboard.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg></span>
+          Alerts
+        </a>
       </nav>
-
-      <div class="sidebar-footer"><a href="index.html">Back to Home</a></div>
     </aside>
 
     <main class="content">
       <header class="topbar">
         <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
-        <div class="search"><input type="search" placeholder="Search market trends, crops, or regions" /></div>
+        <div class="search"><input type="search" placeholder="Search inventory, orders, or reports" /></div>
         <div class="topbar-actions">
-          <div class="weather-pill" id="weatherSummary">Weather: --</div>
+          <div class="weather-pill">28C | Clear</div>
           <div class="clock-pill" id="liveClock">--:--:--</div>
+          <button class="icon-pill bell-btn" aria-label="Notifications">Bell <span class="badge-dot">8</span></button>
           <button class="icon-pill" id="themeToggle" aria-label="Toggle dark mode">Dark</button>
-          <div class="user-pill"><img id="topAvatar" src="warehouse-owner-profile.png" alt="User" /><span id="topName">Warehouse Owner</span><span class="chev">&#9662;</span></div>
+          <div class="user-pill"><img src="warehouse-owner-profile.png" alt="User" /><span>Shailesh Girnare</span><span class="chev">v</span></div>
         </div>
       </header>
 
@@ -86,23 +108,23 @@
                 <tbody id="priceBody"></tbody>
               </table>
             </div>
-            <a class="ghost-btn" href="alerts.html">View Price Alerts</a>
+            <button class="ghost-btn">View Price History</button>
           </article>
 
           <article class="card-glass demand-card">
-            <h2>Local and Regional Demand</h2>
+            <h2>Local &amp; Regional Demand</h2>
             <div id="demandList" class="demand-list"></div>
             <div class="mini-chart" id="demandTrendChart"></div>
           </article>
 
           <article class="card-glass forecast-card">
-            <h2>Forecast and Price Trends</h2>
+            <h2>Forecast &amp; Price Trends</h2>
             <div class="forecast-list" id="forecastList"></div>
             <div class="legend">
               <span><i class="dot range"></i>Projected range</span>
               <span><i class="dot up"></i>Market trend</span>
             </div>
-            <a class="ghost-btn" href="risk-spoilage.html">Open Risk Comparison</a>
+            <button class="ghost-btn">Detailed Forecast</button>
           </article>
 
           <article class="card-glass supply-card">
@@ -130,15 +152,17 @@
                 <tbody id="competitorBody"></tbody>
               </table>
             </div>
-            <a class="ghost-btn" href="settings.html">Configure Monitoring</a>
+            <button class="ghost-btn">View Competitors</button>
           </article>
         </section>
       </div>
     </main>
   </div>
 
-  <script src="warehouse-db.js"></script>
-  <script src="warehouse-common.js"></script>
   <script src="market-intelligence.js"></script>
 </body>
 </html>
+
+
+
+

@@ -38,6 +38,8 @@
   ];
 
   const els = {
+    liveClock: document.getElementById("liveClock"),
+    themeToggle: document.getElementById("themeToggle"),
     cropFilter: document.getElementById("cropFilter"),
     regionFilter: document.getElementById("regionFilter"),
     lastUpdated: document.getElementById("lastUpdated"),
@@ -49,7 +51,11 @@
     arrivalVolume: document.getElementById("arrivalVolume"),
     surplusStatus: document.getElementById("surplusStatus"),
     supplyAlerts: document.getElementById("supplyAlerts"),
-    competitorBody: document.getElementById("competitorBody")
+    competitorBody: document.getElementById("competitorBody"),
+    menuBtn: document.getElementById("menuBtn"),
+    sidebar: document.getElementById("sidebar"),
+    profileToggle: document.getElementById("profileToggle"),
+    profileMenu: document.getElementById("profileMenu")
   };
 
   const state = {
@@ -100,7 +106,7 @@
           <tr>
             <td><strong>${row.crop}</strong></td>
             <td>Rs${row.unit}/kg</td>
-            <td><span class="change ${up ? "up" : "down"}">${up ? "+" : ""}${row.change.toFixed(1)}% ${up ? "Up" : "Down"}</span></td>
+            <td><span class="change ${up ? "up" : "down"}">${up ? "+" : ""}${row.change.toFixed(1)}% ${up ? "?" : "?"}</span></td>
           </tr>
         `;
       })
@@ -186,6 +192,21 @@
     renderAll();
   }
 
+  function updateClock() {
+    els.liveClock.textContent = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  }
+
+  function applyTheme(theme) {
+    const dark = theme === "dark";
+    document.body.classList.toggle("dark", dark);
+    document.body.classList.toggle("dark-mode", dark);
+    els.themeToggle.textContent = dark ? "Light" : "Dark";
+  }
+
   function bindEvents() {
     els.cropFilter.addEventListener("change", (e) => {
       state.crop = e.target.value;
@@ -197,12 +218,36 @@
       renderAll();
     });
 
+    els.themeToggle.addEventListener("click", () => {
+      const dark = document.body.classList.contains("dark") || document.body.classList.contains("dark-mode");
+      const next = dark ? "light" : "dark";
+      localStorage.setItem("market-theme", next);
+      applyTheme(next);
+    });
+
+    if (els.profileToggle && els.profileMenu) {
+      els.profileToggle.addEventListener("click", () => {
+        const expanded = els.profileToggle.getAttribute("aria-expanded") === "true";
+        els.profileToggle.setAttribute("aria-expanded", String(!expanded));
+        els.profileMenu.classList.toggle("open", !expanded);
+      });
+    }
+
+    if (els.menuBtn && els.sidebar) {
+      els.menuBtn.addEventListener("click", () => {
+        els.sidebar.classList.toggle("sidebar-open");
+      });
+    }
   }
 
   function init() {
+    const savedTheme = localStorage.getItem("market-theme") || "light";
+    applyTheme(savedTheme);
     renderFilters();
     bindEvents();
     renderAll();
+    updateClock();
+    setInterval(updateClock, 1000);
     setInterval(simulateRefresh, 12000);
   }
 

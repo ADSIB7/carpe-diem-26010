@@ -2,7 +2,6 @@
   margin-top: 1.2rem;
   display: grid;
   gap: 1rem;
-  min-width: 0;
 }
 
 .card-glass {
@@ -11,7 +10,6 @@
   border-radius: 14px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(4px);
-  min-width: 0;
 }
 
 .page-head {
@@ -56,7 +54,6 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  min-width: 0;
 }
 
 .prices-card,
@@ -78,7 +75,6 @@
 
 .table-wrap {
   overflow-x: auto;
-  max-width: 100%;
 }
 
 .market-page table {
