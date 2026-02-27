@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storage & Capacity Dashboard | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-dashboard.css" />
+  <link rel="stylesheet" href="storage-capacity.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Warehouse</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Warehouse Owner</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="profile.html">
+          <img src="warehouse-owner-profile.png" alt="Owner" />
+          <div>
+            <strong>Shailesh Girnare</strong>
+            <span>Warehouse Owner</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button>
+      </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="profile.html">View Profile</a>
+        <a href="profile.html#edit">Edit Profile</a>
+      </div>
+
+      <nav class="side-nav" aria-label="Dashboard">
+        <a href="warehouse-dashboard.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"/></svg></span>
+          Dashboard
+        </a>
+        <a href="climate.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM8 12h8"/></svg></span>
+          Climate Monitoring
+        </a>
+        <a class="active" href="storage-capacity.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 10h18M10 3v18"/></svg></span>
+          Storage and Capacity
+        </a>
+        <a href="batch-tracking.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h8M15 6h5M10 6v0M4 12h5M12 12h8M9 12v0M4 18h10M17 18h3M14 18v0"/></svg></span>
+          Batch Tracking
+        </a>
+        <a href="risk-spoilage.html">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg></span>
+          Risk and Spoilage
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-6M15 8h5v5"/></svg></span>
+          Market Intelligence
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg></span>
+          Reports
+        </a>
+        <a href="#">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg></span>
+          Alerts
+        </a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div class="search"><input type="search" placeholder="Search inventory, orders, or batches" /></div>
+        <div class="topbar-actions">
+          <div class="weather-pill">28C | Clear</div>
+          <div class="clock-pill" id="liveClock">--:--:--</div>
+          <button class="icon-pill bell-btn" aria-label="Notifications">Bell <span class="badge-dot">8</span></button>
+          <button class="icon-pill" id="themeToggle" aria-label="Toggle dark mode">Dark</button>
+          <div class="user-pill"><img src="warehouse-owner-profile.png" alt="User" /><span>Shailesh Girnare</span><span class="chev">v</span></div>
+        </div>
+      </header>
+
+      <div class="storage-page">
+        <section class="page-title">
+          <h1>Storage &amp; Capacity Dashboard</h1>
+        </section>
+
+        <section class="metric-grid">
+          <article class="card metric-card gauge-card">
+            <h3>Current Storage Utilization</h3>
+            <div class="gauge-wrap">
+              <svg viewBox="0 0 220 120" class="gauge">
+                <path d="M20 100 A90 90 0 0 1 200 100" class="gauge-bg"></path>
+                <path d="M20 100 A90 90 0 0 1 200 100" class="gauge-value"></path>
+                <line x1="110" y1="100" x2="173" y2="58" class="needle"></line>
+                <circle cx="110" cy="100" r="6" class="core"></circle>
+              </svg>
+              <strong>85% Full</strong>
+            </div>
+          </article>
+
+          <article class="card metric-card">
+            <h3>Available Storage Capacity</h3>
+            <div class="metric-value"><span class="icon">[]</span><strong>255 tons</strong><small>Available</small></div>
+          </article>
+
+          <article class="card metric-card warning-card">
+            <h3>Days Until Full Capacity</h3>
+            <div class="metric-value"><span class="icon">!</span><strong>5 days</strong><small>At current inflow</small></div>
+          </article>
+
+          <article class="card metric-card">
+            <h3>Storage Optimization Opportunities</h3>
+            <div class="metric-value"><span class="icon">*</span><strong>4 new suggestions</strong><small>Actionable now</small></div>
+          </article>
+        </section>
+
+        <section class="card zonewise-section">
+          <div class="zonewise-head">
+            <h2>Zone Wise Storage &amp; Capacity Overview</h2>
+            <p>Real-time utilization by storage zone.</p>
+          </div>
+          <div class="zonewise-grid" id="zoneCapacityGrid"></div>
+        </section>
+        <section class="middle-grid">
+          <article class="card performance-card">
+            <h2>Storage Performance Overview</h2>
+            <div class="weekly-chart" id="weeklyChart"></div>
+            <div class="stats-row">
+              <div><span>Avg Utilization</span><strong>80%</strong></div>
+              <div><span>Max Utilization</span><strong>95%</strong></div>
+              <div><span>Total Pallets Stored</span><strong>1,520</strong></div>
+            </div>
+            <button class="ghost-btn">View Detailed Report</button>
+          </article>
+
+          <article class="card rec-card">
+            <h2>Recommended Actions</h2>
+            <div class="rec-item">
+              <div>
+                <strong>Consolidate Incomplete Pallets</strong>
+                <p>30% pallets partially filled</p>
+              </div>
+              <button>Apply</button>
+            </div>
+            <div class="rec-item">
+              <div>
+                <strong>Offload Excess Inventory</strong>
+                <p>Free up 40 tons</p>
+              </div>
+              <button>Plan</button>
+            </div>
+            <div class="rec-item">
+              <div>
+                <strong>Utilize Overflow Storage</strong>
+                <p>Move 20 tons near expiry</p>
+              </div>
+              <button>Move</button>
+            </div>
+            <button class="ghost-btn">View All Recommendations</button>
+          </article>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="card roadmap-card">
+            <h2>Storage Roadmap Zones</h2>
+            <div class="zone-grid">
+              <div class="zone low">
+                <h4>A1</h4>
+                <p>78% Full</p>
+                <p>120 tons capacity</p>
+                <p>26 tons free</p>
+              </div>
+              <div class="zone medium">
+                <h4>A2</h4>
+                <p>86% Full</p>
+                <p>110 tons capacity</p>
+                <p>15 tons free</p>
+              </div>
+              <div class="zone high">
+                <h4>A3</h4>
+                <p>94% Full</p>
+                <p>95 tons capacity</p>
+                <p>6 tons free</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card products-card">
+            <h2>Top 5 Products by Volume</h2>
+            <div id="productBars"></div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="storage-capacity.js"></script>
+</body>
+</html>
+
+
+
+
+
+

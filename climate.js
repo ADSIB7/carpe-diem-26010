@@ -144,10 +144,11 @@
     });
   }
 
-  const savedTheme = localStorage.getItem("climateTheme") || "dark";
-  if (savedTheme === "light") {
-    document.body.classList.add("light-mode");
+  const savedTheme = localStorage.getItem("dashboardTheme") || "light";
+  function applyTheme(theme) {
+    document.body.classList.toggle("light-mode", theme === "light");
   }
+  applyTheme(savedTheme);
 
   function syncThemeButton() {
     if (!themeBtn) return;
@@ -158,11 +159,18 @@
   syncThemeButton();
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
-      const isLight = document.body.classList.toggle("light-mode");
-      localStorage.setItem("climateTheme", isLight ? "light" : "dark");
+      const isLight = !document.body.classList.contains("light-mode");
+      applyTheme(isLight ? "light" : "dark");
+      localStorage.setItem("dashboardTheme", isLight ? "light" : "dark");
       syncThemeButton();
     });
   }
+
+  window.addEventListener("storage", function (event) {
+    if (event.key !== "dashboardTheme") return;
+    applyTheme(event.newValue === "light" ? "light" : "dark");
+    syncThemeButton();
+  });
 
   function createChart(canvasId, color) {
     const ctx = document.getElementById(canvasId).getContext("2d");

@@ -30,7 +30,7 @@
             <span id="sidebarRole">Warehouse Owner</span>
           </div>
         </a>
-        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
       </div>
       <div class="profile-menu" id="profileMenu">
         <a href="profile.html">View Profile</a>
@@ -62,7 +62,7 @@
           </span>
           Batch Tracking
         </a>
-        <a href="warehouse-dashboard.html#risk-spoilage">
+        <a href="risk-spoilage.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4zM12 10v4M12 17h.01"/></svg>
           </span>
@@ -74,13 +74,7 @@
           </span>
           Market Intelligence
         </a>
-        <a href="reports.html">
-          <span class="nav-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M7 3h10v18H7zM9 7h6M9 11h6M9 15h5"/></svg>
-          </span>
-          Reports
-        </a>
-        <a href="alerts.html">
+<a href="alerts.html">
           <span class="nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M15 17H9M18 10a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/></svg>
           </span>
@@ -103,7 +97,7 @@
       <header class="topbar">
         <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
         <div class="search">
-          <input type="search" placeholder="Search inventory, orders, or reports" />
+          <input type="search" placeholder="Search inventory, orders, or batches" />
         </div>
         <div class="topbar-actions">
           <div class="weather-pill" id="weatherSummary">Weather: --</div>
@@ -116,7 +110,7 @@
           <div class="user-pill">
             <img id="topAvatar" src="warehouse-owner-profile.png" alt="User" />
             <span id="topName">Warehouse Owner</span>
-            <span class="chev">v</span>
+            <span class="chev">&#9662;</span>
           </div>
         </div>
       </header>
@@ -438,16 +432,24 @@
     document.getElementById('topAvatar').src = profile.avatar;
     weatherSummary.textContent = profile.location + ' | 28 C | Clear';
 
-    const storedTheme = localStorage.getItem('dashboardTheme') || 'light';
-    if (storedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      themeToggle.textContent = 'Light';
+    function applyTheme(theme) {
+      const dark = theme === 'dark';
+      document.body.classList.toggle('dark-mode', dark);
+      themeToggle.textContent = dark ? 'Light' : 'Dark';
     }
 
+    const storedTheme = localStorage.getItem('dashboardTheme') || 'light';
+    applyTheme(storedTheme);
+
     themeToggle.addEventListener('click', () => {
-      const isDark = document.body.classList.toggle('dark-mode');
+      const isDark = !document.body.classList.contains('dark-mode');
+      applyTheme(isDark ? 'dark' : 'light');
       localStorage.setItem('dashboardTheme', isDark ? 'dark' : 'light');
-      themeToggle.textContent = isDark ? 'Light' : 'Dark';
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key !== 'dashboardTheme') return;
+      applyTheme(event.newValue === 'dark' ? 'dark' : 'light');
     });
 
     function updateClock() {
@@ -614,6 +616,10 @@
   </script>
 </body>
 </html>
+
+
+
+
 
 
 
