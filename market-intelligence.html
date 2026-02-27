@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Storage and Capacity | AgriShield</title>
+  <title>Market Intelligence | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="warehouse-dashboard.css" />
-  <link rel="stylesheet" href="storage-capacity.css" />
+  <link rel="stylesheet" href="market-intelligence.css" />
 </head>
-<body data-page="storage">
+<body data-page="market">
   <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
@@ -55,7 +55,7 @@
     <main class="content">
       <header class="topbar">
         <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
-        <div class="search"><input type="search" placeholder="Search inventory, orders, or batches" /></div>
+        <div class="search"><input type="search" placeholder="Search market trends, crops, or regions" /></div>
         <div class="topbar-actions">
           <div class="weather-pill" id="weatherSummary">Weather: --</div>
           <div class="clock-pill" id="liveClock">--:--:--</div>
@@ -64,119 +64,73 @@
         </div>
       </header>
 
-      <div class="storage-page">
-        <section class="page-title">
+      <div class="market-page">
+        <section class="page-head card-glass">
           <div>
-            <h1>Storage and Capacity</h1>
-            <p>Live utilization, zone-level capacity, and optimization cues.</p>
+            <h1>Market Intelligence</h1>
+            <p>Monitor market trends, prices, demand, and forecasts.</p>
+          </div>
+          <div class="head-controls">
+            <select id="cropFilter" aria-label="Filter by crop"></select>
+            <select id="regionFilter" aria-label="Filter by region"></select>
+            <span class="updated" id="lastUpdated">Last updated: --</span>
           </div>
         </section>
 
-        <section class="metric-grid">
-          <article class="card metric-card gauge-card">
-            <h3>Current Storage Utilization</h3>
-            <div class="gauge-wrap">
-              <svg viewBox="0 0 220 120" class="gauge">
-                <path d="M20 100 A90 90 0 0 1 200 100" class="gauge-bg"></path>
-                <path d="M20 100 A90 90 0 0 1 200 100" class="gauge-value"></path>
-                <line x1="110" y1="100" x2="173" y2="58" class="needle"></line>
-                <circle cx="110" cy="100" r="6" class="core"></circle>
-              </svg>
-              <strong>85% Full</strong>
+        <section class="market-grid">
+          <article class="card-glass prices-card">
+            <h2>Current Crop Prices</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Crop Name</th><th>Unit Price</th><th>% Change</th></tr></thead>
+                <tbody id="priceBody"></tbody>
+              </table>
             </div>
+            <a class="ghost-btn" href="alerts.html">View Price Alerts</a>
           </article>
 
-          <article class="card metric-card">
-            <h3>Available Storage Capacity</h3>
-            <div class="metric-value"><span class="icon">[]</span><strong>255 tons</strong><small>Available</small></div>
+          <article class="card-glass demand-card">
+            <h2>Local and Regional Demand</h2>
+            <div id="demandList" class="demand-list"></div>
+            <div class="mini-chart" id="demandTrendChart"></div>
           </article>
 
-          <article class="card metric-card warning-card">
-            <h3>Days Until Full Capacity</h3>
-            <div class="metric-value"><span class="icon">!</span><strong>5 days</strong><small>At current inflow</small></div>
-          </article>
-
-          <article class="card metric-card">
-            <h3>Storage Optimization Opportunities</h3>
-            <div class="metric-value"><span class="icon">*</span><strong>4 new suggestions</strong><small>Actionable now</small></div>
-          </article>
-        </section>
-
-        <section class="card zonewise-section">
-          <div class="zonewise-head">
-            <h2>Zone Wise Storage and Capacity Overview</h2>
-            <p>Real-time utilization by storage zone.</p>
-          </div>
-          <div class="zonewise-grid" id="zoneCapacityGrid"></div>
-        </section>
-
-        <section class="middle-grid">
-          <article class="card performance-card">
-            <h2>Storage Performance Overview</h2>
-            <div class="weekly-chart" id="weeklyChart"></div>
-            <div class="stats-row">
-              <div><span>Avg Utilization</span><strong>80%</strong></div>
-              <div><span>Max Utilization</span><strong>95%</strong></div>
-              <div><span>Total Pallets Stored</span><strong>1,520</strong></div>
+          <article class="card-glass forecast-card">
+            <h2>Forecast and Price Trends</h2>
+            <div class="forecast-list" id="forecastList"></div>
+            <div class="legend">
+              <span><i class="dot range"></i>Projected range</span>
+              <span><i class="dot up"></i>Market trend</span>
             </div>
-            <a class="ghost-btn" href="alerts.html">View Alerts</a>
+            <a class="ghost-btn" href="risk-spoilage.html">Open Risk Comparison</a>
           </article>
 
-          <article class="card rec-card">
-            <h2>Recommended Actions</h2>
-            <div class="rec-item">
-              <div>
-                <strong>Consolidate Incomplete Pallets</strong>
-                <p>30% pallets partially filled</p>
-              </div>
-              <a href="settings.html">Apply</a>
+          <article class="card-glass supply-card">
+            <h2>Supply Chain Insights</h2>
+            <div class="supply-metric">
+              <span>Monthly inbound stock trend</span>
+              <div class="track"><div class="fill" id="inboundFill"></div></div>
             </div>
-            <div class="rec-item">
-              <div>
-                <strong>Offload Excess Inventory</strong>
-                <p>Free up 40 tons</p>
-              </div>
-              <a href="batch-tracking.html">Plan</a>
+            <div class="supply-row">
+              <span>Market arrival volume</span>
+              <strong id="arrivalVolume">--</strong>
             </div>
-            <div class="rec-item">
-              <div>
-                <strong>Utilize Overflow Storage</strong>
-                <p>Move 20 tons near expiry</p>
-              </div>
-              <a href="batch-tracking.html">Move</a>
+            <div class="supply-row">
+              <span>Shortage / Surplus</span>
+              <strong id="surplusStatus">--</strong>
             </div>
-            <a class="ghost-btn" href="risk-spoilage.html">View Risk Recommendations</a>
-          </article>
-        </section>
-
-        <section class="bottom-grid">
-          <article class="card roadmap-card">
-            <h2>Storage Roadmap Zones</h2>
-            <div class="zone-grid">
-              <div class="zone low">
-                <h4>A1</h4>
-                <p>78% Full</p>
-                <p>120 tons capacity</p>
-                <p>26 tons free</p>
-              </div>
-              <div class="zone medium">
-                <h4>A2</h4>
-                <p>86% Full</p>
-                <p>110 tons capacity</p>
-                <p>15 tons free</p>
-              </div>
-              <div class="zone high">
-                <h4>A3</h4>
-                <p>94% Full</p>
-                <p>95 tons capacity</p>
-                <p>6 tons free</p>
-              </div>
-            </div>
+            <div class="alerts" id="supplyAlerts"></div>
           </article>
 
-          <article class="card products-card">
-            <h2>Top 5 Products by Volume</h2>
-            <div id="productBars"></div>
+          <article class="card-glass competitor-card">
+            <h2>Competitor Price Monitoring</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Competitor</th><th>Crop</th><th>Price/kg</th></tr></thead>
+                <tbody id="competitorBody"></tbody>
+              </table>
+            </div>
+            <a class="ghost-btn" href="settings.html">Configure Monitoring</a>
           </article>
         </section>
       </div>
@@ -185,6 +139,6 @@
 
   <script src="warehouse-db.js"></script>
   <script src="warehouse-common.js"></script>
-  <script src="storage-capacity.js"></script>
+  <script src="market-intelligence.js"></script>
 </body>
 </html>

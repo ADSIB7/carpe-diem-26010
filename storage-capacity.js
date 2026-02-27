@@ -20,31 +20,10 @@
   ];
 
   const els = {
-    liveClock: document.getElementById("liveClock"),
-    themeToggle: document.getElementById("themeToggle"),
     weeklyChart: document.getElementById("weeklyChart"),
     productBars: document.getElementById("productBars"),
-    zoneCapacityGrid: document.getElementById("zoneCapacityGrid"),
-    menuBtn: document.getElementById("menuBtn"),
-    sidebar: document.getElementById("sidebar"),
-    profileToggle: document.getElementById("profileToggle"),
-    profileMenu: document.getElementById("profileMenu")
+    zoneCapacityGrid: document.getElementById("zoneCapacityGrid")
   };
-
-  function updateClock() {
-    els.liveClock.textContent = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-  }
-
-  function applyTheme(theme) {
-    const dark = theme === "dark";
-    document.body.classList.toggle("dark", dark);
-    document.body.classList.toggle("dark-mode", dark);
-    els.themeToggle.textContent = dark ? "Light" : "Dark";
-  }
 
   function renderWeeklyChart() {
     const max = 100;
@@ -154,39 +133,14 @@
   }
 
   function bindEvents() {
-    els.themeToggle.addEventListener("click", () => {
-      const dark = document.body.classList.contains("dark") || document.body.classList.contains("dark-mode");
-      const next = dark ? "light" : "dark";
-      localStorage.setItem("storage-theme", next);
-      applyTheme(next);
-    });
-
-    if (els.profileToggle && els.profileMenu) {
-      els.profileToggle.addEventListener("click", () => {
-        const expanded = els.profileToggle.getAttribute("aria-expanded") === "true";
-        els.profileToggle.setAttribute("aria-expanded", String(!expanded));
-        els.profileMenu.classList.toggle("open", !expanded);
-      });
-    }
-
-    if (els.menuBtn && els.sidebar) {
-      els.menuBtn.addEventListener("click", () => {
-        els.sidebar.classList.toggle("sidebar-open");
-      });
-    }
-
     window.addEventListener("resize", renderWeeklyChart);
   }
 
   function init() {
-    const savedTheme = localStorage.getItem("storage-theme") || "light";
-    applyTheme(savedTheme);
     bindEvents();
     renderWeeklyChart();
     renderProducts();
     renderZoneWise();
-    updateClock();
-    setInterval(updateClock, 1000);
   }
 
   init();
