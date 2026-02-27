@@ -164,8 +164,14 @@ body {
 
 .kicker {
   margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #bfe5c5;
+  background: #eff9f0;
+  font-size: clamp(0.65rem, 1.1vw, 0.78rem);
+  letter-spacing: 0.1em;
   font-weight: 800;
   color: var(--brand-700);
 }
@@ -225,44 +231,28 @@ h1 {
   background: linear-gradient(180deg, #f9fff9 0%, #edf8ee 100%);
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
-  padding: 1.4rem;
+  padding: 0;
   box-shadow: var(--shadow-sm);
   animation: rise 650ms ease-out both;
+  overflow: hidden;
 }
 
-.hero-panel h2 {
-  margin: 0;
-  font-family: "Sora", sans-serif;
-  font-size: 1.05rem;
-}
-
-.hero-panel ul {
-  list-style: none;
-  margin: 1.1rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 0.7rem;
-}
-
-.hero-panel li {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 0.75rem;
+.hero-image-panel {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem;
+  justify-content: center;
+  background: #f1f8f2;
 }
 
-.hero-panel span {
-  color: var(--text-500);
-  font-size: 0.88rem;
-}
-
-.hero-panel strong {
-  color: var(--text-900);
-  font-size: 0.92rem;
+.hero-image-panel img {
+  width: 100%;
+  height: auto;
+  max-height: 520px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: var(--radius-xl);
+  clip-path: inset(0 round var(--radius-xl));
 }
 
 .feature-band,
@@ -515,6 +505,50 @@ h1 {
   width: fit-content;
 }
 
+.auth-switch {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.auth-tab {
+  border: 1px solid #bfdfc5;
+  background: #f4fbf5;
+  color: var(--brand-900);
+  border-radius: 999px;
+  min-height: 42px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-tab.active {
+  background: linear-gradient(120deg, var(--brand-700), var(--brand-500));
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.auth-msg {
+  min-height: 1.35rem;
+  margin-top: 0.75rem;
+  color: var(--brand-700);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.auth-msg.error {
+  color: #b0372b;
+}
+
+.auth-panel {
+  display: none;
+}
+
+.auth-panel.active {
+  display: grid;
+}
+
 .back-link {
   margin-top: 1rem;
   display: inline-flex;
@@ -554,6 +588,10 @@ h1 {
 @media (max-width: 980px) {
   .hero {
     grid-template-columns: 1fr;
+  }
+
+  .hero-image-panel img {
+    max-height: 360px;
   }
 
   .insights-flow {

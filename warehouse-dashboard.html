@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warehouse Dashboard | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="warehouse-dashboard.css" />
+</head>
+<body>
+  <div class="dash">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Warehouse</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Warehouse Owner</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="profile.html">
+          <img id="sidebarAvatar" src="warehouse-owner-profile.png" alt="Owner" />
+          <div>
+            <strong id="sidebarName">Ravi Sharma</strong>
+            <span id="sidebarRole">Warehouse Owner</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">v</button>
+      </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="profile.html">View Profile</a>
+        <a href="profile.html#edit">Edit Profile</a>
+      </div>
+
+      <nav class="menu" aria-label="Dashboard">
+        <a class="active" href="#">Dashboard</a>
+        <a href="#">Warehouses</a>
+        <a href="#">Orders</a>
+        <a href="#">Shipments</a>
+        <a href="#">Inventory</a>
+        <a href="#">Tracking</a>
+        <a href="#">Reports</a>
+        <a href="#">Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html">Back to Home</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div class="search">
+          <input type="search" placeholder="Search inventory, orders, or reports" />
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" aria-label="Notifications">Bell</button>
+          <div class="user">
+            <img id="topAvatar" src="warehouse-owner-profile.png" alt="Manager" />
+            <span id="topName">Warehouse Lead</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <h1>Warehouses (0)</h1>
+          <p>Quick view of active sections, stock levels, and shipment status.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn">Add Request</button>
+          <button class="btn ghost">Edit Section</button>
+          <button class="btn ghost">Delete Section</button>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card large">
+          <div class="card-header">
+            <h2>Section Overview</h2>
+            <span class="pill">0 Sections</span>
+          </div>
+          <div class="section-grid">
+            <div class="section">
+              <h3>A - Electronics</h3>
+              <div class="slots">
+                <span class="slot green">A1</span>
+                <span class="slot green">A2</span>
+                <span class="slot">A3</span>
+                <span class="slot">A4</span>
+              </div>
+            </div>
+            <div class="section">
+              <h3>B - Appliances</h3>
+              <div class="slots">
+                <span class="slot yellow">B1</span>
+                <span class="slot">B2</span>
+                <span class="slot">B3</span>
+                <span class="slot">B4</span>
+              </div>
+            </div>
+            <div class="section">
+              <h3>C - Home Decor</h3>
+              <div class="slots">
+                <span class="slot purple">C1</span>
+                <span class="slot">C2</span>
+                <span class="slot">C3</span>
+                <span class="slot">C4</span>
+              </div>
+            </div>
+            <div class="section">
+              <h3>D - Sports</h3>
+              <div class="slots">
+                <span class="slot blue">D1</span>
+                <span class="slot blue">D2</span>
+                <span class="slot">D3</span>
+                <span class="slot">D4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Section Usage</h2>
+            <span class="pill">B-Section</span>
+          </div>
+          <div class="usage">
+            <div class="donut">
+              <span>0%</span>
+              <small>In Use</small>
+            </div>
+            <div class="usage-list">
+              <div><strong>0</strong><span>Total Slots</span></div>
+              <div><strong>0</strong><span>Used</span></div>
+              <div><strong>0</strong><span>Free</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Inventory Overview</h2>
+            <span class="pill">Today</span>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <strong>0</strong>
+              <span>Orders Received</span>
+            </div>
+            <div class="stat">
+              <strong>0</strong>
+              <span>Orders Shipped</span>
+            </div>
+            <div class="stat">
+              <strong>0</strong>
+              <span>Returns</span>
+            </div>
+            <div class="stat">
+              <strong>0</strong>
+              <span>Issues</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const profileCard = document.getElementById('profileCard');
+    const profileToggle = document.getElementById('profileToggle');
+    const profileMenu = document.getElementById('profileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('sidebar-open');
+    });
+
+    function closeProfileMenu() {
+      profileMenu.classList.remove('open');
+      profileToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    profileToggle.addEventListener('click', () => {
+      const isOpen = profileMenu.classList.toggle('open');
+      profileToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!profileCard.contains(event.target) && !profileMenu.contains(event.target)) {
+        closeProfileMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeProfileMenu();
+      }
+    });
+
+    profileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeProfileMenu);
+    });
+
+    const profile = {
+      name: localStorage.getItem('profileName') || 'Ravi Sharma',
+      role: localStorage.getItem('profileRole') || 'Warehouse Owner',
+      avatar: localStorage.getItem('profileImage') || 'warehouse-owner-profile.png'
+    };
+
+    document.getElementById('sidebarName').textContent = profile.name;
+    document.getElementById('sidebarRole').textContent = profile.role;
+    document.getElementById('sidebarAvatar').src = profile.avatar;
+    document.getElementById('topName').textContent = profile.name;
+    document.getElementById('topAvatar').src = profile.avatar;
+  </script>
+</body>
+</html>

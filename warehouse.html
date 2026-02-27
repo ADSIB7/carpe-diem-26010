@@ -15,20 +15,194 @@
   <main class="role-layout container">
     <section class="role-card">
       <p class="kicker">WAREHOUSE ACCESS</p>
-      <h1>Manage storage, quality, and dispatch in one place.</h1>
-      <p>Track space use, run route rules, and keep temperature data in safe range.</p>
-      <form class="login-form" action="#" method="post">
+      <h1>Control storage, quality, and dispatch from one dashboard.</h1>
+      <p>Track occupancy, run automated routing rules, and keep cold chain metrics in range.</p>
+      <div class="auth-switch" role="tablist" aria-label="Warehouse access mode">
+        <button class="auth-tab active" id="showRegister" type="button" role="tab" aria-selected="true">Register</button>
+        <button class="auth-tab" id="showLogin" type="button" role="tab" aria-selected="false">Login</button>
+      </div>
+
+      <div class="auth-msg" id="authMsg" aria-live="polite"></div>
+
+      <form class="login-form auth-panel active" id="registerForm" novalidate>
+        <label for="reg-name">Full Name</label>
+        <input id="reg-name" type="text" placeholder="Ravi Sharma" required />
+
+        <label for="reg-email">Email</label>
+        <input id="reg-email" type="email" placeholder="ravi.sharma@agrishield.com" required />
+
+        <label for="reg-phone">Phone</label>
+        <input id="reg-phone" type="text" placeholder="+1 (555) 230-9876" required />
+
+        <label for="reg-warehouse">Warehouse Name</label>
+        <input id="reg-warehouse" type="text" placeholder="Green Valley Warehouse" required />
+
+        <label for="reg-location">Location</label>
+        <input id="reg-location" type="text" placeholder="Fresno, CA" required />
+
+        <label for="reg-address">Address</label>
+        <input id="reg-address" type="text" placeholder="1450 Sunrise Blvd, Fresno, CA" required />
+
+        <label for="reg-company">Company Name</label>
+        <input id="reg-company" type="text" placeholder="AgriShield Logistics" required />
+
+        <label for="reg-id">Operator ID</label>
+        <input id="reg-id" type="text" placeholder="WH-CTRL-07" required />
+
+        <label for="reg-pass">Password</label>
+        <input id="reg-pass" type="password" placeholder="Create password" required />
+
+        <label for="reg-confirm">Confirm Password</label>
+        <input id="reg-confirm" type="password" placeholder="Repeat password" required />
+
+        <button type="submit" class="btn btn-primary">Register Warehouse Owner</button>
+      </form>
+
+      <form class="login-form auth-panel" id="loginForm" novalidate>
         <label for="warehouse-id">Operator ID</label>
-        <input id="warehouse-id" name="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
+        <input id="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
 
         <label for="warehouse-pass">Password</label>
-        <input id="warehouse-pass" name="warehouse-pass" type="password" placeholder="Enter password" required />
+        <input id="warehouse-pass" type="password" placeholder="Enter password" required />
 
         <button type="submit" class="btn btn-primary">Login as Warehouse</button>
       </form>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
+  <script>
+    (function () {
+      const showRegister = document.getElementById("showRegister");
+      const showLogin = document.getElementById("showLogin");
+      const registerForm = document.getElementById("registerForm");
+      const loginForm = document.getElementById("loginForm");
+      const authMsg = document.getElementById("authMsg");
+
+      const storageKey = "warehouseAuthUser";
+
+      function showMessage(message, isError) {
+        authMsg.textContent = message;
+        authMsg.classList.toggle("error", Boolean(isError));
+      }
+
+      function setPanel(mode) {
+        const isRegister = mode === "register";
+        registerForm.classList.toggle("active", isRegister);
+        loginForm.classList.toggle("active", !isRegister);
+        showRegister.classList.toggle("active", isRegister);
+        showLogin.classList.toggle("active", !isRegister);
+        showRegister.setAttribute("aria-selected", String(isRegister));
+        showLogin.setAttribute("aria-selected", String(!isRegister));
+        showMessage("");
+      }
+
+      function saveProfileData(user) {
+        localStorage.setItem("profileName", user.name);
+        localStorage.setItem("profileEmail", user.email);
+        localStorage.setItem("profilePhone", user.phone);
+        localStorage.setItem("profileAddress", user.address);
+        localStorage.setItem("profileRole", "Warehouse Owner");
+        localStorage.setItem("profileCompany", user.company);
+        localStorage.setItem("profileWarehouse", user.warehouse);
+        localStorage.setItem("profileLocation", user.location);
+        localStorage.setItem("profileMember", user.memberSince);
+        if (!localStorage.getItem("profileImage")) {
+          localStorage.setItem("profileImage", "warehouse-owner-profile.png");
+        }
+      }
+
+      showRegister.addEventListener("click", function () {
+        setPanel("register");
+      });
+
+      showLogin.addEventListener("click", function () {
+        setPanel("login");
+      });
+
+      registerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const phone = document.getElementById("reg-phone").value.trim();
+        const warehouse = document.getElementById("reg-warehouse").value.trim();
+        const location = document.getElementById("reg-location").value.trim();
+        const address = document.getElementById("reg-address").value.trim();
+        const company = document.getElementById("reg-company").value.trim();
+        const operatorId = document.getElementById("reg-id").value.trim();
+        const password = document.getElementById("reg-pass").value;
+        const confirm = document.getElementById("reg-confirm").value;
+
+        if (!name || !email || !phone || !warehouse || !location || !address || !company || !operatorId || !password) {
+          showMessage("Please fill in all registration fields.", true);
+          return;
+        }
+
+        if (password !== confirm) {
+          showMessage("Password and confirm password do not match.", true);
+          return;
+        }
+
+        const memberSince = "Member since " + new Date().getFullYear();
+
+        const user = {
+          name: name,
+          email: email,
+          phone: phone,
+          warehouse: warehouse,
+          location: location,
+          address: address,
+          company: company,
+          operatorId: operatorId,
+          password: password,
+          memberSince: memberSince
+        };
+
+        localStorage.setItem(storageKey, JSON.stringify(user));
+        saveProfileData(user);
+        document.getElementById("warehouse-id").value = operatorId;
+
+        showMessage("Registration successful. Please login with your Operator ID and password.", false);
+        setPanel("login");
+      });
+
+      loginForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const operatorId = document.getElementById("warehouse-id").value.trim();
+        const password = document.getElementById("warehouse-pass").value;
+        const rawUser = localStorage.getItem(storageKey);
+
+        if (!rawUser) {
+          showMessage("No account found. Please register first.", true);
+          setPanel("register");
+          return;
+        }
+
+        const savedUser = JSON.parse(rawUser);
+
+        if (operatorId !== savedUser.operatorId || password !== savedUser.password) {
+          showMessage("Invalid Operator ID or password.", true);
+          return;
+        }
+
+        saveProfileData(savedUser);
+        localStorage.setItem("warehouseLoggedIn", "true");
+        window.location.href = "warehouse-dashboard.html";
+      });
+
+      const existingUserRaw = localStorage.getItem(storageKey);
+      if (existingUserRaw) {
+        const existingUser = JSON.parse(existingUserRaw);
+        if (existingUser.operatorId) {
+          document.getElementById("warehouse-id").value = existingUser.operatorId;
+        }
+        setPanel("login");
+      } else {
+        setPanel("register");
+      }
+    })();
+  </script>
 </body>
 </html>
 
