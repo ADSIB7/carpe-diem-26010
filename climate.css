@@ -59,6 +59,7 @@ body {
   flex-direction: column;
   gap: 1.1rem;
   transition: transform 240ms ease;
+  overflow-y: auto;
 }
 
 body.light-mode .sidebar,
@@ -243,13 +244,26 @@ body.dark-mode .sidebar {
 }
 
 .sidebar-footer {
-  margin-top: auto;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .sidebar-footer a {
   color: #cfe6d8;
   text-decoration: none;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  font-weight: 600;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.sidebar-footer a:hover {
+  background: #1a5a41;
+  color: #ffffff;
 }
 
 .main {
