@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriShield | Smart Warehouse Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <header class="topbar-wrap">
+    <div class="topbar container">
+      <a class="brand" href="index.html" aria-label="AgriShield home">
+        <span class="brand-mark" aria-hidden="true"><span class="leaf leaf-one"></span><span class="leaf leaf-two"></span></span>
+        <span class="brand-text">AgriShield</span>
+      </a>
+      <nav class="top-links" aria-label="Primary navigation">
+        <a href="#insights">Insights</a>
+        <a href="#warehouse">Warehouse</a>
+        <a href="#in-store">In Store</a>
+        <a href="#contact">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <p class="kicker">SMART AGRI SUPPLY CHAIN</p>
+        <h1>Move produce faster with smart warehouse planning.</h1>
+        <p class="subtext">
+          AgriShield helps farmers, warehouse teams, and merchants work together
+          on one simple real-time platform.
+        </p>
+        <div class="hero-cta" id="access">
+          <a class="btn btn-primary" href="farmer.html">Farmer Login</a>
+          <a class="btn btn-secondary" href="warehouse.html">Warehouse Login</a>
+          <a class="btn btn-secondary" href="merchant.html">Merchant Login</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel hero-image-panel" aria-label="Farmers and farms">
+        <img
+          src="hero-warehouse.jpg"
+          alt="Farmers working in green crop fields"
+          loading="lazy"
+        />
+      </aside>
+    </section>
+
+    <section class="insights-flow" id="insights" aria-label="Insights flow">
+      <div class="insights-flow-inner">
+        <header class="insights-flow-head">
+          <h2>Data Insights That Drive Smarter Warehousing</h2>
+          <p>Clear data. Quick action. Better results.</p>
+        </header>
+        <div class="insights-flow-cards">
+          <article class="insight-card">
+            <h3>Real-Time Storage Data</h3>
+            <p>See live temperature, humidity, and stock levels across all warehouses.</p>
+          </article>
+          <article class="insight-card">
+            <h3>Smart Monitoring</h3>
+            <p>Get instant alerts when conditions move outside safe limits.</p>
+          </article>
+          <article class="insight-card">
+            <h3>Better Decisions</h3>
+            <p>Reduce waste, improve storage use, and increase farmer profit.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow container" id="warehouse">
+      <h2>One simple flow for all users</h2>
+      <div class="flow-grid">
+        <article>
+          <h3>1. Farmer Check-In</h3>
+          <p>Farmers book a slot and check in their produce online.</p>
+        </article>
+        <article>
+          <h3>2. Warehouse Control</h3>
+          <p>Warehouse teams track space, quality, and dispatch from one dashboard.</p>
+        </article>
+        <article>
+          <h3>3. Merchant Orders</h3>
+          <p>Merchants place orders and track quality and delivery time in real time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="showcase container" id="in-store">
+      <h2>In-Store View</h2>
+      <div class="showcase-grid">
+        <article>
+          <h3>Demand Sync</h3>
+          <p>Store teams can update demand so dispatch quantity can be adjusted before loading.</p>
+        </article>
+        <article>
+          <h3>Freshness Groups</h3>
+          <p>Products are grouped by freshness so high-priority lots are used first.</p>
+        </article>
+        <article>
+          <h3>Exception Alerts</h3>
+          <p>Instant alerts for delays and quality issues help prevent losses.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact container" id="contact">
+      <h2>Contact Us</h2>
+      <p>Contact the AgriShield team for setup, pricing, and support.</p>
+      <a class="btn btn-secondary" href="mailto:hello@agrishield.com">hello@agrishield.com</a>
+    </section>
+
+  </main>
+
+  <footer class="site-footer container">
+    <p>2026 AgriShield</p>
+  </footer>
+  <script>
+    (function () {
+      const insightsLink = document.querySelector('a[href="#insights"]');
+      const insightsSection = document.getElementById("insights");
+      const topbarWrap = document.querySelector(".topbar-wrap");
+
+      if (!insightsLink || !insightsSection || !topbarWrap) {
+        return;
+      }
+
+      const syncTopbarHeight = function () {
+        const navHeight = topbarWrap.getBoundingClientRect().height;
+        document.documentElement.style.setProperty("--topbar-height", navHeight + "px");
+      };
+
+      syncTopbarHeight();
+      window.addEventListener("resize", syncTopbarHeight);
+
+      insightsLink.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const navHeight = topbarWrap.getBoundingClientRect().height;
+        const targetTop = insightsSection.getBoundingClientRect().top + window.scrollY - navHeight;
+
+        window.scrollTo({
+          top: Math.max(targetTop, 0),
+          behavior: "smooth"
+        });
+
+        history.replaceState(null, "", "#insights");
+      });
+    })();
+  </script>
+</body>
+</html>
