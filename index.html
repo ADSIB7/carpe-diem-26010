@@ -3,31 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgriShield | Smart Storage</title>
+  <title>AgriShield | Precision Logistics Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="landing-body">
-  <main class="landing-page">
-    <header class="logo-wrap" aria-label="AgriShield branding">
-      <h1 class="brand" aria-label="AgriShield">
-        AgriSh<span class="leaf-i" aria-hidden="true"></span>eld
-      </h1>
-      <p class="tagline">Smart Storage. Zero Waste.</p>
-    </header>
+<body>
+  <div class="site-bg" aria-hidden="true"></div>
 
-    <section class="role-card" aria-labelledby="role-title">
-      <h2 id="role-title">Select Your Role</h2>
-      <nav class="role-list" aria-label="Role selection">
-        <a class="role-btn" href="farmer.html">Farmer &#x1F468;&#x200D;&#x1F33E;</a>
-        <a class="role-btn" href="warehouse.html">Warehouse Owner &#x1F3EC;</a>
-        <a class="role-btn" href="merchant.html">Merchant &#x1F6D2;</a>
+  <header class="topbar-wrap">
+    <div class="topbar container">
+      <a class="brand" href="index.html" aria-label="AgriShield home">
+        <span class="brand-mark" aria-hidden="true"><span class="leaf leaf-one"></span><span class="leaf leaf-two"></span></span>
+        <span class="brand-text">AgriShield</span>
+      </a>
+      <nav class="top-links" aria-label="Primary navigation">
+        <a href="#insights">Insights</a>
+        <a href="#warehouse">Warehouse</a>
+        <a href="#in-store">In Store</a>
+        <a href="#contact">Contact Us</a>
+        <a class="nav-cta" href="#request-demo">Request a Demo</a>
       </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <p class="kicker">AUTOMATED AGRI SUPPLY CHAIN</p>
+        <h1>Move produce faster with intelligent warehouse orchestration.</h1>
+        <p class="subtext">
+          Built for high-volume produce operations, AgriShield connects farmers,
+          warehouse operators, and merchants on one real-time control layer.
+        </p>
+        <div class="hero-cta" id="access">
+          <a class="btn btn-primary" href="farmer.html">Farmer Login</a>
+          <a class="btn btn-secondary" href="warehouse.html">Warehouse Login</a>
+          <a class="btn btn-secondary" href="merchant.html">Merchant Login</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel" aria-label="Live operations panel">
+        <h2>Operations Snapshot</h2>
+        <ul>
+          <li><span>Inbound Queues</span><strong>138 Active Lots</strong></li>
+          <li><span>Storage Utilization</span><strong>84.6%</strong></li>
+          <li><span>Dispatch Accuracy</span><strong>99.3%</strong></li>
+          <li><span>Avg. Dwell Time</span><strong>06h 12m</strong></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="feature-band" id="insights">
+      <div class="container feature-grid">
+        <article class="feature-card">
+          <h3>AI Slotting</h3>
+          <p>Assigns produce to optimal temperature zones and pallet lanes based on decay risk and dispatch priority.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Live Inventory Mesh</h3>
+          <p>Every participant gets synchronized stock visibility across cold rooms, docks, and outbound staging.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Quality Preservation</h3>
+          <p>Automated alerts flag humidity and temperature drift before product quality drops.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="flow container" id="warehouse">
+      <h2>One coordinated flow for all roles</h2>
+      <div class="flow-grid">
+        <article>
+          <h3>1. Farmer Intake</h3>
+          <p>Farmers schedule inbound lots and receive receiving slots with digital check-in.</p>
+        </article>
+        <article>
+          <h3>2. Warehouse Control</h3>
+          <p>Warehouse teams monitor utilization, automate putaway, and trigger route-ready picks.</p>
+        </article>
+        <article>
+          <h3>3. Merchant Fulfillment</h3>
+          <p>Merchants place demand-linked orders and track outbound quality and ETA in real time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="showcase container" id="in-store">
+      <h2>In-Store Visibility</h2>
+      <div class="showcase-grid">
+        <article>
+          <h3>Demand Signal Sync</h3>
+          <p>Store teams can push live demand changes to adjust dispatch quantity before loading.</p>
+        </article>
+        <article>
+          <h3>Freshness Bands</h3>
+          <p>Products are grouped by freshness windows so merchants stock high-priority lots first.</p>
+        </article>
+        <article>
+          <h3>Exception Alerts</h3>
+          <p>Immediate notifications for delayed loads and quality drifts prevent shelf-level losses.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact container" id="contact">
+      <h2>Contact Us</h2>
+      <p>Connect with the AgriShield team for implementation, pricing, and operations planning.</p>
+      <a class="btn btn-secondary" href="mailto:hello@agrishield.com">hello@agrishield.com</a>
+    </section>
+
+    <section class="demo container" id="request-demo">
+      <h2>Request a Demo</h2>
+      <p>See how AgriShield can cut spoilage and improve dispatch velocity across your network.</p>
+      <a class="btn btn-primary" href="mailto:demo@agrishield.com?subject=AgriShield%20Demo%20Request">Book a Demo</a>
     </section>
   </main>
 
-  <footer class="site-footer">© 2026 AgriShield</footer>
+  <footer class="site-footer container">
+    <p>2026 AgriShield Platform</p>
+  </footer>
 </body>
 </html>

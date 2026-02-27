@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgriShield | Warehouse Owner</title>
+  <title>Warehouse Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="role-page">
-    <section class="placeholder-card">
-      <h2>Warehouse Owner Portal</h2>
-      <p>This is a placeholder page for Warehouse Owner role access.</p>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <main class="role-layout container">
+    <section class="role-card">
+      <p class="kicker">WAREHOUSE ACCESS</p>
+      <h1>Control storage, quality, and dispatch from one dashboard.</h1>
+      <p>Track occupancy, run automated routing rules, and keep cold chain metrics in range.</p>
+      <form class="login-form" action="#" method="post">
+        <label for="warehouse-id">Operator ID</label>
+        <input id="warehouse-id" name="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
+
+        <label for="warehouse-pass">Password</label>
+        <input id="warehouse-pass" name="warehouse-pass" type="password" placeholder="Enter password" required />
+
+        <button type="submit" class="btn btn-primary">Login as Warehouse</button>
+      </form>
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
-  <footer class="site-footer">© 2026 AgriShield</footer>
 </body>
 </html>
+
