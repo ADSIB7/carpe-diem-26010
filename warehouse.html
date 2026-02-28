@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="farmer-auth.css" />
 </head>
 <body>
   <div class="site-bg" aria-hidden="true"></div>
@@ -60,8 +60,8 @@
         </form>
 
         <form class="login-form auth-panel" id="loginForm" novalidate>
-          <label for="warehouse-id">Email</label>
-          <input id="warehouse-id" type="email" placeholder="ravi.sharma@agrishield.com" required />
+          <label for="warehouse-id">Operator ID</label>
+          <input id="warehouse-id" type="text" placeholder="WH-CTRL-07" required />
 
         <label for="warehouse-pass">Password</label>
         <input id="warehouse-pass" type="password" placeholder="Enter password" required />
@@ -72,10 +72,6 @@
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="runtime-config.js"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-client.js"></script>
   <script>
     (function () {
       const showRegister = document.getElementById("showRegister");
@@ -85,21 +81,13 @@
       const authMsg = document.getElementById("authMsg");
 
       const storageKey = "warehouseAuthUser";
-      const pendingProfileKey = "warehousePendingProfile";
-      let supabase;
-
-      try {
-        supabase = window.AgriSupabase.getClient();
-      } catch (error) {
-        showMessage(error.message, true);
-      }
 
       function showMessage(message, isError) {
         authMsg.textContent = message;
         authMsg.classList.toggle("error", Boolean(isError));
       }
 
-      function setPanel(mode, keepMessage) {
+      function setPanel(mode) {
         const isRegister = mode === "register";
         registerForm.classList.toggle("active", isRegister);
         loginForm.classList.toggle("active", !isRegister);
@@ -107,13 +95,7 @@
         showLogin.classList.toggle("active", !isRegister);
         showRegister.setAttribute("aria-selected", String(isRegister));
         showLogin.setAttribute("aria-selected", String(!isRegister));
-        if (!keepMessage) {
-          showMessage("");
-        }
-      }
-
-      function makeMemberSince() {
-        return "Member since " + new Date().getFullYear();
+        showMessage("");
       }
 
       function saveProfileData(user) {
@@ -131,87 +113,6 @@
         }
       }
 
-      function saveWarehouseSession(user) {
-        localStorage.setItem(storageKey, JSON.stringify(user));
-        localStorage.setItem("warehouseLoggedIn", "true");
-        localStorage.setItem("warehouseSessionOperatorId", user.operatorId || user.userId);
-      }
-
-      async function loadProfileForSignedInUser(authUser) {
-        const profileRes = await window.AgriSupabase.getWarehouseProfileByUserId(supabase, authUser.id);
-        if (profileRes.error) {
-          throw profileRes.error;
-        }
-
-        const p = profileRes.data || {};
-        return {
-          userId: authUser.id,
-          name: p.name || authUser.user_metadata?.full_name || "Warehouse Owner",
-          email: authUser.email || "",
-          phone: p.phone || "",
-          warehouse: p.warehouse || "",
-          location: p.location || "Warehouse",
-          address: p.address || "",
-          company: p.company || "",
-          operatorId: p.operator_id || authUser.id,
-          memberSince: p.member_since || makeMemberSince()
-        };
-      }
-
-      async function ensureProfileForSignedInUser(authUser) {
-        const profileRes = await window.AgriSupabase.getWarehouseProfileByUserId(supabase, authUser.id);
-        if (profileRes.error) {
-          throw profileRes.error;
-        }
-        if (profileRes.data) {
-          return;
-        }
-
-        let pending = null;
-        try {
-          const rawPending = localStorage.getItem(pendingProfileKey);
-          pending = rawPending ? JSON.parse(rawPending) : null;
-        } catch (error) {
-          pending = null;
-        }
-
-        if (!pending) {
-          const fallbackProfile = {
-            user_id: authUser.id,
-            name: authUser.user_metadata?.full_name || "Warehouse Owner",
-            phone: "",
-            warehouse: "",
-            location: "Warehouse",
-            address: "",
-            company: "",
-            operator_id: authUser.id,
-            member_since: makeMemberSince()
-          };
-          const fallbackUpsert = await window.AgriSupabase.upsertWarehouseProfile(supabase, fallbackProfile);
-          if (fallbackUpsert.error) {
-            throw fallbackUpsert.error;
-          }
-          return;
-        }
-
-        const pendingProfile = {
-          user_id: authUser.id,
-          name: pending.name || authUser.user_metadata?.full_name || "Warehouse Owner",
-          phone: pending.phone || "",
-          warehouse: pending.warehouse || "",
-          location: pending.location || "Warehouse",
-          address: pending.address || "",
-          company: pending.company || "",
-          operator_id: pending.operator_id || authUser.id,
-          member_since: pending.member_since || makeMemberSince()
-        };
-        const upsertRes = await window.AgriSupabase.upsertWarehouseProfile(supabase, pendingProfile);
-        if (upsertRes.error) {
-          throw upsertRes.error;
-        }
-        localStorage.removeItem(pendingProfileKey);
-      }
-
       showRegister.addEventListener("click", function () {
         setPanel("register");
       });
@@ -220,12 +121,8 @@
         setPanel("login");
       });
 
-      registerForm.addEventListener("submit", async function (event) {
+      registerForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        if (!supabase) {
-          showMessage("Supabase is not configured.", true);
-          return;
-        }
 
         const name = document.getElementById("reg-name").value.trim();
         const email = document.getElementById("reg-email").value.trim();
@@ -248,129 +145,65 @@
           return;
         }
 
-        const memberSince = makeMemberSince();
+        const memberSince = "Member since " + new Date().getFullYear();
 
-        const profilePayload = {
+        const user = {
           name: name,
+          email: email,
           phone: phone,
           warehouse: warehouse,
           location: location,
           address: address,
           company: company,
-          operator_id: operatorId,
-          member_since: memberSince
+          operatorId: operatorId,
+          password: password,
+          memberSince: memberSince
         };
 
-        const signUpRes = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-            data: {
-              full_name: name,
-              role: "Warehouse Owner"
-            }
-          }
-        });
+        localStorage.setItem(storageKey, JSON.stringify(user));
+        saveProfileData(user);
+        document.getElementById("warehouse-id").value = operatorId;
 
-        if (signUpRes.error) {
-          showMessage(signUpRes.error.message, true);
-          return;
-        }
-
-        const authUser = signUpRes.data.user;
-        if (!authUser) {
-          showMessage("Sign up succeeded but no user was returned. Try logging in.", false);
-          setPanel("login", true);
-          document.getElementById("warehouse-id").value = email;
-          return;
-        }
-
-        localStorage.setItem(pendingProfileKey, JSON.stringify(profilePayload));
-        if (signUpRes.data.session) {
-          const upsertRes = await window.AgriSupabase.upsertWarehouseProfile(
-            supabase,
-            Object.assign({ user_id: authUser.id }, profilePayload)
-          );
-          if (upsertRes.error) {
-            showMessage(upsertRes.error.message, true);
-            return;
-          }
-          localStorage.removeItem(pendingProfileKey);
-        }
-
-        document.getElementById("warehouse-id").value = email;
-        showMessage("Registration successful. Check your email if confirmation is enabled, then login.", false);
-        setPanel("login", true);
+        showMessage("Registration successful. Please login with your Operator ID and password.", false);
+        setPanel("login");
       });
 
-      loginForm.addEventListener("submit", async function (event) {
+      loginForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        if (!supabase) {
-          showMessage("Supabase is not configured.", true);
-          return;
-        }
 
-        const email = document.getElementById("warehouse-id").value.trim();
+        const operatorId = document.getElementById("warehouse-id").value.trim();
         const password = document.getElementById("warehouse-pass").value;
+        const rawUser = localStorage.getItem(storageKey);
 
-        const loginRes = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-        if (loginRes.error) {
-          showMessage(loginRes.error.message || "Invalid email or password.", true);
+        if (!rawUser) {
+          showMessage("No account found. Please register first.", true);
+          setPanel("register");
           return;
         }
 
-        try {
-          const authUser = loginRes.data.user;
-          await ensureProfileForSignedInUser(authUser);
-          const warehouseUser = await loadProfileForSignedInUser(authUser);
-          saveProfileData(warehouseUser);
-          saveWarehouseSession(warehouseUser);
-          window.location.href = "warehouse-dashboard.html";
-        } catch (error) {
-          showMessage(error.message || "Unable to load profile after login.", true);
+        const savedUser = JSON.parse(rawUser);
+
+        if (operatorId !== savedUser.operatorId || password !== savedUser.password) {
+          showMessage("Invalid Operator ID or password.", true);
+          return;
         }
+
+        saveProfileData(savedUser);
+        localStorage.setItem("warehouseLoggedIn", "true");
+        localStorage.setItem("warehouseSessionOperatorId", savedUser.operatorId);
+        window.location.href = "warehouse-dashboard.html";
       });
 
-      async function hydrateFromActiveSession() {
-        if (!supabase) {
-          setPanel("register");
-          return;
+      const existingUserRaw = localStorage.getItem(storageKey);
+      if (existingUserRaw) {
+        const existingUser = JSON.parse(existingUserRaw);
+        if (existingUser.operatorId) {
+          document.getElementById("warehouse-id").value = existingUser.operatorId;
         }
-        const sessionRes = await supabase.auth.getSession();
-        if (sessionRes.error || !sessionRes.data.session) {
-          const existingUserRaw = localStorage.getItem(storageKey);
-          if (existingUserRaw) {
-            try {
-              const existingUser = JSON.parse(existingUserRaw);
-              if (existingUser.email) {
-                document.getElementById("warehouse-id").value = existingUser.email;
-              }
-            } catch (error) {
-              // no-op
-            }
-            setPanel("login");
-            return;
-          }
-          setPanel("register");
-          return;
-        }
-
-        try {
-          await ensureProfileForSignedInUser(sessionRes.data.session.user);
-          const warehouseUser = await loadProfileForSignedInUser(sessionRes.data.session.user);
-          saveProfileData(warehouseUser);
-          saveWarehouseSession(warehouseUser);
-          window.location.href = "warehouse-dashboard.html";
-        } catch (error) {
-          showMessage(error.message || "Unable to load profile for active session.", true);
-          setPanel("login");
-        }
+        setPanel("login");
+      } else {
+        setPanel("register");
       }
-
-      hydrateFromActiveSession();
     })();
   </script>
 </body>

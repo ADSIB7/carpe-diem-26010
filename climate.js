@@ -96,7 +96,7 @@
   };
   const zoneIds = ["A1", "A2", "B1", "B2", "D1", "C1", "C2", "C3", "D2", "D4"];
 
-  const thresholds = {
+  let thresholds = {
     temperature: { warn: 6.5, critical: 8.2 },
     humidity: { warn: 80, critical: 87 },
     co2: { warn: 1250, critical: 1600 },
@@ -121,8 +121,8 @@
   if (sidebarAvatar) sidebarAvatar.src = profile.avatar;
 
   function closeProfileMenu() {
-    profileMenu.classList.remove("open");
-    profileToggle.setAttribute("aria-expanded", "false");
+    if (profileMenu) profileMenu.classList.remove("open");
+    if (profileToggle) profileToggle.setAttribute("aria-expanded", "false");
   }
 
   if (profileToggle && profileMenu && profileCard) {
@@ -173,7 +173,9 @@
   });
 
   function createChart(canvasId, color) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
+    const el = document.getElementById(canvasId);
+    if (!el) return null;
+    const ctx = el.getContext("2d");
     return new Chart(ctx, {
       type: "line",
       data: {
@@ -225,26 +227,16 @@
   const humidityChart = createChart("humidityChart", "#f0bb53");
   const co2Chart = createChart("co2Chart", "#66a8ff");
   const predictionChart = createChart("predictionChart", "#86d868");
-  predictionChart.data.datasets[0].backgroundColor = "rgba(134, 216, 104, 0.12)";
-
-  function statusFrom(value, metricName) {
-    const rule = thresholds[metricName];
-    if (metricName === "airflow") {
-      if (value <= rule.critical) return "critical";
-      if (value <= rule.warn) return "warn";
-      return "safe";
-    }
-    if (value >= rule.critical) return "critical";
-    if (value >= rule.warn) return "warn";
-    return "safe";
-  }
+  if (predictionChart) predictionChart.data.datasets[0].backgroundColor = "rgba(134, 216, 104, 0.12)";
 
   function applyStatus(el, state) {
+    if (!el) return;
     el.className = "status " + state;
     el.textContent = state === "critical" ? "Critical" : state === "warn" ? "Warning" : "Safe";
   }
 
   function addHistory(title, details, state) {
+    if (!alertHistory) return;
     const item = document.createElement("div");
     item.className = "history-item";
     item.innerHTML = "<b>" + title + " (" + (state === "critical" ? "Critical" : "Warning") + ")</b><span>" + details + "</span>";
@@ -252,7 +244,7 @@
   }
 
   function beep() {
-    if (!soundToggle.checked) return;
+    if (!soundToggle || !soundToggle.checked) return;
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
@@ -270,7 +262,8 @@
   }
 
   function updateRisk(temp, humidity) {
-    // Simulated AI risk: weighted on humidity and temperature excursions.
+    if (!riskMeterFill || !riskPercent || !riskLabel || !riskReason) return;
+    // Simulated AI risk baseline
     const tempScore = Math.max(0, (temp - 4.5) * 12);
     const humidityScore = Math.max(0, (humidity - 72) * 2.2);
     const score = Math.min(100, Math.round(tempScore + humidityScore));
@@ -293,277 +286,207 @@
     }
   }
 
-  function updateCharts() {
-    tempChart.data.labels = labels;
-    humidityChart.data.labels = labels;
-    co2Chart.data.labels = labels;
+  function updateCharts(history) {
+    if (!history) return;
 
-    tempChart.data.datasets[0].data = tempData;
-    humidityChart.data.datasets[0].data = humidityData;
-    co2Chart.data.datasets[0].data = co2Data;
+    const hLabels = history.labels || [];
+    const hTemp = history.temperature || [];
+    const hHum = history.humidity || [];
+    const hCo2 = history.co2 || [];
 
-    tempChart.update();
-    humidityChart.update();
-    co2Chart.update();
+    if (tempChart) {
+      tempChart.data.labels = hLabels;
+      tempChart.data.datasets[0].data = hTemp;
+      tempChart.update();
+    }
+    if (humidityChart) {
+      humidityChart.data.labels = hLabels;
+      humidityChart.data.datasets[0].data = hHum;
+      humidityChart.update();
+    }
+    if (co2Chart) {
+      co2Chart.data.labels = hLabels;
+      co2Chart.data.datasets[0].data = hCo2;
+      co2Chart.update();
+    }
 
-    predictionChart.data.labels = predictionLabels;
-    predictionChart.data.datasets[0].data = predictionRiskData;
-    predictionChart.update();
+    if (predictionChart) {
+      predictionChart.data.labels = hLabels;
+      // Synthetic prediction data based on temp/hum
+      predictionChart.data.datasets[0].data = hTemp.map((t, i) => {
+        const h = hHum[i] || 70;
+        return Math.min(100, Math.max(5, Math.round((t - 4.3) * 15 + (h - 70) * 1.8)));
+      });
+      predictionChart.update();
+    }
   }
 
   function setSyncStamp() {
+    if (!lastSync) return;
     const now = new Date();
     lastSync.textContent = "Last sync: " + now.toLocaleString();
   }
 
-  function renderZones(baseTemp, baseHumidity) {
-    let safe = 0;
-    let warn = 0;
-    let critical = 0;
-    let totalTemp = 0;
-    let totalHumidity = 0;
-    const warnings = [];
-    const zoneCards = [];
-    const zoneStates = [];
-    let insightText = "Climate distribution is stable. Keep current cooling profile.";
+  function renderZones(zonesData) {
+    if (!zonesGrid || !safeCount || !warnCount || !criticalCount || !zoneAverage || !zoneInsight || !zoneWarnings) return;
 
-    for (let i = 0; i < zoneIds.length; i += 1) {
-      const temp = Number((baseTemp + (Math.random() * 2.2 - 1.1)).toFixed(1));
-      const humidity = Math.round(baseHumidity + (Math.random() * 14 - 7));
-      const tState = statusFrom(temp, "temperature");
-      const hState = statusFrom(humidity, "humidity");
-      const state = tState === "critical" || hState === "critical" ? "critical" : (tState === "warn" || hState === "warn" ? "warn" : "safe");
+    const safe = zonesData.safe || 0;
+    const warn = zonesData.warn || 0;
+    const critical = zonesData.critical || 0;
+    const avgTemp = zonesData.averageTemp || 0;
+    const avgHum = zonesData.averageHumidity || 0;
+    const states = zonesData.zoneStates || [];
+    const warnings = zonesData.warnings || [];
 
-      if (state === "critical") critical += 1;
-      else if (state === "warn") warn += 1;
-      else safe += 1;
+    zonesGrid.innerHTML = states.map(z => `
+      <div class="zone-item ${z.state}">
+        <div class="zone-top">
+          <span class="zone-id">${z.id}</span>
+          <span class="zone-tag ${z.state}">${z.state.toUpperCase()}</span>
+        </div>
+        <div class="zone-meta">Temp: ${z.temp.toFixed(1)} C</div>
+        <div class="zone-meta">Hum: ${z.humidity}%</div>
+      </div>
+    `).join("");
 
-      if (state !== "safe") {
-        warnings.push(zoneIds[i] + ": Temp " + temp.toFixed(1) + " C, Hum " + humidity + "%");
-      }
-
-      totalTemp += temp;
-      totalHumidity += humidity;
-      zoneStates.push({ id: zoneIds[i], state: state, temp: Number(temp.toFixed(1)), humidity: humidity });
-
-      zoneCards.push(
-        '<div class="zone-item ' + state + '">' +
-          '<div class="zone-top">' +
-            '<span class="zone-id">' + zoneIds[i] + '</span>' +
-            '<span class="zone-tag ' + state + '">' + (state === "safe" ? "SAFE" : state === "warn" ? "WARN" : "CRITICAL") + "</span>" +
-          "</div>" +
-          '<div class="zone-meta">Temp: ' + temp.toFixed(1) + " C</div>" +
-          '<div class="zone-meta">Hum: ' + humidity + "%</div>" +
-        "</div>"
-      );
-    }
-
-    zonesGrid.innerHTML = zoneCards.join("");
     safeCount.textContent = safe + " Zones Safe";
     warnCount.textContent = warn + " Zones Warning";
     criticalCount.textContent = critical + " Zone" + (critical === 1 ? "" : "s") + " Critical";
-    zoneAverage.textContent =
-      "Avg " + (totalTemp / zoneIds.length).toFixed(1) + " C / " + Math.round(totalHumidity / zoneIds.length) + "%";
-
-    if (critical > 0) {
-      insightText = "Immediate action required: isolate critical zone(s) and increase airflow.";
-    } else if (warn > 2) {
-      insightText = "Humidity trend rising across multiple zones. Start preventive ventilation.";
-    }
-    zoneInsight.textContent = insightText;
+    zoneAverage.textContent = `Avg ${avgTemp.toFixed(1)} C / ${avgHum}%`;
+    zoneInsight.textContent = zonesData.insight || "Climate distribution is stable.";
 
     zoneWarnings.innerHTML = warnings.length
-      ? warnings.slice(0, 4).map(function (w) { return '<div class="warning-item">' + w + "</div>"; }).join("")
+      ? warnings.map(w => `<div class="warning-item">${w}</div>`).join("")
       : '<div class="warning-item muted">No warning in last cycle.</div>';
-
-    return {
-      safe: safe,
-      warn: warn,
-      critical: critical,
-      averageTemp: Number((totalTemp / zoneIds.length).toFixed(1)),
-      averageHumidity: Math.round(totalHumidity / zoneIds.length),
-      zoneStates: zoneStates,
-      warnings: warnings.slice(0, 4),
-      insight: insightText
-    };
   }
 
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-  }
-
-  function evolveValue(prev, cfg, wave) {
-    const noise = (Math.random() * 2 - 1) * cfg.noise;
-    const drift = (cfg.center - prev) * cfg.revert;
-    return clamp(prev + wave + drift + noise, cfg.min, cfg.max);
-  }
-
-  function generateDataPoint() {
-    tick += 1;
-
-    const tempWave = Math.sin(tick / 6) * 0.12;
-    const humidityWave = Math.sin(tick / 7 + 1.2) * 0.7;
-    const co2Wave = Math.sin(tick / 8 + 0.4) * 12;
-    const moistureWave = Math.sin(tick / 9 + 0.8) * 0.08;
-    const airflowWave = Math.sin(tick / 5 + 2.3) * 0.8;
-
-    sensorState.temperature = evolveValue(sensorState.temperature, { min: 3.8, max: 7.2, center: 4.8, noise: 0.18, revert: 0.22 }, tempWave);
-    sensorState.humidity = evolveValue(sensorState.humidity, { min: 66, max: 86, center: 75, noise: 1.2, revert: 0.2 }, humidityWave);
-    sensorState.co2 = evolveValue(sensorState.co2, { min: 820, max: 1500, center: 1020, noise: 20, revert: 0.18 }, co2Wave);
-    sensorState.moisture = evolveValue(sensorState.moisture, { min: 10.8, max: 15.7, center: 12.7, noise: 0.2, revert: 0.16 }, moistureWave);
-    sensorState.airflow = evolveValue(sensorState.airflow, { min: 34, max: 74, center: 58, noise: 1.6, revert: 0.22 }, airflowWave);
-
-    const temp = Number(sensorState.temperature.toFixed(1));
-    const humidity = Math.round(sensorState.humidity);
-    const co2 = Math.round(sensorState.co2);
-    const moisture = Number(sensorState.moisture.toFixed(1));
-    const airflow = Math.round(sensorState.airflow);
-
-    const tState = statusFrom(temp, "temperature");
-    const hState = statusFrom(humidity, "humidity");
-    const cState = statusFrom(co2, "co2");
-    const mState = statusFrom(moisture, "moisture");
-    const aState = statusFrom(airflow, "airflow");
-
-    temperatureValue.textContent = temp.toFixed(1) + " C";
-    humidityValue.textContent = humidity + " %";
-    co2Value.textContent = co2 + " ppm";
-    moistureValue.textContent = moisture.toFixed(1) + " %";
-    airflowValue.textContent = airflow + " %";
-
-    applyStatus(temperatureStatus, tState);
-    applyStatus(humidityStatus, hState);
-    applyStatus(co2Status, cState);
-    applyStatus(moistureStatus, mState);
-    applyStatus(airflowStatus, aState);
-
-    const timeTag = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    labels.push(timeTag);
-    tempData.push(temp);
-    humidityData.push(humidity);
-    co2Data.push(co2);
-    predictionLabels.push(timeTag);
-    predictionRiskData.push(Math.min(100, Math.max(5, Math.round((temp - 4.3) * 15 + (humidity - 70) * 1.8))));
-
-    if (labels.length > 24) {
-      labels.shift();
-      tempData.shift();
-      humidityData.shift();
-      co2Data.shift();
-    }
-    if (predictionLabels.length > 24) {
-      predictionLabels.shift();
-      predictionRiskData.shift();
-    }
-
-    const tempTrend = tempData.length > 6 ? tempData[tempData.length - 1] - tempData[tempData.length - 6] : 0;
-    const humTrend = humidityData.length > 6 ? humidityData[humidityData.length - 1] - humidityData[humidityData.length - 6] : 0;
-    predTemp.textContent = tempTrend > 0.35 ? "Temperature likely to rise in coming cycles." : "Temperature trend stable in safe band.";
-    predHum.textContent = humTrend > 1.5 ? "Humidity expected to remain elevated." : "Humidity likely to stay controlled.";
-    predAction.textContent =
-      tempTrend > 0.35 || humTrend > 1.5
-        ? "Action: Increase ventilation and reduce chamber loading."
-        : "Action: Maintain current cooling profile.";
-    const zones = renderZones(temp, humidity);
-    updateCharts();
-    updateRisk(temp, humidity);
-    setSyncStamp();
-
-    const tripped = [];
-    if (tState !== "safe") tripped.push("Temperature");
-    if (hState !== "safe") tripped.push("Humidity");
-    if (cState !== "safe") tripped.push("CO2");
-    if (mState !== "safe") tripped.push("Grain Moisture");
-    if (aState !== "safe") tripped.push("Airflow");
-
-    if (tripped.length > 0) {
-      activeAlert = {
-        title: "Threshold Breach",
-        detail: tripped.join(", ") + " out of safe band at " + timeTag
-      };
-      alertBanner.textContent = "ALERT: " + activeAlert.detail;
-      beep();
-      const worstState =
-        tState === "critical" || hState === "critical" || cState === "critical" || mState === "critical" || aState === "critical"
-          ? "critical"
-          : "warn";
-      addHistory(activeAlert.title, activeAlert.detail, worstState);
-    } else if (!activeAlert) {
-      alertBanner.textContent = "No active critical alerts.";
-    }
-
-    const totalZones = Math.max(1, zones.safe + zones.warn + zones.critical);
-    const utilizationRatio = (zones.warn * 0.7 + zones.critical * 0.95 + zones.safe * 0.45) / totalZones;
-    const availableSpace = Math.max(0, Math.round(10000 * (1 - utilizationRatio)));
-    const snapshot = {
-      timestamp: Date.now(),
-      sensors: {
-        temperature: temp,
-        humidity: humidity,
-        co2: co2,
-        moisture: moisture,
-        airflow: airflow
-      },
-      states: {
-        temperature: tState,
-        humidity: hState,
-        co2: cState,
-        moisture: mState,
-        airflow: aState
-      },
-      series: {
-        labels: labels.slice(-12),
-        temperature: tempData.slice(-12),
-        humidity: humidityData.slice(-12)
-      },
-      zones: zones,
-      summary: {
-        safePercent: Math.round((zones.safe / totalZones) * 100),
-        warnPercent: Math.round((zones.warn / totalZones) * 100),
-        criticalPercent: Math.round((zones.critical / totalZones) * 100),
-        availableSpace: availableSpace
-      },
-      prediction: {
-        temp: predTemp.textContent,
-        humidity: predHum.textContent,
-        action: predAction.textContent
-      },
-      alerts: {
-        active: Boolean(activeAlert),
-        text: alertBanner.textContent
+  async function fetchInitialConfig() {
+    if (!window.AgriApi) return;
+    try {
+      const res = await window.AgriApi.getClimateConfig();
+      if (res && res.data) {
+        thresholds = res.data.thresholds || thresholds;
+        zoneIds = res.data.zoneIds || zoneIds;
       }
-    };
-    localStorage.setItem("climateLiveSnapshot", JSON.stringify(snapshot));
-    if (window.WarehouseDB) {
-      window.WarehouseDB.set("climateSnapshot", snapshot);
+    } catch (err) {
+      console.error("Failed to fetch climate config", err);
     }
   }
 
-  resolveBtn.addEventListener("click", function () {
-    activeAlert = null;
-    alertBanner.textContent = "No active critical alerts.";
-  });
+  async function refreshLiveData() {
+    if (!window.AgriApi) return;
+    try {
+      const res = await window.AgriApi.getClimateLiveData();
+      if (!res || !res.data) return;
 
-  refreshBtn.addEventListener("click", function () {
-    generateDataPoint();
-  });
+      const data = res.data;
+      const ss = data.sensorState || {};
 
-  exportBtn.addEventListener("click", function () {
-    const rows = ["time,temperature_c,humidity_percent,co2_ppm"];
-    for (let i = 0; i < labels.length; i += 1) {
-      rows.push([labels[i], tempData[i], humidityData[i], co2Data[i]].join(","));
+      if (temperatureValue) temperatureValue.textContent = (ss.temperature || 0).toFixed(1) + " C";
+      if (humidityValue) humidityValue.textContent = (ss.humidity || 0) + " %";
+      if (co2Value) co2Value.textContent = (ss.co2 || 0) + " ppm";
+      if (moistureValue) moistureValue.textContent = (ss.moisture || 0).toFixed(1) + " %";
+      if (airflowValue) airflowValue.textContent = (ss.airflow || 0) + " %";
+
+      if (data.states) {
+        applyStatus(temperatureStatus, data.states.temperature);
+        applyStatus(humidityStatus, data.states.humidity);
+        applyStatus(co2Status, data.states.co2);
+        applyStatus(moistureStatus, data.states.moisture);
+        applyStatus(airflowStatus, data.states.airflow);
+      }
+
+      if (data.prediction) {
+        if (predTemp) predTemp.textContent = data.prediction.temp;
+        if (predHum) predHum.textContent = data.prediction.humidity;
+        if (predAction) predAction.textContent = data.prediction.action;
+      }
+
+      renderZones(data.zones);
+      updateCharts(data.history);
+      updateRisk(ss.temperature, ss.humidity);
+      setSyncStamp();
+
+      // Mirror state to WarehouseDB if available
+      if (window.WarehouseDB) {
+        window.WarehouseDB.set("climateSnapshot", {
+          timestamp: data.timestamp,
+          sensors: ss,
+          states: data.states,
+          series: {
+            labels: data.history?.labels?.slice(-12),
+            temperature: data.history?.temperature?.slice(-12),
+            humidity: data.history?.humidity?.slice(-12)
+          },
+          zones: data.zones,
+          summary: {
+            safePercent: Math.round((data.zones.safe / zoneIds.length) * 100),
+            warnPercent: Math.round((data.zones.warn / zoneIds.length) * 100),
+            criticalPercent: Math.round((data.zones.critical / zoneIds.length) * 100),
+            availableSpace: 0
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch live climate data", err);
     }
-    const csv = rows.join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "climate_report.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  });
+  }
+
+  function initAlerts() {
+    if (!window.AgriApi || !window.AgriApi.subscribeToAlerts) return;
+
+    window.AgriApi.subscribeToAlerts((alert) => {
+      if (alert.type === "CONNECTED") return;
+
+      activeAlert = {
+        title: alert.type === "AI_PREDICTION" ? "AI Prediction" : "Threshold Breach",
+        detail: alert.message
+      };
+
+      if (alertBanner) alertBanner.textContent = "ALERT: " + activeAlert.detail;
+      beep();
+
+      const state = alert.priority === "medium" ? "warn" : "critical";
+      addHistory(activeAlert.title, activeAlert.detail, state);
+
+      // Auto refresh data on alert to see latest state
+      setTimeout(refreshLiveData, 1000);
+    });
+  }
+
+  if (resolveBtn) {
+    resolveBtn.addEventListener("click", function () {
+      activeAlert = null;
+      alertBanner.textContent = "No active critical alerts.";
+    });
+  }
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", function () {
+      refreshLiveData();
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener("click", function () {
+      // Basic CSV export from charts if they have data
+      if (!labels.length) return;
+      const rows = ["time,temperature_c,humidity_percent,co2_ppm"];
+      for (let i = 0; i < labels.length; i += 1) {
+        rows.push([labels[i], tempData[i], humidityData[i], co2Data[i]].join(","));
+      }
+      const csv = rows.join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "climate_report.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  }
 
   if (applySuggestionBtn) {
     applySuggestionBtn.addEventListener("click", function () {
@@ -571,13 +494,13 @@
     });
   }
 
-  if (isBackgroundMode && soundToggle) {
-    soundToggle.checked = false;
-  }
+  (async function main() {
+    await fetchInitialConfig();
+    await refreshLiveData();
+    initAlerts();
 
-  for (let i = 0; i < 12; i += 1) {
-    generateDataPoint();
-  }
-
-  setInterval(generateDataPoint, 10000);
+    if (!isBackgroundMode) {
+      setInterval(refreshLiveData, 15000);
+    }
+  })();
 })();

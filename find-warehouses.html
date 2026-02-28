@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmer Portal | Find Warehouses</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="warehouse-dashboard.css" />
   <link rel="stylesheet" href="farmer-portal.css" />
 </head>
+
 <body>
   <div class="layout">
     <aside class="sidebar" id="sidebar">
@@ -31,7 +35,8 @@
             <span id="sidebarRole">Farmer</span>
           </div>
         </a>
-        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu"
+          aria-label="Toggle profile menu">&#9662;</button>
       </div>
 
       <div class="profile-menu" id="profileMenu">
@@ -233,7 +238,8 @@
 
           <div id="profileViewMode">
             <div class="profile-card-layout">
-              <img id="profilePhoto" class="profile-photo" src="businessman-avatar-profile-picture-36775850.png" alt="Profile photo" />
+              <img id="profilePhoto" class="profile-photo" src="businessman-avatar-profile-picture-36775850.png"
+                alt="Profile photo" />
               <div id="profileViewGrid" class="profile-grid"></div>
             </div>
           </div>
@@ -327,7 +333,8 @@
       <div class="trend-chart-wrap">
         <svg id="trendChart" class="trend-chart" viewBox="0 0 100 70" aria-label="Last 7 days price trend">
           <line x1="0" y1="62" x2="100" y2="62" stroke="#8dbca0" stroke-width="1.2"></line>
-          <polyline id="trendLine" fill="none" stroke="#1f7a46" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline id="trendLine" fill="none" stroke="#1f7a46" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
         </svg>
         <div class="trend-labels">
           <span>D1</span>
@@ -342,133 +349,48 @@
     </div>
   </div>
 
+  </div>
+
+  <div id="requestStorageModal" class="produce-modal" role="dialog" aria-modal="true"
+    aria-labelledby="requestModalTitle">
+    <div class="produce-modal-card">
+      <div class="produce-modal-head">
+        <h3 id="requestModalTitle">Request Storage</h3>
+        <button type="button" class="modal-close" id="closeRequestModal">Close</button>
+      </div>
+      <form id="requestStorageForm" class="profile-form">
+        <input type="hidden" id="reqWarehouseId" />
+        <p id="reqWarehouseName" style="font-weight:700;margin-bottom:1rem;color:var(--primary);"></p>
+        <label>
+          Crop / Product Name
+          <input class="finder-control" type="text" id="reqProductName" required placeholder="e.g. Wheat" />
+        </label>
+        <label>
+          Quantity (Tons)
+          <input class="finder-control" type="number" id="reqQuantity" required min="0.1" step="0.1" />
+        </label>
+        <label>
+          Expected Expiry Date
+          <input class="finder-control" type="date" id="reqExpiry" required />
+        </label>
+        <div class="profile-actions">
+          <button type="submit" class="finder-btn">Submit Request</button>
+          <button type="button" class="profile-cancel" id="cancelRequestBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="api-client.js"></script>
+
   <script>
     (function () {
-      const data = [
-        { name: "GreenCold Warehouse", location: "Nashik", price: 1100, storageTime: 60, availableSpace: 20 },
-        { name: "FreshCool Depot", location: "Pune", price: 900, storageTime: 90, availableSpace: 39 },
-        { name: "FarmFresh Storage", location: "Aurangabad", price: 800, storageTime: 30, availableSpace: 80 },
-        { name: "AgriStore Hub", location: "Satara", price: 950, storageTime: 60, availableSpace: 10 },
-        { name: "ColdStack Warehouse", location: "Nashik", price: 920, storageTime: 90, availableSpace: 55 },
-        { name: "Kisan SafeStore", location: "Pune", price: 870, storageTime: 30, availableSpace: 48 }
-      ];
+      let data = [];
+      let produceData = [];
+      let alertsData = [];
+      let marketData = [];
 
-      const produceData = [
-        {
-          cropName: "Wheat",
-          warehouseName: "GreenCold",
-          quantity: "5 tons",
-          storedDays: "20 days stored",
-          remainingDays: "40 days left",
-          status: "Safe",
-          currentTemperature: "8 C",
-          currentHumidity: "68%",
-          storageStartDate: "2026-01-08",
-          expectedSafeDate: "2026-03-08",
-          message: "Your crop is safe."
-        },
-        {
-          cropName: "Onion",
-          warehouseName: "AgriStore Hub",
-          quantity: "8 tons",
-          storedDays: "50 days stored",
-          remainingDays: "5 days left",
-          status: "Risk of Spoilage",
-          currentTemperature: "13 C",
-          currentHumidity: "84%",
-          storageStartDate: "2025-12-30",
-          expectedSafeDate: "2026-03-06",
-          message: "Please sell or move within 5 days."
-        },
-        {
-          cropName: "Tomato",
-          warehouseName: "FreshCool",
-          quantity: "6 tons",
-          storedDays: "25 days stored",
-          remainingDays: "10 days left",
-          status: "Check Soon",
-          currentTemperature: "10 C",
-          currentHumidity: "78%",
-          storageStartDate: "2026-01-20",
-          expectedSafeDate: "2026-03-02",
-          message: "Please check this crop daily."
-        }
-      ];
-
-      const alertsData = [
-        {
-          id: 1,
-          type: "spoilage",
-          typeLabel: "Spoilage Risk",
-          icon: "⚠",
-          cropName: "Onion",
-          warehouseName: "AgriStore Hub",
-          message: "Onion at AgriStore Hub may spoil in 3 days. High humidity detected.",
-          time: "2 hours ago",
-          priority: "Immediate Action"
-        },
-        {
-          id: 2,
-          type: "expiry",
-          typeLabel: "Storage Expiry",
-          icon: "📅",
-          cropName: "Wheat",
-          warehouseName: "GreenCold",
-          message: "Wheat storage ending in 5 days.",
-          time: "5 hours ago",
-          priority: "Check Soon"
-        },
-        {
-          id: 3,
-          type: "market",
-          typeLabel: "Market Opportunity",
-          icon: "📈",
-          cropName: "Wheat",
-          warehouseName: "GreenCold",
-          message: "Wheat price increased by 6%. Good time to sell.",
-          time: "1 day ago",
-          priority: "Good News"
-        }
-      ];
-
-      const marketData = [
-        {
-          id: 1,
-          cropName: "Wheat",
-          todayPrice: 42,
-          changePercent: 5,
-          message: "Good time to sell",
-          updatedAt: "30 minutes ago",
-          weeklyTrend: [36, 37, 38, 39, 40, 41, 42]
-        },
-        {
-          id: 2,
-          cropName: "Tomato",
-          todayPrice: 26,
-          changePercent: -2,
-          message: "Price is low, you may wait",
-          updatedAt: "15 minutes ago",
-          weeklyTrend: [30, 29, 28, 27, 27, 26, 26]
-        },
-        {
-          id: 3,
-          cropName: "Onion",
-          todayPrice: 38,
-          changePercent: 3,
-          message: "Good time to sell",
-          updatedAt: "1 hour ago",
-          weeklyTrend: [34, 35, 35, 36, 37, 37, 38]
-        },
-        {
-          id: 4,
-          cropName: "Maize",
-          todayPrice: 39,
-          changePercent: 1,
-          message: "Stable price",
-          updatedAt: "20 minutes ago",
-          weeklyTrend: [38, 38, 39, 39, 39, 39, 39]
-        }
-      ];
+      // Data arrays replaced by fetchBackendData()
 
       const profileData = {
         photo: "businessman-avatar-profile-picture-36775850.png",
@@ -480,6 +402,73 @@
         landArea: localStorage.getItem("farmerLandArea") || "12 Acres",
         mainCrops: localStorage.getItem("farmerCrop") || "Tomato"
       };
+
+      async function fetchBackendData() {
+        if (!window.AgriApi) return;
+        try {
+          const [warehousesRes, batchesRes, dashboardRes] = await Promise.all([
+            AgriApi.listWarehouses(),
+            AgriApi.listBatches(),
+            AgriApi.getDashboardData()
+          ]);
+
+          data = (warehousesRes.data || []).map(w => ({
+            id: w.id,
+            name: w.name,
+            location: w.location,
+            price: 900 + Math.floor(Math.random() * 300),
+            storageTime: 30 + Math.floor(Math.random() * 60),
+            availableSpace: Math.max(0, w.capacityTons - w.currentStockTons)
+          }));
+
+          produceData = (batchesRes.data || [])
+            .filter(b => b.farmer_name === profileData.fullName)
+            .map(b => ({
+              cropName: b.product_name || b.productName,
+              warehouseName: "Warehouse: " + (b.warehouse_id || b.warehouseId).substring(0, 6),
+              quantity: (b.quantity_tons || b.quantityTons) + " tons",
+              storedDays: Math.max(0, Math.floor((new Date() - new Date(b.entry_date || b.entryDate)) / 86400000)) + " days stored",
+              remainingDays: (b.days_to_expiry || b.daysToExpiry) + " days left",
+              status: b.spoilage_risk === "critical" || b.spoilageRisk === "critical" ? "Risk of Spoilage" : (b.spoilage_risk === "warning" || b.spoilageRisk === "warning" ? "Check Soon" : "Safe"),
+              currentTemperature: (4 + Math.random() * 4).toFixed(1) + " C",
+              currentHumidity: Math.floor(65 + Math.random() * 20) + "%",
+              storageStartDate: new Date(b.entry_date || b.entryDate).toLocaleDateString(),
+              expectedSafeDate: new Date(b.expiry_date || b.expiryDate).toLocaleDateString(),
+              message: b.spoilage_risk === "critical" || b.spoilageRisk === "critical" ? "Please sell or move quickly." : "Crop is currently safe."
+            }));
+
+          if (dashboardRes.data) {
+            marketData = (dashboardRes.data.marketRows || []).map((m, i) => ({
+              id: i + 1,
+              cropName: m.name,
+              todayPrice: m.price,
+              changePercent: m.change,
+              message: m.change > 0 ? "Good time to sell" : "Price is low",
+              updatedAt: "Just now",
+              weeklyTrend: [m.price - 2, m.price - 1, m.price, m.price + 1, m.price]
+            }));
+
+            alertsData = (dashboardRes.data.topRiskItems || []).map((r, i) => ({
+              id: i + 1,
+              type: "spoilage",
+              typeLabel: "Spoilage Risk",
+              icon: "⚠",
+              cropName: r.product,
+              warehouseName: r.zone,
+              message: r.product + " in zone " + r.zone + " is at high risk.",
+              time: "Just now",
+              priority: r.daysLeft <= 2 ? "Immediate Action" : "Check Soon"
+            }));
+          }
+
+          renderWarehouseList(data);
+          renderProduceList();
+          renderAlerts();
+          renderMarketPrices();
+        } catch (e) {
+          console.error("Failed to load backend data", e);
+        }
+      }
 
       const menuBtn = document.getElementById("menuBtn");
       const sidebar = document.getElementById("sidebar");
@@ -620,9 +609,51 @@
             "<div class='space-row'><span>Available: " + item.availableSpace + " tons</span><div class='space-track'><div class='space-fill' style='width:" + capacityPercent + "%'></div></div></div>" +
             "<button class='request-btn' type='button'>Request Storage</button>";
 
+          card.querySelector(".request-btn").addEventListener("click", function () {
+            openRequestModal(item);
+          });
+
           warehouseGrid.appendChild(card);
         });
       }
+
+      const requestStorageModal = document.getElementById("requestStorageModal");
+      const closeRequestModal = document.getElementById("closeRequestModal");
+      const cancelRequestBtn = document.getElementById("cancelRequestBtn");
+      const requestStorageForm = document.getElementById("requestStorageForm");
+
+      function openRequestModal(item) {
+        document.getElementById("reqWarehouseId").value = item.id;
+        document.getElementById("reqWarehouseName").textContent = item.name;
+        document.getElementById("reqProductName").value = profileData.mainCrops;
+        requestStorageModal.classList.add("open");
+      }
+
+      requestStorageForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const warehouseId = document.getElementById("reqWarehouseId").value;
+        const productName = document.getElementById("reqProductName").value;
+        const quantityTons = document.getElementById("reqQuantity").value;
+        const expiryDate = document.getElementById("reqExpiry").value;
+
+        try {
+          await AgriApi.requestStorage({
+            warehouseId,
+            productName,
+            quantityTons,
+            expiryDate,
+            farmerName: profileData.fullName
+          });
+          AgriApi.toast.success("Storage request submitted!");
+          requestStorageModal.classList.remove("open");
+          fetchBackendData(); // Refresh produce list
+        } catch (error) {
+          AgriApi.toast.error(error.error || "Failed to submit request");
+        }
+      });
+
+      closeRequestModal.addEventListener("click", () => requestStorageModal.classList.remove("open"));
+      cancelRequestBtn.addEventListener("click", () => requestStorageModal.classList.remove("open"));
 
       function filterData() {
         const location = locationFilter.value.trim().toLowerCase();
@@ -663,17 +694,17 @@
           card.className = "produce-card";
           card.innerHTML =
             "<div class='produce-top'>" +
-              "<div>" +
-                "<h2 class='produce-title'>" + item.cropName + "</h2>" +
-                "<p class='produce-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
-              "</div>" +
-              "<span class='" + badgeClass(item.status) + "'>" + item.status + "</span>" +
+            "<div>" +
+            "<h2 class='produce-title'>" + item.cropName + "</h2>" +
+            "<p class='produce-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
+            "</div>" +
+            "<span class='" + badgeClass(item.status) + "'>" + item.status + "</span>" +
             "</div>" +
             "<div class='produce-meta'>" +
-              "<div class='produce-chip'><span>Quantity</span><strong>" + item.quantity + "</strong></div>" +
-              "<div class='produce-chip'><span>Stored</span><strong>" + item.storedDays + "</strong></div>" +
-              "<div class='produce-chip'><span>Remaining</span><strong>" + item.remainingDays + "</strong></div>" +
-              "<div class='produce-chip'><span>Status</span><strong>" + item.status + "</strong></div>" +
+            "<div class='produce-chip'><span>Quantity</span><strong>" + item.quantity + "</strong></div>" +
+            "<div class='produce-chip'><span>Stored</span><strong>" + item.storedDays + "</strong></div>" +
+            "<div class='produce-chip'><span>Remaining</span><strong>" + item.remainingDays + "</strong></div>" +
+            "<div class='produce-chip'><span>Status</span><strong>" + item.status + "</strong></div>" +
             "</div>" +
             "<button class='details-btn' type='button'>View Details</button>";
 
@@ -718,17 +749,17 @@
           card.className = alertClassByType(item.type) + (readAlertIds[item.id] ? " read" : "");
           card.innerHTML =
             "<div class='alert-top'>" +
-              "<div>" +
-                "<p class='alert-type'>" + item.icon + " " + item.typeLabel + "</p>" +
-                "<h3 class='alert-title'>" + item.cropName + "</h3>" +
-                "<p class='alert-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
-              "</div>" +
-              "<span class='" + priorityClass(item.priority) + "'>" + item.priority + "</span>" +
+            "<div>" +
+            "<p class='alert-type'>" + item.icon + " " + item.typeLabel + "</p>" +
+            "<h3 class='alert-title'>" + item.cropName + "</h3>" +
+            "<p class='alert-warehouse'>Warehouse: " + item.warehouseName + "</p>" +
+            "</div>" +
+            "<span class='" + priorityClass(item.priority) + "'>" + item.priority + "</span>" +
             "</div>" +
             "<p class='alert-message'>" + item.message + "</p>" +
             "<div class='alert-actions'>" +
-              "<span class='alert-time'>" + item.time + "</span>" +
-              "<button class='mark-read-btn' type='button'>" + (readAlertIds[item.id] ? "Read" : "Mark as Read") + "</button>" +
+            "<span class='alert-time'>" + item.time + "</span>" +
+            "<button class='mark-read-btn' type='button'>" + (readAlertIds[item.id] ? "Read" : "Mark as Read") + "</button>" +
             "</div>";
 
           const actionBtn = card.querySelector(".mark-read-btn");
@@ -813,7 +844,7 @@
             "<h3 class='market-crop'>" + item.cropName + "</h3>" +
             "<p class='market-price'>" + String.fromCharCode(8377) + item.todayPrice + "/kg</p>" +
             "<span class='" + marketChangeClass(item.changePercent) + "'>" +
-              marketBadgeText(item.changePercent) +
+            marketBadgeText(item.changePercent) +
             "</span>" +
             "<p class='market-note'><span class='note-icon'>" + suggestion.icon + "</span><span>" + suggestion.text + "</span></p>" +
             "<p class='market-updated'>Updated " + item.updatedAt + "</p>" +
@@ -880,8 +911,8 @@
           row.className = "message-item";
           row.innerHTML =
             "<div class='message-top'>" +
-              "<span class='message-meta'>" + item.createdAt + " | " + item.warehouseId + "</span>" +
-              "<span class='message-status " + (item.status === "Replied" ? "replied" : "pending") + "'>" + item.status + "</span>" +
+            "<span class='message-meta'>" + item.createdAt + " | " + item.warehouseId + "</span>" +
+            "<span class='message-status " + (item.status === "Replied" ? "replied" : "pending") + "'>" + item.status + "</span>" +
             "</div>" +
             "<div class='message-meta'>" + item.subject + " | Priority: " + item.priority + "</div>" +
             "<button class='view-conv-btn' type='button'>View conversation</button>";
@@ -895,8 +926,11 @@
         const message = contactMessage.value.trim();
 
         if (!warehouse || !subject || !message) {
-          contactStatus.textContent = "Please select warehouse, subject, and write your message.";
-          contactStatus.classList.add("error");
+          if (window.AgriApi) AgriApi.toast.error("Please fill in all fields.");
+          else {
+            contactStatus.textContent = "Please select warehouse, subject, and write your message.";
+            contactStatus.classList.add("error");
+          }
           return;
         }
 
@@ -918,8 +952,12 @@
         saveStoredContactMessages(messages);
         renderPreviousMessages();
 
-        contactStatus.textContent = priority === "emergency" ? "Emergency alert sent." : "Message sent successfully.";
-        contactStatus.classList.remove("error");
+        const successText = priority === "emergency" ? "Emergency alert sent!" : "Message sent successfully!";
+        if (window.AgriApi) AgriApi.toast.success(successText);
+        else {
+          contactStatus.textContent = successText;
+          contactStatus.classList.remove("error");
+        }
 
         contactSubject.value = "Spoilage Issue";
         contactMessage.value = "";
@@ -1074,8 +1112,11 @@
       renderMarketPrices();
       renderPreviousMessages();
       setMainSection("find");
+
+      // Load live data from the backend
+      fetchBackendData();
     })();
   </script>
 </body>
-</html>
 
+</html>

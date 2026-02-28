@@ -11,6 +11,7 @@ function createApp(options) {
   const uiDataRoutes = opts.uiDataRoutes || require("./routes/uiDataRoutes");
   const orderRoutes = opts.orderRoutes || require("./routes/orderRoutes");
   const authRoutes = opts.authRoutes || require("./routes/authRoutes");
+  const messageRoutes = opts.messageRoutes || require("./routes/messageRoutes");
 
   const app = express();
   app.use(cors());
@@ -42,6 +43,7 @@ function createApp(options) {
   app.use("/api/orders", orderRoutes);
   app.use("/api/app-state", appStateRoutes);
   app.use("/api/ui-data", uiDataRoutes);
+  app.use("/api/messages", messageRoutes);
 
   app.get("/api/alerts/stream", (req, res) => {
     res.setHeader("Content-Type", "text/event-stream");

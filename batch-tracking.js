@@ -76,19 +76,55 @@
     sort: "expiry-asc"
   };
 
-  let batches = defaultBatches;
+  let batches = [];
   let movementTabs = defaultMovementTabs;
-  if (window.WarehouseDB) {
-    const batchStore = window.WarehouseDB.ensure("batchTracking", {
-      batches: defaultBatches,
-      movementTabs: defaultMovementTabs
-    });
-    batches = batchStore.batches || defaultBatches;
-    movementTabs = batchStore.movementTabs || defaultMovementTabs;
-    if (!Array.isArray(batchStore.batches) || batchStore.batches.length < 10) {
-      batches = defaultBatches;
-      window.WarehouseDB.merge("batchTracking", { batches: defaultBatches, movementTabs: movementTabs });
+
+  async function fetchBatches() {
+    if (!window.AgriApi) return;
+    try {
+      const res = await AgriApi.listBatches();
+      const rawBatches = res.data || [];
+
+      batches = rawBatches.map(b => ({
+        id: b.id.substring(0, 5).toUpperCase(),
+        emoji: getEmojiForProduct(b.productName),
+        product: b.productName,
+        farmer: b.farmerName,
+        quantity: b.quantityTons + " tons",
+        zone: b.zoneCode || "A1",
+        entryDate: new Date(b.entryDate),
+        expiryDate: new Date(b.expiryDate),
+        inTransit: b.status === 'in-transit',
+        movements: [] // Backend doesn't provide history yet, so keeping empty or mock
+      }));
+
+      renderSummary();
+      renderTable();
+      renderTimeline();
+    } catch (error) {
+      console.error("Failed to fetch batches", error);
     }
+  }
+
+  function getEmojiForProduct(product) {
+    const map = {
+      'Tomato': '🍅',
+      'Tomatoes': '🍅',
+      'Potato': '🥔',
+      'Potatoes': '🥔',
+      'Onion': '🧅',
+      'Onions': '🧅',
+      'Wheat': '🌾',
+      'Rice': '🍚',
+      'Mango': '🥭',
+      'Mangoes': '🥭',
+      'Grapes': '🍇',
+      'Apple': '🍎',
+      'Apples': '🍎',
+      'Spinach': '🥬',
+      'Cabbage': '🥬'
+    };
+    return map[product] || '📦';
   }
 
   const els = {
@@ -131,7 +167,7 @@
 
   const statusFromDays = (days) => {
     if (days < 5) return "critical";
-    if (days <= 10) return "warning";
+    if (days <= 15) return "warning"; // Extended warning for hackathon visibility
     return "fresh";
   };
 
@@ -433,11 +469,9 @@
     renderMovement();
     updateClock();
     setInterval(updateClock, 1000);
-    setInterval(() => {
-      renderSummary();
-      renderTable();
-      renderTimeline();
-    }, 4000);
+
+    fetchBatches();
+    setInterval(fetchBatches, 10000);
   }
 
   init();
