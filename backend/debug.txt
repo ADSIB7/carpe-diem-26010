@@ -1,0 +1,9 @@
+[dotenv@17.3.1] injecting env (3) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[demoInit] Initializing Demo User Workspace...
+Backend running on http://localhost:5000
+
+STDERR:
+[demoInit] Initialization failed: Error: Failed to create demo warehouse: insert or update on table "warehouses" violates foreign key constraint "warehouses_owner_user_id_fkey"
+    at initializeDemoUser (D:\ARYAN\branch\carpe-diem-26010\backend\lib\demoInit.js:45:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\ARYAN\branch\carpe-diem-26010\backend\server.js:13:5

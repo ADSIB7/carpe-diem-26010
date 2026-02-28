@@ -18,7 +18,8 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "mongoose": "^9.2.3",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "supertest": "^7.1.1"
