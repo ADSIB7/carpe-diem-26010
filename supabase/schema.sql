@@ -288,6 +288,9 @@ create table if not exists public.farmer_profiles (
   location text,
   primary_crop text,
   farmer_id text unique,
+  address text,
+  company text,
+  member_since text,
   updated_at timestamptz not null default now()
 );
 
@@ -305,6 +308,10 @@ create table if not exists public.merchant_profiles (
   phone text,
   business_name text,
   business_location text,
+  address text,
+  company text,
+  merchant_id text unique,
+  member_since text,
   updated_at timestamptz not null default now()
 );
 
