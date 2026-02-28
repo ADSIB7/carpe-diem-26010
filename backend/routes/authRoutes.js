@@ -21,16 +21,19 @@ router.post("/merchant/register", async (req, res) => {
 
         const { data, error } = await supabase
             .from("merchant_profiles")
-            .insert([
-                {
-                    user_id: userId,
-                    name,
-                    email,
-                    phone,
-                    business_name: businessName,
-                    business_location: businessLocation
-                }
-            ]);
+            .upsert(
+                [
+                    {
+                        user_id: userId,
+                        name,
+                        email,
+                        phone,
+                        business_name: businessName,
+                        business_location: businessLocation
+                    }
+                ],
+                { onConflict: 'user_id' }
+            );
 
         if (error) throw error;
 
@@ -51,18 +54,21 @@ router.post("/farmer/register", async (req, res) => {
 
         const { data, error } = await supabase
             .from("farmer_profiles")
-            .insert([
-                {
-                    user_id: userId,
-                    name,
-                    email,
-                    phone,
-                    farm_name: farmName,
-                    location,
-                    primary_crop: primaryCrop,
-                    farmer_id: farmerId
-                }
-            ]);
+            .upsert(
+                [
+                    {
+                        user_id: userId,
+                        name,
+                        email,
+                        phone,
+                        farm_name: farmName,
+                        location,
+                        primary_crop: primaryCrop,
+                        farmer_id: farmerId
+                    }
+                ],
+                { onConflict: 'user_id' }
+            );
 
         if (error) throw error;
 
