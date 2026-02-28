@@ -22,6 +22,7 @@
           <strong>AgriShield</strong>
           <span>Warehouse</span>
         </div>
+        <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Close sidebar">&times;</button>
       </div>
 
       <div class="owner-label">Warehouse Owner</div>
@@ -446,6 +447,12 @@
     menuBtn.addEventListener('click', () => {
       sidebar.classList.toggle('sidebar-open');
     });
+
+    if (closeSidebarBtn) {
+      closeSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.remove('sidebar-open');
+      });
+    }
 
     function closeProfileMenu() {
       profileMenu.classList.remove('open');

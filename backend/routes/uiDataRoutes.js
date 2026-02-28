@@ -6,7 +6,7 @@ const climateStateByOwner = new Map();
 
 const defaultZoneIds = ["A1", "A2", "B1", "B2", "D1", "C1", "C2", "C3", "D2", "D4"];
 const climateThresholds = {
-  temperature: { warn: 6.5, critical: 8.2 },
+  temperature: { warn: 28, critical: 32 },
   humidity: { warn: 80, critical: 87 },
   co2: { warn: 1250, critical: 1600 },
   moisture: { warn: 14.5, critical: 16 },
@@ -85,7 +85,7 @@ router.get("/climate-config", async (req, res) => {
         sensorState: { temperature: 4.6, humidity: 74, co2: 980, moisture: 12.4, airflow: 58 },
         zoneIds: zoneIds.length ? zoneIds : defaultZoneIds,
         thresholds: {
-          temperature: { warn: 6.5, critical: 8.2 },
+          temperature: { warn: 28, critical: 32 },
           humidity: { warn: 80, critical: 87 },
           co2: { warn: 1250, critical: 1600 },
           moisture: { warn: 14.5, critical: 16 },
