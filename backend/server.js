@@ -2,7 +2,6 @@ const { loadEnv, getConfig } = require("./config/env");
 const { createApp } = require("./app");
 const { getSupabase } = require("./lib/supabase");
 const { initializeDemoUser } = require("./lib/demoInit");
-
 const { startSimulation } = require("./lib/simulation");
 
 loadEnv();
