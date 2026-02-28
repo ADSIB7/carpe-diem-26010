@@ -104,202 +104,60 @@ router.get("/climate-live", async (req, res) => {
     const supabase = supabaseLib.getSupabase();
     const ownerState = getOwnerClimateState(ownerId);
 
-    const [zoneRes, batchRes] = await Promise.all([
+    // 1. Fetch current data from the database
+    const [zoneRes, batchRes, linkRes] = await Promise.all([
       supabase.from("storage_zones").select("id,zone_code").eq("owner_user_id", ownerId).order("zone_code", { ascending: true }),
-      supabase.from("batches").select("zone_code,quantity_tons,product_name,expiry_date,status").eq("owner_user_id", ownerId)
+      supabase.from("batches").select("zone_code,quantity_tons,product_name,expiry_date,status").eq("owner_user_id", ownerId),
+      supabase.from("zone_climate_links").select("*").eq("owner_user_id", ownerId)
     ]);
+
     if (zoneRes.error) return res.status(500).json({ error: zoneRes.error.message });
     if (batchRes.error) return res.status(500).json({ error: batchRes.error.message });
+    if (linkRes.error) return res.status(500).json({ error: linkRes.error.message });
 
     const zoneRows = zoneRes.data || [];
-    const zoneByCode = zoneRows.reduce((acc, row) => {
-      acc[row.zone_code] = row;
+    const batches = batchRes.data || [];
+    const linkRows = linkRes.data || [];
+    const linkByZoneId = linkRows.reduce((acc, row) => {
+      acc[row.storage_zone_id] = row;
       return acc;
     }, {});
-    const zoneIds = zoneRows.map((z) => z.zone_code);
-    const zones = zoneIds.length ? zoneIds : defaultZoneIds;
-    const batches = batchRes.data || [];
+
     const now = Date.now();
-    const tick = Math.floor(now / 10000);
 
-    const grouped = {};
-    for (let i = 0; i < batches.length; i += 1) {
-      const batch = batches[i];
-      const zoneId = String(batch.zone_code || "UNASSIGNED");
-      const quantity = Math.max(0, Number(batch.quantity_tons || 0));
-      const profile = getCropProfile(batch.product_name);
-      const daysToExpiry = Math.max(0, Math.ceil((new Date(batch.expiry_date).getTime() - now) / (1000 * 60 * 60 * 24)));
-      const qualityPressure = clamp((14 - daysToExpiry) / 14, 0, 1);
-      const statusPressure = String(batch.status || "").toLowerCase() === "critical" ? 1 : qualityPressure;
-      const weight = quantity > 0 ? quantity : 1;
-      if (!grouped[zoneId]) {
-        grouped[zoneId] = {
-          stockTons: 0,
-          weightedQuality: 0,
-          weightedSpoilRate: 0,
-          weightedIdealTemp: 0,
-          weightedIdealHumidity: 0,
-          weightTotal: 0
-        };
-      }
-      grouped[zoneId].stockTons += quantity;
-      grouped[zoneId].weightedQuality += statusPressure * weight;
-      grouped[zoneId].weightedSpoilRate += clamp(profile.idealSpoilRatePerDay / 0.5, 0, 1) * weight;
-      grouped[zoneId].weightedIdealTemp += profile.idealTemp * weight;
-      grouped[zoneId].weightedIdealHumidity += profile.idealHumidity * weight;
-      grouped[zoneId].weightTotal += weight;
-    }
+    // 2. Map zones and their climate states
+    const zoneStates = zoneRows.map(zone => {
+      const link = linkByZoneId[zone.id];
+      const zoneBatches = batches.filter(b => b.zone_code === zone.zone_code);
+      const stockTons = zoneBatches.reduce((sum, b) => sum + Number(b.quantity_tons || 0), 0);
 
-    const maxStock = Object.keys(grouped).reduce((acc, key) => Math.max(acc, grouped[key].stockTons), 0);
-    const zoneMeta = {};
-    let globalPressureSum = 0;
-    let globalPressureCount = 0;
-
-    for (let i = 0; i < zones.length; i += 1) {
-      const zoneId = zones[i];
-      const record = grouped[zoneId];
-      if (!record || !record.weightTotal) {
-        zoneMeta[zoneId] = { score: 0, stockTons: 0, idealTemp: 4.8, idealHumidity: 75, hasStock: false };
-        continue;
-      }
-      const stockPressure = maxStock > 0 ? clamp(record.stockTons / maxStock, 0, 1) : 0;
-      const qualityPressure = clamp(record.weightedQuality / record.weightTotal, 0, 1);
-      const spoilPressure = clamp(record.weightedSpoilRate / record.weightTotal, 0, 1);
-      const score = clamp((stockPressure * 0.5) + (qualityPressure * 0.3) + (spoilPressure * 0.2), 0, 1);
-      zoneMeta[zoneId] = {
-        score,
-        stockTons: Number(record.stockTons.toFixed(2)),
-        idealTemp: Number((record.weightedIdealTemp / record.weightTotal).toFixed(1)),
-        idealHumidity: Math.round(record.weightedIdealHumidity / record.weightTotal),
-        hasStock: record.stockTons > 0
+      return {
+        id: zone.zone_code,
+        temp: link ? Number(link.temperature_c) : 4.8,
+        humidity: link ? Number(link.humidity_percent) : 72,
+        state: link ? link.climate_state : "safe",
+        stockTons: Number(stockTons.toFixed(2)),
+        pressure: link ? Number(link.pressure_score || 0) : 0
       };
-      globalPressureSum += score;
-      globalPressureCount += 1;
-    }
-
-    const globalPressure = globalPressureCount > 0 ? clamp(globalPressureSum / globalPressureCount, 0, 1) : 0;
-    const baseTemp = clamp(4.8 + (Math.sin(tick / 5) * 0.12) + (globalPressure * 0.4), 3.8, 7.2);
-    const baseHumidity = clamp(67 + (Math.sin(tick / 7 + 1.1) * 0.6) + (globalPressure * 2.4), 64, 73);
-    const baseCo2 = clamp(980 + (Math.sin(tick / 8 + 0.4) * 14) + (globalPressure * 110), 820, 1500);
-    const baseMoisture = clamp(12.4 + (Math.sin(tick / 9 + 0.8) * 0.1) + (globalPressure * 0.9), 10.8, 15.7);
-    const baseAirflow = clamp(58 - (globalPressure * 9) + (Math.sin(tick / 6 + 2.3) * 1.1), 34, 74);
-
-    const sensorState = {
-      temperature: Number(baseTemp.toFixed(1)),
-      humidity: Math.round(baseHumidity),
-      co2: Math.round(baseCo2),
-      moisture: Number(baseMoisture.toFixed(1)),
-      airflow: Math.round(baseAirflow)
-    };
-
-    const zoneStates = [];
-    let safe = 0;
-    let warn = 0;
-    let critical = 0;
-    const warnings = [];
-    let totalTemp = 0;
-    let totalHumidity = 0;
-
-    for (let i = 0; i < zones.length; i += 1) {
-      const zoneId = zones[i];
-      const meta = zoneMeta[zoneId] || { score: 0, stockTons: 0, idealTemp: sensorState.temperature, idealHumidity: sensorState.humidity, hasStock: false };
-      let zoneTemp;
-      let zoneHumidity;
-
-      if (!meta.hasStock) {
-        const existing = ownerState.noStockZoneReadings[zoneId];
-        if (existing && Number.isFinite(existing.temp) && Number.isFinite(existing.humidity)) {
-          zoneTemp = existing.temp;
-          zoneHumidity = existing.humidity;
-        } else {
-          const seed = hashCode(`${ownerId}:${zoneId}`);
-          const tempOffset = ((seed % 11) - 5) * 0.12; // ~[-0.6, +0.6]
-          const humidityOffset = ((Math.floor(seed / 13) % 9) - 4); // ~[-4, +4]
-          zoneTemp = Number(clamp(sensorState.temperature + tempOffset, 3.8, 7.0).toFixed(1));
-          zoneHumidity = Math.round(clamp(sensorState.humidity + humidityOffset, 62, 76));
-          ownerState.noStockZoneReadings[zoneId] = { temp: zoneTemp, humidity: zoneHumidity };
-        }
-      } else {
-        const zonePhase = (hashCode(zoneId) % 9) / 10;
-        const tempVariance = 0.8 + (meta.score * 2);
-        const humidityVariance = 5 + (meta.score * 14);
-        const instabilityTemp = (sensorState.temperature - meta.idealTemp) * meta.score * 0.55;
-        const instabilityHumidity = (sensorState.humidity - meta.idealHumidity) * meta.score * 0.55;
-
-        zoneTemp = clamp(
-          sensorState.temperature + (Math.sin(tick / 4 + zonePhase) * tempVariance) + instabilityTemp,
-          2.8,
-          9.4
-        );
-        zoneHumidity = clamp(
-          sensorState.humidity + (Math.cos(tick / 5 + zonePhase) * humidityVariance) + instabilityHumidity,
-          58,
-          93
-        );
-
-        zoneTemp = Number(zoneTemp.toFixed(1));
-        zoneHumidity = Math.round(zoneHumidity);
-      }
-
-      const tState = statusFrom(zoneTemp, "temperature");
-      const hState = statusFrom(zoneHumidity, "humidity");
-      const state = tState === "critical" || hState === "critical" ? "critical" : (tState === "warn" || hState === "warn" ? "warn" : "safe");
-      if (state === "critical") critical += 1;
-      else if (state === "warn") warn += 1;
-      else safe += 1;
-
-      if (state !== "safe") {
-        warnings.push(`${zoneId}: Temp ${zoneTemp.toFixed(1)} C, Hum ${zoneHumidity}%`);
-      }
-
-      totalTemp += zoneTemp;
-      totalHumidity += zoneHumidity;
-      zoneStates.push({
-        id: zoneId,
-        state,
-        temp: zoneTemp,
-        humidity: zoneHumidity,
-        stockTons: meta.stockTons,
-        pressure: Number(meta.score.toFixed(2))
-      });
-    }
-
-    const linkRows = zoneStates
-      .map((zone) => {
-        const source = zoneByCode[zone.id];
-        if (!source || !source.id) return null;
-        return {
-          storage_zone_id: source.id,
-          owner_user_id: ownerId,
-          zone_code: zone.id,
-          temperature_c: Number(zone.temp || 0),
-          humidity_percent: Number(zone.humidity || 0),
-          stock_tons: Number(zone.stockTons || 0),
-          pressure_score: Number(zone.pressure || 0),
-          climate_state: zone.state || "safe",
-          updated_at: new Date().toISOString()
-        };
-      })
-      .filter(Boolean);
-
-    if (linkRows.length > 0) {
-      const linkUpsert = await supabase
-        .from("zone_climate_links")
-        .upsert(linkRows, { onConflict: "storage_zone_id" });
-      if (linkUpsert.error) return res.status(500).json({ error: linkUpsert.error.message });
-    }
-
-    ownerState.sensorHistory.push({
-      t: now,
-      temperature: sensorState.temperature,
-      humidity: sensorState.humidity,
-      co2: sensorState.co2
     });
-    if (ownerState.sensorHistory.length > 24) ownerState.sensorHistory.shift();
 
-    const history = ownerState.sensorHistory;
-    const tempTrend = history.length > 6 ? history[history.length - 1].temperature - history[history.length - 6].temperature : 0;
-    const humTrend = history.length > 6 ? history[history.length - 1].humidity - history[history.length - 6].humidity : 0;
+    const safe = zoneStates.filter(z => z.state === "safe").length;
+    const warn = zoneStates.filter(z => z.state === "warn").length;
+    const critical = zoneStates.filter(z => z.state === "critical").length;
+
+    const totalTemp = zoneStates.reduce((sum, z) => sum + z.temp, 0);
+    const totalHum = zoneStates.reduce((sum, z) => sum + z.humidity, 0);
+    const avgTemp = Number((totalTemp / Math.max(1, zoneStates.length)).toFixed(1));
+    const avgHum = Math.round(totalHum / Math.max(1, zoneStates.length));
+
+    // 3. Overall sensor state (Averaged/Aggregated)
+    const sensorState = {
+      temperature: avgTemp,
+      humidity: avgHum,
+      co2: 980 + (critical * 50) + (warn * 20), // Synthetic CO2 based on activity
+      moisture: 12.4 + (avgHum > 80 ? (avgHum - 80) * 0.1 : 0), // Synthetic moisture
+      airflow: Math.max(30, 60 - (critical * 5) - (warn * 2)) // Airflow decreases as risk increases
+    };
 
     const states = {
       temperature: statusFrom(sensorState.temperature, "temperature"),
@@ -309,35 +167,48 @@ router.get("/climate-live", async (req, res) => {
       airflow: statusFrom(sensorState.airflow, "airflow")
     };
 
+    // 4. Update history and trends
+    ownerState.sensorHistory.push({
+      t: now,
+      temperature: sensorState.temperature,
+      humidity: sensorState.humidity,
+      co2: sensorState.co2
+    });
+    if (ownerState.sensorHistory.length > 24) ownerState.sensorHistory.shift();
+
+    const history = ownerState.sensorHistory;
+    const tempTrend = history.length > 3 ? history[history.length - 1].temperature - history[history.length - 3].temperature : 0;
+    const humTrend = history.length > 3 ? history[history.length - 1].humidity - history[history.length - 3].humidity : 0;
+
     const insight = critical > 0
       ? "Immediate action required: isolate critical zone(s) and increase airflow."
       : warn > 2
         ? "Humidity trend rising across multiple zones. Start preventive ventilation."
-        : "Climate distribution is stable. Keep current cooling profile.";
+        : "Climate distribution is stable. Overall environment in safe band.";
 
     return res.status(200).json({
       data: {
         timestamp: now,
         sensorState,
         states,
-        zoneIds: zones,
+        zoneIds: zoneRows.map(z => z.zone_code),
         thresholds: climateThresholds,
         zones: {
           safe,
           warn,
           critical,
-          averageTemp: Number((totalTemp / Math.max(1, zones.length)).toFixed(1)),
-          averageHumidity: Math.round(totalHumidity / Math.max(1, zones.length)),
+          averageTemp: avgTemp,
+          averageHumidity: avgHum,
           zoneStates,
-          warnings: warnings.slice(0, 4),
+          warnings: zoneStates.filter(z => z.state !== "safe").slice(0, 4).map(z => `${z.id}: Temp ${z.temp.toFixed(1)} C, Hum ${z.humidity}%`),
           insight
         },
         prediction: {
-          temp: tempTrend > 0.35 ? "Temperature likely to rise in coming cycles." : "Temperature trend stable in safe band.",
-          humidity: humTrend > 1.5 ? "Humidity expected to remain elevated." : "Humidity likely to stay controlled.",
-          action: tempTrend > 0.35 || humTrend > 1.5
-            ? "Action: Increase ventilation and reduce chamber loading."
-            : "Action: Maintain current cooling profile."
+          temp: tempTrend > 0.2 ? "Temperature rising: AI predicts potential threshold breach in 2 hours." : "Temperature trend stable.",
+          humidity: humTrend > 1 ? "Humidity increasing: Preventive ventilation recommended." : "Humidity likely to stay controlled.",
+          action: tempTrend > 0.2 || humTrend > 1
+            ? "Action: Increase cooling cycle and exhaust airflow."
+            : "Action: Maintain current environmental setpoints."
         },
         history: {
           labels: history.map((h) => new Date(h.t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })),
@@ -551,8 +422,8 @@ router.get("/risk-spoilage", async (req, res) => {
     const preventionSuggestions = Math.max(
       0,
       (forecastData.some((row) => row.status === "critical") ? 1 : 0) +
-        (forecastData.some((row) => row.status === "warning") ? 1 : 0) +
-        (overallRiskScore >= 60 ? 1 : 0)
+      (forecastData.some((row) => row.status === "warning") ? 1 : 0) +
+      (overallRiskScore >= 60 ? 1 : 0)
     );
 
     return res.status(200).json({
@@ -574,45 +445,46 @@ router.get("/risk-spoilage", async (req, res) => {
   }
 });
 
-router.get("/market-intelligence", (_req, res) => {
-  return res.status(200).json({
-    data: {
-      prices: [
-        { crop: "Wheat", unit: 45, change: 5.0, region: "North" },
-        { crop: "Rice", unit: 65, change: -2.3, region: "East" },
-        { crop: "Maize", unit: 38, change: 3.1, region: "West" },
-        { crop: "Soybean", unit: 72, change: -1.6, region: "Central" },
-        { crop: "Tomato", unit: 28, change: 4.3, region: "South" }
-      ],
-      demands: [
-        { crop: "Wheat", trend: "rising", region: "North", score: 86 },
-        { crop: "Soybean", trend: "stable", region: "Central", score: 66 },
-        { crop: "Tomato", trend: "rising", region: "South", score: 91 },
-        { crop: "Rice", trend: "falling", region: "East", score: 48 },
-        { crop: "Maize", trend: "stable", region: "West", score: 63 }
-      ],
-      forecast: [
-        { crop: "Wheat", status: "Rising", points: [40, 44, 46, 49, 53, 55, 60], region: "North" },
-        { crop: "Rice", status: "Stable", points: [64, 65, 66, 65, 66, 67, 66], region: "East" },
-        { crop: "Tomato", status: "Decline", points: [34, 33, 31, 30, 28, 27, 26], region: "South" }
-      ],
-      competitors: [
-        { name: "Cultivar Agro", crop: "Wheat", price: 68, region: "North" },
-        { name: "GreenHarvest", crop: "Rice", price: 67, region: "East" },
-        { name: "FreshField", crop: "Tomato", price: 70, region: "South" }
-      ],
-      supply: {
-        inbound: 74,
-        arrival: 1320,
-        surplus: 18,
-        alerts: [
-          { icon: "!", text: "Government MSP update released for wheat", posted: "2 hrs ago" },
-          { icon: "!", text: "Weather alert: heatwave may affect crop yields", posted: "1 day ago" },
-          { icon: "!", text: "Transport strike risk on major inbound route", posted: "3 hrs ago" }
-        ]
+router.get("/market-intelligence", async (_req, res) => {
+  try {
+    const supabase = supabaseLib.getSupabase();
+    const [pricesRes, demandsRes, forecastsRes, competitorsRes, supplyRes] = await Promise.all([
+      supabase.from("market_prices").select("crop, unit_price, percent_change, region"),
+      supabase.from("market_demands").select("crop, trend, region, score"),
+      supabase.from("market_forecasts").select("crop, status, points, region"),
+      supabase.from("market_competitors").select("name, crop, price, region"),
+      supabase.from("market_supply_chain").select("inbound_stock_percent, arrival_volume_tons, surplus_percent, alerts").limit(1).single()
+    ]);
+
+    if (pricesRes.error) throw pricesRes.error;
+    if (demandsRes.error) throw demandsRes.error;
+    if (forecastsRes.error) throw forecastsRes.error;
+    if (competitorsRes.error) throw competitorsRes.error;
+    if (supplyRes.error) throw supplyRes.error;
+
+    return res.status(200).json({
+      data: {
+        prices: pricesRes.data.map(p => ({
+          crop: p.crop,
+          unit: p.unit_price,
+          change: p.percent_change,
+          region: p.region
+        })),
+        demands: demandsRes.data,
+        forecast: forecastsRes.data,
+        competitors: competitorsRes.data,
+        supply: {
+          inbound: supplyRes.data.inbound_stock_percent,
+          arrival: supplyRes.data.arrival_volume_tons,
+          surplus: supplyRes.data.surplus_percent,
+          alerts: supplyRes.data.alerts
+        }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error("[uiDataRoutes] Market intelligence fetch failed:", err.message);
+    return res.status(500).json({ error: "Failed to fetch market intelligence data." });
+  }
 });
 
 router.get("/dashboard", async (req, res) => {

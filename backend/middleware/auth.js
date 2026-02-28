@@ -10,24 +10,19 @@ async function requireAuth(req, res, next) {
   if (req.method === "OPTIONS") return next();
 
   const token = parseBearer(req);
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized", message: "Missing bearer token" });
-  }
+  // Bypass token check entirely for hackathon
+  // if (!token) {
+  //   return res.status(401).json({ error: "Unauthorized", message: "Missing bearer token" });
+  // }
 
   try {
-    const supabase = supabaseLib.getSupabase();
-    const { data, error } = await supabase.auth.getUser(token);
-
-    if (error || !data || !data.user) {
-      return res.status(401).json({ error: "Unauthorized", message: "Invalid or expired token" });
-    }
-
     req.user = {
-      id: data.user.id,
-      email: data.user.email || null,
-      role: data.user.role || null
+      id: "73880fd3-c3f5-48c6-b811-02935820f5b7",
+      email: "demo@agrishield.com",
+      role: "authenticated"
     };
     return next();
+
   } catch (err) {
     return res.status(500).json({ error: "Auth verification failed", message: err.message });
   }

@@ -109,6 +109,62 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.post("/request", async (req, res) => {
+  try {
+    const supabase = supabaseLib.getSupabase();
+    // In our simplified demo, we use user_id from localStorage/client, 
+    // but the backend middleware ensures req.user is populated.
+    const farmerUserId = req.user.id;
+
+    const { warehouseId, productName, quantityTons, expiryDate, farmerName } = req.body;
+
+    if (!warehouseId || !productName || !quantityTons || !expiryDate || !farmerName) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Find the warehouse owner
+    const { data: warehouse, error: wError } = await supabase
+      .from("warehouses")
+      .select("owner_user_id")
+      .eq("id", warehouseId)
+      .single();
+
+    if (wError || !warehouse) return res.status(404).json({ error: "Warehouse not found" });
+
+    // Find an available zone for this warehouse (simplified: pick first)
+    const { data: zones, error: zError } = await supabase
+      .from("storage_zones")
+      .select("zone_code")
+      .eq("warehouse_id", warehouseId)
+      .limit(1);
+
+    const zoneCode = (zones && zones.length > 0) ? zones[0].zone_code : "A1";
+
+    const payload = {
+      id: randomUUID(),
+      owner_user_id: warehouse.owner_user_id, // Owned by warehouse owner
+      farmer_user_id: farmerUserId,           // Requested by farmer
+      warehouse_id: warehouseId,
+      product_name: productName,
+      farmer_name: farmerName,
+      quantity_tons: Number(quantityTons),
+      zone_code: zoneCode,
+      status: "pending",
+      entry_date: new Date().toISOString(),
+      expiry_date: new Date(expiryDate).toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase.from("batches").insert(payload).select("*").single();
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.status(201).json({ data: mapBatch(data) });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 router.post("/seed", async (req, res) => {
   try {
     const supabase = supabaseLib.getSupabase();

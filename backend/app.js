@@ -9,6 +9,8 @@ function createApp(options) {
   const batchRoutes = opts.batchRoutes || require("./routes/batchRoutes");
   const appStateRoutes = opts.appStateRoutes || require("./routes/appStateRoutes");
   const uiDataRoutes = opts.uiDataRoutes || require("./routes/uiDataRoutes");
+  const orderRoutes = opts.orderRoutes || require("./routes/orderRoutes");
+  const authRoutes = opts.authRoutes || require("./routes/authRoutes");
 
   const app = express();
   app.use(cors());
@@ -32,12 +34,27 @@ function createApp(options) {
     });
   }
 
+  app.use("/api/auth", authRoutes); // Public auth routes
   app.use("/api", requireAuth);
   app.use("/api/warehouses", warehouseRoutes);
   app.use("/api/storage", storageRoutes);
   app.use("/api/batches", batchRoutes);
+  app.use("/api/orders", orderRoutes);
   app.use("/api/app-state", appStateRoutes);
   app.use("/api/ui-data", uiDataRoutes);
+
+  app.get("/api/alerts/stream", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders && res.flushHeaders();
+
+    const { addAlertClient } = require("./lib/simulation");
+    addAlertClient(res);
+
+    // Initial heartbeat
+    res.write("data: {\"type\": \"CONNECTED\"}\n\n");
+  });
 
   app.use((req, res) => {
     res.status(404).json({
