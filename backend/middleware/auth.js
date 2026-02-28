@@ -17,7 +17,7 @@ async function requireAuth(req, res, next) {
 
   try {
     req.user = {
-      id: "73880fd3-c3f5-48c6-b811-02935820f5b7",
+      id: "d390ffdb-17f1-44c9-afd3-40a564a54d12",
       email: "demo@agrishield.com",
       role: "authenticated"
     };
