@@ -1,6 +1,6 @@
 const { randomUUID } = require("crypto");
 
-const DEMO_USER_ID = "a9dd8fb6-20a7-46fe-9b86-11147e613a61";
+const DEMO_USER_ID = "d390ffdb-17f1-44c9-afd3-40a564a54d12";
 const { seedMarketData } = require("./seedMarketData");
 
 function pick(arr, index) {
