@@ -4,7 +4,9 @@
   /** @typedef {{ id: string, warehouseId: string, zoneCode: string, state: string, capacityTons: number, occupiedTons: number, utilizationPercent: number, updatedAt: string }} StorageZone */
   /** @typedef {{ id: string, warehouseId: string, productName: string, farmerName: string, quantityTons: number, zoneCode: string, status: string, entryDate: string, expiryDate: string, createdAt: string, updatedAt: string, daysToExpiry: number, spoilageRisk: string }} Batch */
 
-  var base = window.API_BASE_URL || "http://localhost:5000/api";
+  var isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  var base = window.API_BASE_URL || (isLocal ? "http://localhost:5000/api" : "https://agrishield-backend-i0k9.onrender.com/api");
+  // Note: Replace the Render URL above with your actual deployed backend URL.
   var supabaseClient = null;
   var toastHost = null;
 
