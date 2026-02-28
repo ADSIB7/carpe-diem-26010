@@ -291,7 +291,9 @@
     renderAll();
     updateClock();
     setInterval(updateClock, 1000);
-    setInterval(simulateRefresh, 12000);
+    // Periodically refresh data from database instead of simulating
+    setInterval(loadMarketIntelligenceData, 30000);
+    setInterval(renderAll, 30000);
   }
 
   init();

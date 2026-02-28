@@ -1,24 +1,30 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Merchant Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="farmer-auth.css" />
 </head>
+
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
   <main class="role-layout container">
     <section class="role-card">
       <p class="kicker">MERCHANT ACCESS</p>
-      <h1>Order inventory with live freshness and stock data.</h1>
-      <p>Place orders with clear quality status and ready dispatch times.</p>
+      <h1>Track and order produce with trusted warehouse visibility.</h1>
+      <p>Use your merchant account to monitor stock and place orders quickly.</p>
+
       <div class="auth-switch" role="tablist" aria-label="Merchant access mode">
-        <button class="auth-tab active" id="showRegister" type="button" role="tab" aria-selected="true">Register</button>
+        <button class="auth-tab active" id="showRegister" type="button" role="tab"
+          aria-selected="true">Register</button>
         <button class="auth-tab" id="showLogin" type="button" role="tab" aria-selected="false">Login</button>
       </div>
 
@@ -32,17 +38,14 @@
           <label for="reg-email">Email</label>
           <input id="reg-email" type="email" placeholder="aryan@merchant.com" required />
 
-          <label for="reg-phone">Phone</label>
+          <label for="reg-phone">Phone Number</label>
           <input id="reg-phone" type="text" placeholder="+1 (555) 210-1040" required />
 
-          <label for="reg-company">Company Name</label>
-          <input id="reg-company" type="text" placeholder="FreshRoute Merchants" required />
+          <label for="reg-business">Business Name</label>
+          <input id="reg-business" type="text" placeholder="FreshRoute Traders" required />
 
-          <label for="reg-location">Location</label>
+          <label for="reg-location">Business Location</label>
           <input id="reg-location" type="text" placeholder="San Jose, CA" required />
-
-          <label for="reg-id">Merchant ID</label>
-          <input id="reg-id" type="text" placeholder="MRC-6201" required />
 
           <label for="reg-pass">Password</label>
           <input id="reg-pass" type="password" placeholder="Create password" required />
@@ -54,8 +57,8 @@
         </form>
 
         <form class="login-form auth-panel" id="loginForm" novalidate>
-          <label for="merchant-id">Merchant ID</label>
-          <input id="merchant-id" type="text" placeholder="MRC-6201" required />
+          <label for="merchant-email">Email</label>
+          <input id="merchant-email" type="email" placeholder="aryan@merchant.com" required />
 
           <label for="merchant-pass">Password</label>
           <input id="merchant-pass" type="password" placeholder="Enter password" required />
@@ -63,9 +66,11 @@
           <button type="submit" class="btn btn-primary">Login as Merchant</button>
         </form>
       </div>
+
       <a class="back-link" href="index.html">Back to Home</a>
     </section>
   </main>
+
   <script>
     (function () {
       const showRegister = document.getElementById("showRegister");
@@ -99,19 +104,18 @@
         setPanel("login");
       });
 
-      registerForm.addEventListener("submit", function (event) {
+      registerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const name = document.getElementById("reg-name").value.trim();
-        const email = document.getElementById("reg-email").value.trim();
+        const email = document.getElementById("reg-email").value.trim().toLowerCase();
         const phone = document.getElementById("reg-phone").value.trim();
-        const company = document.getElementById("reg-company").value.trim();
-        const location = document.getElementById("reg-location").value.trim();
-        const merchantId = document.getElementById("reg-id").value.trim();
+        const businessName = document.getElementById("reg-business").value.trim();
+        const businessLocation = document.getElementById("reg-location").value.trim();
         const password = document.getElementById("reg-pass").value;
         const confirm = document.getElementById("reg-confirm").value;
 
-        if (!name || !email || !phone || !company || !location || !merchantId || !password) {
+        if (!name || !email || !phone || !businessName || !businessLocation || !password) {
           showMessage("Please fill in all registration fields.", true);
           return;
         }
@@ -121,56 +125,68 @@
           return;
         }
 
-        const user = {
-          name: name,
-          email: email,
-          phone: phone,
-          company: company,
-          location: location,
-          merchantId: merchantId,
-          password: password
-        };
+        try {
+          const res = await window.AgriApi.registerMerchant({
+            name,
+            email,
+            phone,
+            businessName,
+            businessLocation,
+            password
+          });
 
-        localStorage.setItem(storageKey, JSON.stringify(user));
-        localStorage.setItem("merchantName", user.name);
-        localStorage.setItem("merchantCompany", user.company);
-        localStorage.setItem("merchantLocation", user.location);
-        document.getElementById("merchant-id").value = merchantId;
-        showMessage("Registration successful. Please login with your Merchant ID and password.", false);
-        setPanel("login");
+          const user = {
+            name,
+            email,
+            phone,
+            businessName,
+            businessLocation,
+            password,
+            userId: res.data.userId
+          };
+
+          localStorage.setItem(storageKey, JSON.stringify(user));
+          localStorage.setItem("merchantName", user.name);
+          localStorage.setItem("merchantCompany", user.businessName);
+          localStorage.setItem("merchantLocation", user.businessLocation);
+          document.getElementById("merchant-email").value = user.email;
+          showMessage("Registration successful. Please login with your email and password.", false);
+          setPanel("login");
+        } catch (error) {
+          showMessage(error.error || "Registration failed", true);
+        }
       });
 
-      loginForm.addEventListener("submit", function (event) {
+      loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const merchantId = document.getElementById("merchant-id").value.trim();
+        const email = document.getElementById("merchant-email").value.trim().toLowerCase();
         const password = document.getElementById("merchant-pass").value;
-        const rawUser = localStorage.getItem(storageKey);
 
-        if (!rawUser) {
-          showMessage("No account found. Please register first.", true);
-          setPanel("register");
+        if (!email || !password) {
+          showMessage("Please enter both email and password.", true);
           return;
         }
 
-        const savedUser = JSON.parse(rawUser);
-        if (merchantId !== savedUser.merchantId || password !== savedUser.password) {
-          showMessage("Invalid Merchant ID or password.", true);
-          return;
-        }
+        try {
+          const res = await window.AgriApi.loginMerchant({ email, password });
+          const savedUser = res.data;
 
-        localStorage.setItem("merchantName", savedUser.name);
-        localStorage.setItem("merchantCompany", savedUser.company);
-        localStorage.setItem("merchantLocation", savedUser.location);
-        localStorage.setItem("merchantLoggedIn", "true");
-        window.location.href = "merchant-dashboard.html";
+          localStorage.setItem("merchantName", savedUser.name);
+          localStorage.setItem("merchantCompany", savedUser.business_name || savedUser.businessName);
+          localStorage.setItem("merchantLocation", savedUser.business_location || savedUser.businessLocation);
+          localStorage.setItem("merchantLoggedIn", "true");
+          window.location.href = "merchant-dashboard.html";
+        } catch (error) {
+          showMessage(error.error || "Login failed. Check your credentials.", true);
+        }
       });
 
       const existingUserRaw = localStorage.getItem(storageKey);
       if (existingUserRaw) {
         const existingUser = JSON.parse(existingUserRaw);
-        if (existingUser.merchantId) {
-          document.getElementById("merchant-id").value = existingUser.merchantId;
+        if (existingUser.email) {
+          document.getElementById("merchant-email").value = existingUser.email;
         }
         setPanel("login");
       } else {
@@ -179,10 +195,5 @@
     })();
   </script>
 </body>
+
 </html>
-
-
-
-
-
-

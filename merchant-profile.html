@@ -1,0 +1,327 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merchant Profile | AgriShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="dash">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div>
+          <strong>AgriShield</strong>
+          <span>Merchant</span>
+        </div>
+      </div>
+
+      <div class="owner-label">Merchant</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="merchant-profile.html">
+          <img id="sidebarAvatar" src="businessman-avatar-profile-picture-36775850.png" alt="Merchant" />
+          <div>
+            <strong id="sidebarName">Rahul Traders</strong>
+            <span id="sidebarRole">Merchant</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
+      </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="merchant-profile.html">View Profile</a>
+        <a href="#edit" id="editLink">Update Profile</a>
+      </div>
+
+      <nav class="menu" aria-label="Dashboard">
+        <a href="merchant-dashboard.html">Dashboard</a>
+        <a href="merchant-dashboard.html">Search Produce</a>
+        <a href="merchant-dashboard.html">My Orders</a>
+        <a href="merchant-dashboard.html">Warehouse Listings</a>
+        <a href="merchant-dashboard.html">Market Insights</a>
+        <a href="merchant-dashboard.html">Messages</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html">Back to Home</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">Menu</button>
+        <div>
+          <h1>Merchant Profile</h1>
+          <p>Manage your personal and business information.</p>
+        </div>
+        <button class="btn" id="editProfileBtn">Update Profile</button>
+      </header>
+
+      <section class="profile-header">
+        <img id="profileAvatar" src="businessman-avatar-profile-picture-36775850.png" alt="Merchant" />
+        <div>
+          <h2 id="profileName">Rahul Traders</h2>
+          <p class="muted" id="profileEmail">rahul@traders.com</p>
+          <div class="profile-meta">
+            <span id="profilePhone">+91 98989 12345</span>
+            <span id="profileWarehouse">Connected Warehouse Network</span>
+            <span id="profileLocation">Pune</span>
+            <span id="profileMember">Member since 2026</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <div class="card">
+          <h3>Personal Information</h3>
+          <div class="info-list">
+            <div><span>Full Name</span><strong id="infoName">Rahul Traders</strong></div>
+            <div><span>Email</span><strong id="infoEmail">rahul@traders.com</strong></div>
+            <div><span>Phone</span><strong id="infoPhone">+91 98989 12345</strong></div>
+            <div><span>Address</span><strong id="infoAddress">Pune</strong></div>
+            <div><span>Role</span><strong id="infoRole">Merchant</strong></div>
+            <div><span>Business Name</span><strong id="infoCompany">Rahul Agro Traders</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Business Summary</h3>
+          <div class="stats">
+            <div><strong id="statOrders">128</strong><span>Total Orders</span></div>
+            <div><strong id="statWarehouses">12</strong><span>Connected Warehouses</span></div>
+            <div><strong id="statInvestment">₹1,28,400</strong><span>Total Investment</span></div>
+            <div><strong id="statActive">46</strong><span>Active Purchases</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="editModal">
+    <form class="modal-card" method="dialog">
+      <h3>Update Profile</h3>
+      <label>
+        Full Name
+        <input id="formName" type="text" required />
+      </label>
+      <label>
+        Email
+        <input id="formEmail" type="email" required />
+      </label>
+      <label>
+        Phone
+        <input id="formPhone" type="text" required />
+      </label>
+      <label>
+        Address
+        <input id="formAddress" type="text" required />
+      </label>
+      <label>
+        Profile Image
+        <input id="formImage" type="file" accept="image/*" />
+      </label>
+      <div class="modal-actions">
+        <button class="btn" id="saveBtn" type="submit">Save</button>
+        <button class="btn ghost" id="cancelBtn" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast">Profile updated successfully</div>
+
+  <script>
+    (function () {
+      const menuBtn = document.getElementById('menuBtn');
+      const sidebar = document.getElementById('sidebar');
+      const profileCard = document.getElementById('profileCard');
+      const profileToggle = document.getElementById('profileToggle');
+      const profileMenu = document.getElementById('profileMenu');
+      const editProfileBtn = document.getElementById('editProfileBtn');
+      const editLink = document.getElementById('editLink');
+      const editModal = document.getElementById('editModal');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const toast = document.getElementById('toast');
+
+      function readMerchantAuth() {
+        const raw = localStorage.getItem('merchantAuthUser');
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (error) {
+          return null;
+        }
+      }
+
+      const auth = readMerchantAuth();
+      const currentYear = new Date().getFullYear();
+
+      const defaults = {
+        name: (auth && auth.name) || localStorage.getItem('merchantName') || 'Rahul Traders',
+        email: (auth && auth.email) || 'rahul@traders.com',
+        phone: (auth && auth.phone) || '+91 98989 12345',
+        address: localStorage.getItem('merchantProfileAddress') || (auth && auth.businessLocation) || localStorage.getItem('merchantLocation') || 'Pune',
+        role: 'Merchant',
+        company: (auth && auth.businessName) || localStorage.getItem('merchantCompany') || 'Rahul Agro Traders',
+        warehouse: 'Connected Warehouse Network',
+        location: localStorage.getItem('merchantLocation') || (auth && auth.businessLocation) || 'Pune',
+        member: localStorage.getItem('merchantProfileMember') || ('Member since ' + currentYear),
+        image: localStorage.getItem('merchantProfileImage') || 'businessman-avatar-profile-picture-36775850.png'
+      };
+
+      const fields = {
+        name: document.getElementById('profileName'),
+        email: document.getElementById('profileEmail'),
+        phone: document.getElementById('profilePhone'),
+        warehouse: document.getElementById('profileWarehouse'),
+        location: document.getElementById('profileLocation'),
+        member: document.getElementById('profileMember'),
+        infoName: document.getElementById('infoName'),
+        infoEmail: document.getElementById('infoEmail'),
+        infoPhone: document.getElementById('infoPhone'),
+        infoAddress: document.getElementById('infoAddress'),
+        infoRole: document.getElementById('infoRole'),
+        infoCompany: document.getElementById('infoCompany'),
+        avatar: document.getElementById('profileAvatar'),
+        sidebarAvatar: document.getElementById('sidebarAvatar'),
+        sidebarName: document.getElementById('sidebarName'),
+        sidebarRole: document.getElementById('sidebarRole')
+      };
+
+      function loadProfile() {
+        const data = {
+          name: localStorage.getItem('merchantProfileName') || defaults.name,
+          email: localStorage.getItem('merchantProfileEmail') || defaults.email,
+          phone: localStorage.getItem('merchantProfilePhone') || defaults.phone,
+          address: localStorage.getItem('merchantProfileAddress') || defaults.address,
+          role: localStorage.getItem('merchantProfileRole') || defaults.role,
+          company: localStorage.getItem('merchantProfileCompany') || defaults.company,
+          warehouse: localStorage.getItem('merchantProfileWarehouse') || defaults.warehouse,
+          location: localStorage.getItem('merchantProfileLocation') || defaults.location,
+          member: localStorage.getItem('merchantProfileMember') || defaults.member,
+          image: localStorage.getItem('merchantProfileImage') || defaults.image
+        };
+
+        fields.name.textContent = data.name;
+        fields.email.textContent = data.email;
+        fields.phone.textContent = data.phone;
+        fields.warehouse.textContent = data.warehouse;
+        fields.location.textContent = data.location;
+        fields.member.textContent = data.member;
+        fields.infoName.textContent = data.name;
+        fields.infoEmail.textContent = data.email;
+        fields.infoPhone.textContent = data.phone;
+        fields.infoAddress.textContent = data.address;
+        fields.infoRole.textContent = data.role;
+        fields.infoCompany.textContent = data.company;
+        fields.avatar.src = data.image;
+        fields.sidebarAvatar.src = data.image;
+        fields.sidebarName.textContent = data.name;
+        fields.sidebarRole.textContent = data.role;
+
+        localStorage.setItem('merchantName', data.name);
+        localStorage.setItem('merchantCompany', data.company);
+        localStorage.setItem('merchantLocation', data.location);
+
+        document.getElementById('formName').value = data.name;
+        document.getElementById('formEmail').value = data.email;
+        document.getElementById('formPhone').value = data.phone;
+        document.getElementById('formAddress').value = data.address;
+      }
+
+      function showToast() {
+        toast.classList.add('show');
+        setTimeout(function () { toast.classList.remove('show'); }, 2400);
+      }
+
+      menuBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('sidebar-open');
+      });
+
+      function closeProfileMenu() {
+        profileMenu.classList.remove('open');
+        profileToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      profileToggle.addEventListener('click', function () {
+        const isOpen = profileMenu.classList.toggle('open');
+        profileToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      document.addEventListener('click', function (event) {
+        if (!profileCard.contains(event.target) && !profileMenu.contains(event.target)) {
+          closeProfileMenu();
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          closeProfileMenu();
+        }
+      });
+
+      profileMenu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeProfileMenu);
+      });
+
+      function openModal() {
+        editModal.showModal();
+      }
+
+      editProfileBtn.addEventListener('click', openModal);
+      editLink.addEventListener('click', function (event) {
+        event.preventDefault();
+        openModal();
+      });
+
+      cancelBtn.addEventListener('click', function () {
+        editModal.close();
+      });
+
+      editModal.querySelector('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById('formName').value.trim();
+        const email = document.getElementById('formEmail').value.trim();
+        const phone = document.getElementById('formPhone').value.trim();
+        const address = document.getElementById('formAddress').value.trim();
+
+        localStorage.setItem('merchantProfileName', name);
+        localStorage.setItem('merchantProfileEmail', email);
+        localStorage.setItem('merchantProfilePhone', phone);
+        localStorage.setItem('merchantProfileAddress', address);
+        localStorage.setItem('merchantProfileRole', 'Merchant');
+        localStorage.setItem('merchantProfileCompany', localStorage.getItem('merchantCompany') || defaults.company);
+        localStorage.setItem('merchantProfileLocation', localStorage.getItem('merchantLocation') || defaults.location);
+        localStorage.setItem('merchantProfileWarehouse', defaults.warehouse);
+        localStorage.setItem('merchantProfileMember', defaults.member);
+
+        const imageInput = document.getElementById('formImage');
+        if (imageInput.files && imageInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            localStorage.setItem('merchantProfileImage', reader.result);
+            loadProfile();
+            editModal.close();
+            showToast();
+          };
+          reader.readAsDataURL(imageInput.files[0]);
+          return;
+        }
+
+        loadProfile();
+        editModal.close();
+        showToast();
+      });
+
+      loadProfile();
+
+      if (window.location.hash === '#edit') {
+        openModal();
+      }
+    })();
+  </script>
+</body>
+</html>

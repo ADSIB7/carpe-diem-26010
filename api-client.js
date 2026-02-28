@@ -82,17 +82,7 @@
   }
 
   async function getAccessToken() {
-    var client = getSupabaseClient();
-    if (!client) return null;
-    try {
-      var sessionRes = await client.auth.getSession();
-      var token = sessionRes && sessionRes.data && sessionRes.data.session
-        ? sessionRes.data.session.access_token
-        : null;
-      return token || null;
-    } catch (_error) {
-      return null;
-    }
+    return "DEMO_TOKEN";
   }
 
   function toApiError(status, payload, fallbackText) {
@@ -242,6 +232,47 @@
     getMarketIntelligenceData: function () {
       return request("/ui-data/market-intelligence", { method: "GET", silent: true });
     },
+
+    /**
+     * @param {any} data
+     */
+    registerMerchant: function (data) {
+      return request("/auth/merchant/register", { method: "POST", body: data });
+    },
+
+    /**
+     * @param {any} data
+     */
+    registerFarmer: function (data) {
+      return request("/auth/farmer/register", { method: "POST", body: data });
+    },
+
+    /**
+     * @param {any} data
+     */
+    loginMerchant: function (data) {
+      return request("/auth/merchant/login", { method: "POST", body: data });
+    },
+
+    /**
+     * @param {any} data
+     */
+    loginFarmer: function (data) {
+      return request("/auth/farmer/login", { method: "POST", body: data });
+    },
+
+    requestStorage: function (data) {
+      return request("/batches/request", { method: "POST", body: data });
+    },
+
+    placeOrder: function (data) {
+      return request("/orders", { method: "POST", body: data });
+    },
+
+    getStorageCapacity: function () {
+      return request("/ui-data/storage-capacity", { method: "GET", silent: true });
+    },
+
     getDashboardData: function () {
       return request("/ui-data/dashboard", { method: "GET", silent: true });
     },
@@ -254,6 +285,23 @@
         body: state,
         silent: !!(options && options.silent)
       });
+    },
+    subscribeToAlerts: function (onAlert) {
+      const source = new EventSource(base + "/alerts/stream");
+      source.onmessage = function (event) {
+        try {
+          const data = JSON.parse(event.data);
+          onAlert(data);
+        } catch (e) {
+          console.error("Failed to parse alert data", e);
+        }
+      };
+      source.onerror = function (err) {
+        console.error("SSE Error:", err);
+      };
+      return function unsubscribe() {
+        source.close();
+      };
     },
     getWarehouseUserId: getWarehouseUserId,
     toast: {

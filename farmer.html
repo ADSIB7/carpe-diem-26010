@@ -1,14 +1,18 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmer Login | AgriShield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="farmer-auth.css" />
 </head>
+
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
@@ -19,7 +23,8 @@
       <p>Register your farm profile, reserve storage support, and login to continue your crop flow.</p>
 
       <div class="auth-switch" role="tablist" aria-label="Farmer access mode">
-        <button class="auth-tab active" id="showRegister" type="button" role="tab" aria-selected="true">Register</button>
+        <button class="auth-tab active" id="showRegister" type="button" role="tab"
+          aria-selected="true">Register</button>
         <button class="auth-tab" id="showLogin" type="button" role="tab" aria-selected="false">Login</button>
       </div>
 
@@ -105,20 +110,20 @@
         setPanel("login");
       });
 
-      registerForm.addEventListener("submit", function (event) {
+      registerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const name = document.getElementById("reg-name").value.trim();
         const email = document.getElementById("reg-email").value.trim();
         const phone = document.getElementById("reg-phone").value.trim();
-        const farm = document.getElementById("reg-farm").value.trim();
+        const farmName = document.getElementById("reg-farm").value.trim();
         const location = document.getElementById("reg-location").value.trim();
-        const crop = document.getElementById("reg-crop").value.trim();
+        const primaryCrop = document.getElementById("reg-crop").value.trim();
         const farmerId = document.getElementById("reg-id").value.trim();
         const password = document.getElementById("reg-pass").value;
         const confirm = document.getElementById("reg-confirm").value;
 
-        if (!name || !email || !phone || !farm || !location || !crop || !farmerId || !password) {
+        if (!name || !email || !phone || !farmName || !location || !primaryCrop || !farmerId || !password) {
           showMessage("Please fill in all registration fields.", true);
           return;
         }
@@ -128,54 +133,68 @@
           return;
         }
 
-        const user = {
-          name: name,
-          email: email,
-          phone: phone,
-          farm: farm,
-          location: location,
-          crop: crop,
-          farmerId: farmerId,
-          password: password
-        };
+        try {
+          const res = await window.AgriApi.registerFarmer({
+            name,
+            email,
+            phone,
+            farmName,
+            location,
+            primaryCrop,
+            farmerId,
+            password
+          });
 
-        localStorage.setItem(storageKey, JSON.stringify(user));
-        localStorage.setItem("farmerName", user.name);
-        localStorage.setItem("farmerFarm", user.farm);
-        localStorage.setItem("farmerLocation", user.location);
-        localStorage.setItem("farmerCrop", user.crop);
-        document.getElementById("farmer-id").value = farmerId;
+          const user = {
+            name,
+            email,
+            phone,
+            farm: farmName,
+            location,
+            crop: primaryCrop,
+            farmerId,
+            password,
+            userId: res.data.userId
+          };
 
-        showMessage("Registration successful. Please login with your Farmer ID and password.", false);
-        setPanel("login");
+          localStorage.setItem(storageKey, JSON.stringify(user));
+          localStorage.setItem("farmerName", user.name);
+          localStorage.setItem("farmerFarm", user.farm);
+          localStorage.setItem("farmerLocation", user.location);
+          localStorage.setItem("farmerCrop", user.crop);
+          document.getElementById("farmer-id").value = farmerId;
+
+          showMessage("Registration successful. Please login with your Farmer ID and password.", false);
+          setPanel("login");
+        } catch (error) {
+          showMessage(error.error || "Registration failed", true);
+        }
       });
 
-      loginForm.addEventListener("submit", function (event) {
+      loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const farmerId = document.getElementById("farmer-id").value.trim();
         const password = document.getElementById("farmer-pass").value;
-        const rawUser = localStorage.getItem(storageKey);
 
-        if (!rawUser) {
-          showMessage("No account found. Please register first.", true);
-          setPanel("register");
+        if (!farmerId || !password) {
+          showMessage("Please enter both Farmer ID and password.", true);
           return;
         }
 
-        const savedUser = JSON.parse(rawUser);
+        try {
+          const res = await window.AgriApi.loginFarmer({ farmerId, password });
+          const savedUser = res.data;
 
-        if (farmerId !== savedUser.farmerId || password !== savedUser.password) {
-          showMessage("Invalid Farmer ID or password.", true);
-          return;
+          localStorage.setItem("farmerName", savedUser.name);
+          localStorage.setItem("farmerFarm", savedUser.farm_name || savedUser.farmName);
+          localStorage.setItem("farmerLocation", savedUser.location);
+          localStorage.setItem("farmerCrop", savedUser.primary_crop || savedUser.primaryCrop);
+          localStorage.setItem("farmerLoggedIn", "true");
+          window.location.href = "find-warehouses.html";
+        } catch (error) {
+          showMessage(error.error || "Login failed. Check your credentials.", true);
         }
-
-        localStorage.setItem("farmerName", savedUser.name);
-        localStorage.setItem("farmerFarm", savedUser.farm);
-        localStorage.setItem("farmerLocation", savedUser.location);
-        localStorage.setItem("farmerCrop", savedUser.crop);
-        localStorage.setItem("farmerLoggedIn", "true");
-        window.location.href = "find-warehouses.html";
       });
 
       const existingUserRaw = localStorage.getItem(storageKey);
@@ -191,5 +210,5 @@
     })();
   </script>
 </body>
-</html>
 
+</html>

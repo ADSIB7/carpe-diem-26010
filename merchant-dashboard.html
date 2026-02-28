@@ -10,468 +10,388 @@
   <link rel="stylesheet" href="merchant-dashboard.css" />
 </head>
 <body>
-  <div class="shell" id="shell">
+  <div class="layout" id="layout">
     <aside class="sidebar" id="sidebar">
-      <div class="brand-row">
-        <div class="brand-mark">A</div>
-        <div class="brand-text">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
           <strong>AgriShield</strong>
-          <span>Merchant Dashboard</span>
+          <span>MERCHANT PORTAL</span>
         </div>
       </div>
 
-      <nav class="nav-list">
-        <a class="active" href="#overview"><span>&#127968;</span><b>Dashboard</b></a>
-        <a href="#inventory"><span>&#128269;</span><b>Browse Inventory</b></a>
-        <a href="#orders"><span>&#128722;</span><b>My Orders</b></a>
-        <a href="#purchases"><span>&#128230;</span><b>My Purchases</b></a>
-        <a href="merchant-capacity.html"><span>&#128202;</span><b>Storage and Capacity</b></a>
-        <a href="#market"><span>&#128202;</span><b>Market Trends</b></a>
-        <a href="#conditions"><span>&#127777;</span><b>Storage Conditions</b></a>
-        <a href="#traceability"><span>&#128270;</span><b>Traceability</b></a>
-        <a href="#demand"><span>&#128200;</span><b>Demand Insights</b></a>
-        <a href="#payments"><span>&#128176;</span><b>Payments</b></a>
-        <a href="#notifications"><span>&#128276;</span><b>Notifications</b></a>
-        <a href="#profile"><span>&#128100;</span><b>Profile</b></a>
+      <div class="owner-label">Merchant</div>
+
+      <div class="profile-card" id="profileCard">
+        <a class="profile-main" href="merchant-profile.html">
+          <img src="businessman-avatar-profile-picture-36775850.png" alt="Merchant" />
+          <div>
+            <strong id="sidebarMerchantName">Rahul Traders</strong>
+            <span>Merchant</span>
+          </div>
+        </a>
+        <button class="profile-toggle" id="profileToggle" aria-expanded="false" aria-controls="profileMenu" aria-label="Toggle profile menu">&#9662;</button>
+      </div>
+      <div class="profile-menu" id="profileMenu">
+        <a href="merchant-profile.html">View Profile</a>
+        <a href="merchant-profile.html#edit">Update Profile</a>
+      </div>
+
+      <nav class="side-nav" id="sideNav" aria-label="Merchant navigation">
+        <button type="button" class="active" data-view="dashboard">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"></path></svg>
+          </span>
+          Dashboard
+        </button>
+        <button type="button" data-view="search-produce">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3M10.5 18A7.5 7.5 0 1 0 10.5 3a7.5 7.5 0 0 0 0 15z"></path></svg>
+          </span>
+          Search Produce
+        </button>
+        <button type="button" data-view="my-orders">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 10h8M8 14h5"></path></svg>
+          </span>
+          My Orders
+        </button>
+        <button type="button" data-view="warehouse-listings">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3zM9 20v-6h6v6"></path></svg>
+          </span>
+          Warehouse Listings
+        </button>
+        <button type="button" data-view="market-insights">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 18h16M6 14l4-4 3 3 5-6"></path></svg>
+          </span>
+          Market Insights
+        </button>
+        <button type="button" data-view="messages">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16v10H8l-4 4z"></path></svg>
+          </span>
+          Messages
+        </button>
       </nav>
 
-      <button class="logout-btn" id="logoutBtn" type="button"><span>&#128682;</span><b>Logout</b></button>
+      <div class="sidebar-footer">
+        <a class="back-home" href="index.html">Back to Home</a>
+      </div>
     </aside>
 
-    <main class="main">
-      <header class="topbar glass" id="overview">
-        <div class="top-left">
-          <button class="icon-btn" id="menuBtn" type="button" aria-label="Toggle sidebar">&#9776;</button>
-          <div>
-            <p class="eyebrow">Merchant Control Center</p>
-            <h1>Welcome, <span id="merchantName">Merchant User</span></h1>
-          </div>
+    <main class="content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle sidebar">Menu</button>
+
+        <div class="search">
+          <input type="search" placeholder="Search crops, farmers, warehouses" />
         </div>
 
-        <div class="top-right">
-          <label class="search-box" for="search">
-            <span>&#128269;</span>
-            <input id="search" type="search" placeholder="Search produce / warehouse" />
-          </label>
-
-          <button class="icon-btn bell" type="button" id="bellBtn" aria-label="Notifications">
-            &#128276;
-            <span class="dot" id="notifCount">0</span>
+        <div class="topbar-actions">
+          <span class="weather-pill" id="weatherSummary">Pune | 28 C | Clear</span>
+          <span class="clock-pill" id="liveClock">--:--:--</span>
+          <button class="icon-pill bell-btn" type="button" aria-label="Notifications">
+            Bell
+            <span class="badge-dot">4</span>
           </button>
-
-          <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">&#127769;</button>
-
-          <div class="profile-wrap" id="profileWrap">
-            <button class="profile-btn" id="profileBtn" type="button" aria-expanded="false">
-              <img src="warehouse-owner-profile.png" alt="Avatar" />
-              <span id="merchantShort">Merchant</span>
-            </button>
-            <div class="profile-menu" id="profileMenu">
-              <a href="#profile">View Profile</a>
-              <a href="#payments">Billing</a>
-              <button type="button" id="logoutMenu">Logout</button>
-            </div>
+          <button class="icon-pill" id="themeToggle" type="button">Dark</button>
+          <div class="user-pill">
+            <img src="businessman-avatar-profile-picture-36775850.png" alt="Merchant user" />
+            <span id="topMerchantName">Rahul Traders</span>
+            <span class="chev">&#9662;</span>
           </div>
         </div>
       </header>
 
-      <section class="kpi-grid">
-        <article class="kpi glass">
-          <p>&#128722; Total Active Orders</p>
-          <h2 class="count" data-target="86">0</h2>
-          <small>+9.2% from last week</small>
-        </article>
-        <article class="kpi glass" id="purchases">
-          <p>&#128230; Total Quantity Purchased</p>
-          <h2 class="count" data-target="412">0</h2>
-          <small>tons this cycle</small>
-        </article>
-        <article class="kpi glass">
-          <p>&#128176; Average Purchase Price</p>
-          <h2>&#8377;<span class="count" data-target="32">0</span>/kg</h2>
-          <small>Based on latest all-India wheat retail average</small>
-        </article>
-        <article class="kpi glass">
-          <p>&#128200; Market Trend Indicator</p>
-          <h2 id="trendState">&#8593; Rising</h2>
-          <small id="trendMeta">Onion +6.4% (7d)</small>
-        </article>
-      </section>
+      <section class="view active" id="view-dashboard">
+        <section class="page-title">
+          <h1>Merchant Dashboard</h1>
+          <p>Monitor your produce buying activity in one place.</p>
+        </section>
 
-      <section class="grid-2" id="market">
-        <article class="panel glass">
+        <section class="stat-grid" id="dashboardStats"></section>
+
+        <section class="panel">
           <div class="panel-head">
-            <h3>Market Trends (INR)</h3>
-            <div class="row-controls">
-              <select id="commodity">
-                <option>Wheat</option>
-                <option>Rice</option>
-                <option>Onion</option>
-                <option>Tomato</option>
-              </select>
-              <select id="range">
-                <option value="7">7 Days</option>
-                <option value="30">30 Days</option>
-                <option value="90">90 Days</option>
-              </select>
-            </div>
+            <h2>Available Produce</h2>
           </div>
-          <canvas id="marketChart" width="900" height="260"></canvas>
-          <div class="buy-rec">
-            <strong>Best Buy Recommendation:</strong>
-            <span id="bestBuy">Buy Onion this cycle (recent downtrend in all-India average prices)</span>
-          </div>
-        </article>
+          <div class="produce-grid" id="dashboardProduce"></div>
+        </section>
 
-        <aside class="panel glass" id="notifications">
-          <div class="panel-head"><h3>Smart Notifications</h3></div>
-          <div class="notif-list" id="notifList"></div>
-        </aside>
-      </section>
-
-      <section class="panel glass" id="inventory">
-        <div class="panel-head">
-          <h3>Browse Inventory</h3>
-          <div class="row-controls filters">
-            <select><option>Commodity Type</option><option>Wheat</option><option>Rice</option><option>Onion</option></select>
-            <select><option>Price Range</option><option>&#8377;20-&#8377;30 /kg</option><option>&#8377;30-&#8377;40 /kg</option><option>&#8377;40+ /kg</option></select>
-            <select><option>Location</option><option>Fresno</option><option>Modesto</option><option>Bakersfield</option></select>
-            <select><option>Quality Grade</option><option>A+</option><option>A</option><option>B</option></select>
-          </div>
-        </div>
-
-        <div class="inventory-grid">
-          <article class="item-card">
-            <h4>Basmati Rice</h4>
-            <p>Warehouse: North Valley</p>
-            <p>Qty: 3,500 tons | &#8377;43.11/kg</p>
-            <p>Grade: A+ | Temp: 4.1 C | Humidity: 76%</p>
-            <div class="item-actions"><button>View Details</button><button class="buy">Buy Now</button></div>
-          </article>
-          <article class="item-card">
-            <h4>Wheat</h4>
-            <p>Warehouse: Pacific Cold Storage</p>
-            <p>Qty: 1,120 tons | &#8377;31.57/kg</p>
-            <p>Grade: A | Temp: 5.4 C | Humidity: 81%</p>
-            <div class="item-actions"><button>View Details</button><button class="buy">Buy Now</button></div>
-          </article>
-          <article class="item-card">
-            <h4>Onion</h4>
-            <p>Warehouse: AgriDock Hub</p>
-            <p>Qty: 2,430 tons | &#8377;26.98/kg</p>
-            <p>Grade: A | Temp: 6.1 C | Humidity: 84%</p>
-            <div class="item-actions"><button>View Details</button><button class="buy">Buy Now</button></div>
-          </article>
-        </div>
-      </section>
-
-      <section class="grid-2">
-        <article class="panel glass" id="orders">
+        <section class="panel">
           <div class="panel-head">
-            <h3>My Orders</h3>
-            <div class="row-controls">
-              <button class="ghost">Export PDF</button>
-              <button class="ghost">Export CSV</button>
-            </div>
+            <h2>Market Demand Overview</h2>
+          </div>
+          <div class="insights-grid" id="dashboardDemand"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Recent Orders</h2>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Order ID</th><th>Commodity</th><th>Warehouse</th><th>Qty</th><th>Date</th><th>Delivery</th><th>Payment</th><th>Action</th></tr>
+                <tr>
+                  <th>Crop</th>
+                  <th>Farmer</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                </tr>
               </thead>
-              <tbody>
-                <tr><td>ORD-7821</td><td>Basmati Rice</td><td>North Valley</td><td>350</td><td>2026-02-23</td><td><span class="tag processing">Processing</span></td><td><span class="tag processing">Pending</span></td><td><a href="#">Track</a></td></tr>
-                <tr><td>ORD-7810</td><td>Wheat</td><td>Pacific Cold</td><td>210</td><td>2026-02-20</td><td><span class="tag transit">In Transit</span></td><td><span class="tag done">Paid</span></td><td><a href="#">Invoice</a></td></tr>
-                <tr><td>ORD-7762</td><td>Onion</td><td>AgriDock Hub</td><td>430</td><td>2026-02-14</td><td><span class="tag delivered">Delivered</span></td><td><span class="tag done">Completed</span></td><td><a href="#">Invoice</a></td></tr>
-              </tbody>
+              <tbody id="dashboardOrders"></tbody>
             </table>
           </div>
-        </article>
-
-        <article class="panel glass" id="conditions">
-          <div class="panel-head"><h3>Storage Conditions Monitoring</h3></div>
-          <div class="condition-stats">
-            <div><small>Real-time Temperature</small><h4 id="tempNow">4.2 C</h4></div>
-            <div><small>Real-time Humidity</small><h4 id="humidityNow">78%</h4></div>
-            <div><small>Risk Level</small><h4 id="riskNow" class="safe">Safe</h4></div>
-          </div>
-          <canvas id="storageChart" width="560" height="220"></canvas>
-          <div class="alert" id="riskAlert">&#9888; Storage conditions exceed safe limits</div>
-        </article>
+        </section>
       </section>
 
-      <section class="grid-2">
-        <article class="panel glass" id="traceability">
-          <div class="panel-head"><h3>Traceability</h3></div>
-          <div class="trace-row">
-            <input id="batchId" type="text" placeholder="Enter Batch ID" />
-            <button id="traceBtn" type="button">Track Batch</button>
-          </div>
-          <div class="timeline" id="timeline">
-            <div class="step"><b>Farm Source:</b> Green Acre Farms</div>
-            <div class="step"><b>Harvest Date:</b> 2026-02-15</div>
-            <div class="step"><b>Warehouse Entry:</b> 2026-02-17</div>
-            <div class="step"><b>Storage Log:</b> 4.2 C | 77% humidity stable</div>
-            <div class="step"><b>Movement:</b> Farm Dock -> Zone B2 -> Dispatch Bay</div>
-          </div>
-        </article>
+      <section class="view" id="view-search-produce">
+        <section class="page-title">
+          <h1>Search Produce</h1>
+          <p>Find the right produce quickly using simple filters.</p>
+        </section>
 
-        <article class="panel glass" id="demand">
-          <div class="panel-head"><h3>Demand Insights</h3></div>
-          <p class="meta">Predicted demand for selected commodity (Wheat):</p>
-          <h4 class="demand-main">+32% next 6 days</h4>
-          <p class="ai-suggest" id="aiSuggest">AI Suggestion: High demand incoming - Buy now</p>
-          <div class="demand-bars">
-            <span style="height:42%"></span>
-            <span style="height:53%"></span>
-            <span style="height:62%"></span>
-            <span style="height:74%"></span>
-            <span style="height:88%"></span>
+        <section class="panel">
+          <div class="filters-grid">
+            <input id="produceSearchInput" type="search" placeholder="Search crop name" />
+            <select id="qualityFilter">
+              <option value="all">Quality: All</option>
+              <option value="Good">Good</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Risk">Risk</option>
+            </select>
+            <select id="warehouseFilter">
+              <option value="all">All Warehouses</option>
+            </select>
+            <input id="maxPriceFilter" type="number" min="0" placeholder="Max price (per kg)" />
           </div>
-        </article>
+          <div class="produce-grid" id="searchProduceGrid"></div>
+        </section>
       </section>
 
-      <section class="panel glass" id="payments">
-        <div class="panel-head"><h3>Payments</h3></div>
-        <div class="payments-grid">
-          <div class="pay-box"><small>Pending Payments</small><h4>&#8377;24,85,000</h4></div>
-          <div class="pay-box"><small>Completed Payments</small><h4>&#8377;1,82,40,000</h4></div>
-          <div class="pay-box"><small>Total Spending</small><h4>&#8377;2,07,25,000</h4></div>
-          <div class="pay-box"><small>Storage Cost</small><h4>&#8377;41,23,000</h4></div>
-        </div>
-        <div class="methods">
-          <button class="ghost">Wallet</button>
-          <button class="ghost">UPI</button>
-          <button class="ghost">Card</button>
-          <button class="primary">Download Invoice</button>
-        </div>
+      <section class="view" id="view-my-orders">
+        <section class="page-title">
+          <h1>My Orders</h1>
+          <p>Track all orders and status updates.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Orders List</h2>
+            <select id="orderStatusFilter">
+              <option value="all">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Crop</th>
+                  <th>Farmer</th>
+                  <th>Warehouse</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-warehouse-listings">
+        <section class="page-title">
+          <h1>Connected Warehouses</h1>
+          <p>View storage partner details and contact quickly.</p>
+        </section>
+
+        <section class="warehouse-grid" id="warehouseGrid"></section>
+      </section>
+
+      <section class="view" id="view-market-insights">
+        <section class="page-title">
+          <h1>Market Insights &amp; Analytics</h1>
+          <p>Detailed demand, pricing trends and profit opportunities</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Real-Time Market Summary</h2>
+          </div>
+          <div class="market-summary-grid" id="marketSummaryCards"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Detailed Demand Analysis</h2>
+          </div>
+          <div class="demand-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Demand Level</th>
+                  <th>Demand Change</th>
+                  <th>Market Region</th>
+                  <th>Suggested Action</th>
+                </tr>
+              </thead>
+              <tbody id="demandTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Price Trend Analysis (Weekly)</h2>
+          </div>
+          <div class="price-trend-grid" id="priceTrendGrid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Profit Margin Calculator</h2>
+          </div>
+          <div class="profit-calc-grid">
+            <div class="calculator-form">
+              <label for="profitCrop">Select Crop</label>
+              <select id="profitCrop"></select>
+              <label for="purchasePrice">Purchase Price (₹/kg)</label>
+              <input id="purchasePrice" type="number" min="0" step="0.01" />
+              <label for="sellingPrice">Selling Price (₹/kg)</label>
+              <input id="sellingPrice" type="number" min="0" step="0.01" />
+              <label for="calcQuantity">Quantity (kg)</label>
+              <input id="calcQuantity" type="number" min="0" step="0.01" />
+              <button class="primary-btn" id="calculateProfitBtn" type="button">Calculate Profit</button>
+            </div>
+            <div class="profit-output" id="profitResult">
+              <div class="result-row"><span>Total Revenue</span><strong id="resultRevenue">₹0</strong></div>
+              <div class="result-row"><span>Total Cost</span><strong id="resultCost">₹0</strong></div>
+              <div class="result-row"><span>Estimated Profit</span><strong id="resultProfit">₹0</strong></div>
+              <div class="result-row"><span>Profit Margin</span><strong id="resultMargin">0%</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Supply vs Demand Comparison</h2>
+          </div>
+          <div class="supply-demand-grid" id="supplyDemandGrid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Buying Opportunities</h2>
+          </div>
+          <div class="opportunity-grid" id="insightsOpportunityGrid"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-messages">
+        <section class="page-title">
+          <h1>Messages</h1>
+          <p>Chat with farmers and warehouse contacts.</p>
+        </section>
+
+        <section class="panel chat-layout">
+          <aside class="chat-list" id="chatList"></aside>
+          <div class="chat-pane">
+            <div class="chat-header" id="chatHeader">Select a conversation</div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-row">
+              <input id="chatInput" type="text" placeholder="Type message" />
+              <button id="sendChatBtn" type="button">Send</button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-profile">
+        <section class="page-title">
+          <h1>Merchant Profile</h1>
+          <p>View and update account information.</p>
+        </section>
+
+        <section class="profile-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Profile Info</h2>
+              <button id="editProfileBtn" class="ghost-btn" type="button">Edit Profile</button>
+            </div>
+
+            <div id="profileView" class="profile-view"></div>
+
+            <form id="profileForm" class="profile-form hidden">
+              <label>Full Name<input id="profileNameInput" type="text" required /></label>
+              <label>Email<input id="profileEmailInput" type="email" required /></label>
+              <label>Phone<input id="profilePhoneInput" type="text" required /></label>
+              <label>Business Name<input id="profileBusinessInput" type="text" required /></label>
+              <label>Business Location<input id="profileLocationInput" type="text" required /></label>
+              <div class="profile-form-actions">
+                <button type="submit" class="primary-btn">Save</button>
+                <button type="button" id="cancelProfileEdit" class="ghost-btn">Cancel</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Account Summary</h2>
+            </div>
+            <div class="summary-list" id="accountSummary"></div>
+          </article>
+        </section>
       </section>
     </main>
   </div>
 
-  <dialog id="logoutModal" class="logout-modal">
-    <form method="dialog" class="logout-card">
-      <h3>Confirm Logout</h3>
-      <p>Do you want to logout from Merchant Dashboard?</p>
-      <div class="logout-actions">
-        <button value="cancel" type="submit">Cancel</button>
-        <button value="confirm" type="submit" class="danger">Logout</button>
+  <div class="modal" id="orderModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Place Order</h3>
+        <button class="close-btn" data-close="orderModal" type="button">Close</button>
       </div>
-    </form>
-  </dialog>
+      <p id="orderModalCrop"></p>
+      <label class="modal-label">Enter quantity (tons)
+        <input id="orderQtyInput" type="number" min="1" />
+      </label>
+      <button id="confirmOrderBtn" class="primary-btn" type="button">Confirm Order</button>
+    </div>
+  </div>
 
-  <script>
-    (function () {
-      const shell = document.getElementById("shell");
-      const menuBtn = document.getElementById("menuBtn");
-      const themeBtn = document.getElementById("themeBtn");
-      const profileBtn = document.getElementById("profileBtn");
-      const profileMenu = document.getElementById("profileMenu");
-      const profileWrap = document.getElementById("profileWrap");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const logoutMenu = document.getElementById("logoutMenu");
-      const logoutModal = document.getElementById("logoutModal");
-      const notifList = document.getElementById("notifList");
-      const notifCount = document.getElementById("notifCount");
-      const tempNow = document.getElementById("tempNow");
-      const humidityNow = document.getElementById("humidityNow");
-      const riskNow = document.getElementById("riskNow");
-      const riskAlert = document.getElementById("riskAlert");
-      const commodity = document.getElementById("commodity");
-      const range = document.getElementById("range");
-      const marketChart = document.getElementById("marketChart");
-      const trendState = document.getElementById("trendState");
-      const trendMeta = document.getElementById("trendMeta");
-      const bestBuy = document.getElementById("bestBuy");
-      const storageChart = document.getElementById("storageChart");
-      const traceBtn = document.getElementById("traceBtn");
-      const batchId = document.getElementById("batchId");
-      const timeline = document.getElementById("timeline");
+  <div class="modal" id="orderDetailsModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Order Details</h3>
+        <button class="close-btn" data-close="orderDetailsModal" type="button">Close</button>
+      </div>
+      <div id="orderDetailsContent" class="details-list"></div>
+    </div>
+  </div>
 
-      if (localStorage.getItem("merchantLoggedIn") !== "true") {
-        window.location.href = "merchant.html";
-        return;
-      }
+  <div class="modal" id="warehouseContactModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Warehouse Contact</h3>
+        <button class="close-btn" data-close="warehouseContactModal" type="button">Close</button>
+      </div>
+      <div id="warehouseContactContent" class="details-list"></div>
+      <button id="sendWarehouseMessageBtn" class="primary-btn" type="button">Send Message</button>
+    </div>
+  </div>
 
-      const merchantName = localStorage.getItem("merchantName") || "Merchant User";
-      document.getElementById("merchantName").textContent = merchantName;
-      document.getElementById("merchantShort").textContent = merchantName;
-
-      menuBtn.addEventListener("click", function () {
-        shell.classList.toggle("sidebar-open");
-      });
-
-      profileBtn.addEventListener("click", function () {
-        const open = profileMenu.classList.toggle("open");
-        profileBtn.setAttribute("aria-expanded", String(open));
-      });
-
-      document.addEventListener("click", function (event) {
-        if (!profileWrap.contains(event.target)) {
-          profileMenu.classList.remove("open");
-          profileBtn.setAttribute("aria-expanded", "false");
-        }
-      });
-
-      const storedTheme = localStorage.getItem("merchantTheme") || "dark";
-      if (storedTheme === "light") {
-        document.body.classList.add("light-mode");
-      }
-
-      function syncTheme() {
-        themeBtn.textContent = document.body.classList.contains("light-mode") ? "\uD83C\uDF19" : "\u2600";
-      }
-      syncTheme();
-
-      themeBtn.addEventListener("click", function () {
-        document.body.classList.toggle("light-mode");
-        localStorage.setItem("merchantTheme", document.body.classList.contains("light-mode") ? "light" : "dark");
-        syncTheme();
-      });
-
-      document.querySelectorAll(".count").forEach(function (el) {
-        const target = Number(el.getAttribute("data-target") || "0");
-        let current = 0;
-        const step = Math.max(1, Math.ceil(target / 40));
-        const timer = setInterval(function () {
-          current += step;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
-          }
-          el.textContent = String(current);
-        }, 24);
-      });
-
-      const notifications = [
-        "Price trend: Wheat softened to about \u20B931.57/kg",
-        "Price trend: Onion cooled to about \u20B926.98/kg",
-        "Tomato corrected sharply to near \u20B929.91/kg",
-        "Order ORD-7810 shipped",
-        "Payment successful for INV-22031"
-      ];
-
-      notifCount.textContent = String(notifications.length);
-      notifList.innerHTML = "";
-      notifications.forEach(function (n) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "notif-item";
-        btn.textContent = n;
-        notifList.appendChild(btn);
-      });
-
-      const priceData = {
-        Wheat: [32.5, 32.3, 32.1, 31.9, 31.8, 31.82, 31.75, 31.72, 31.69, 31.66, 31.62, 31.57],
-        Rice: [42.4, 42.6, 42.8, 43.0, 43.17, 43.2, 43.18, 43.15, 43.14, 43.13, 43.12, 43.11],
-        Onion: [29.4, 29.1, 28.8, 28.4, 27.93, 27.9, 27.81, 27.6, 27.4, 27.25, 27.1, 26.98],
-        Tomato: [27.8, 29.2, 31.7, 33.46, 33.94, 33.2, 32.5, 31.6, 30.8, 30.4, 30.1, 29.91]
-      };
-
-      function drawLine(canvas, values, colorA, colorB) {
-        const ctx = canvas.getContext("2d");
-        const w = canvas.width;
-        const h = canvas.height;
-        const pad = 30;
-        const min = Math.min.apply(null, values) - 5;
-        const max = Math.max.apply(null, values) + 5;
-
-        ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle = document.body.classList.contains("light-mode") ? "#c6d7cb" : "#2d4b3c";
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 4; i += 1) {
-          const y = pad + (i * (h - pad * 2)) / 3;
-          ctx.beginPath();
-          ctx.moveTo(pad, y);
-          ctx.lineTo(w - pad, y);
-          ctx.stroke();
-        }
-
-        const grad = ctx.createLinearGradient(0, 0, w, 0);
-        grad.addColorStop(0, colorA);
-        grad.addColorStop(1, colorB);
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        values.forEach(function (v, i) {
-          const x = pad + (i * (w - pad * 2)) / Math.max(1, values.length - 1);
-          const y = h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-      }
-
-      function renderMarket() {
-        const c = commodity.value;
-        const d = priceData[c];
-        const slice = Number(range.value) === 7 ? d.slice(-7) : d;
-        drawLine(marketChart, slice, "#4fd88b", "#2c78ff");
-
-        const change = ((slice[slice.length - 1] - slice[0]) / slice[0]) * 100;
-        const up = change >= 0;
-        trendState.textContent = (up ? "\u2191 Rising" : "\u2193 Falling");
-        trendMeta.textContent = c + " " + (up ? "+" : "") + change.toFixed(1) + "% over " + range.value + " days (INR)";
-        const latest = slice[slice.length - 1];
-        bestBuy.textContent = "Best Buy Recommendation: " + c + " near \u20B9" + latest.toLocaleString("en-IN") + "/kg in current cycle";
-      }
-
-      function renderStorage() {
-        const tempSeries = [4.1, 4.3, 4.5, 5.2, 5.6, 5.9, 6.2];
-        drawLine(storageChart, tempSeries, "#58d391", "#f0b44f");
-
-        const temp = tempSeries[tempSeries.length - 1];
-        const humidity = 74 + Math.floor(Math.random() * 12);
-        tempNow.textContent = temp.toFixed(1) + " C";
-        humidityNow.textContent = humidity + "%";
-
-        let risk = "Safe";
-        if (temp >= 6 || humidity >= 84) risk = "Critical";
-        else if (temp >= 5.4 || humidity >= 79) risk = "Warning";
-
-        riskNow.textContent = risk;
-        riskNow.className = risk === "Critical" ? "critical" : risk === "Warning" ? "warn" : "safe";
-        riskAlert.classList.toggle("show", risk !== "Safe");
-      }
-
-      commodity.addEventListener("change", renderMarket);
-      range.addEventListener("change", renderMarket);
-      renderMarket();
-      renderStorage();
-      setInterval(renderStorage, 7000);
-
-      traceBtn.addEventListener("click", function () {
-        const id = (batchId.value || "BATCH-101").trim();
-        timeline.innerHTML = ""
-          + "<div class='step'><b>Batch ID:</b> " + id + "</div>"
-          + "<div class='step'><b>Farm Source:</b> Sunrise Agro Cooperative</div>"
-          + "<div class='step'><b>Harvest Date:</b> 2026-02-17</div>"
-          + "<div class='step'><b>Warehouse Entry:</b> 2026-02-19</div>"
-          + "<div class='step'><b>Storage History:</b> 4.3 C / 76% -> 5.1 C / 80%</div>"
-          + "<div class='step'><b>Movement Logs:</b> Farm Dock -> Zone B2 -> Outbound Bay 4</div>";
-      });
-
-      function openLogoutModal() {
-        if (typeof logoutModal.showModal === "function") {
-          logoutModal.showModal();
-        }
-      }
-
-      logoutBtn.addEventListener("click", openLogoutModal);
-      logoutMenu.addEventListener("click", openLogoutModal);
-
-      logoutModal.addEventListener("close", function () {
-        if (logoutModal.returnValue === "confirm") {
-          localStorage.removeItem("merchantLoggedIn");
-          window.location.href = "merchant.html";
-        }
-      });
-    })();
-  </script>
+  <script src="merchant-dashboard.js"></script>
 </body>
 </html>
-
-
-
-
-

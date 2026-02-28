@@ -1,8 +1,8 @@
 (() => {
-  const weeklyUtilization = [62, 70, 78, 85, 82, 88, 80];
-  const weeklyLine = [56, 60, 68, 72, 70, 75, 80];
+  let weeklyUtilization = [62, 70, 78, 85, 82, 88, 80];
+  let weeklyLine = [56, 60, 68, 72, 70, 75, 80];
 
-  const topProducts = [
+  let topProducts = [
     { name: "Potatoes", tons: 85 },
     { name: "Rice", tons: 70 },
     { name: "Tomatoes", tons: 65 },
@@ -10,22 +10,81 @@
     { name: "Wheat", tons: 50 }
   ];
 
-  const zoneData = [
-    { zone: "A1", utilization: 78, capacity: 120, used: 94, free: 26, crops: "Potatoes, Rice", temp: "4.1C", risk: "Low" },
-    { zone: "A2", utilization: 86, capacity: 110, used: 95, free: 15, crops: "Onions, Wheat", temp: "5.3C", risk: "Moderate" },
-    { zone: "A3", utilization: 94, capacity: 95, used: 89, free: 6, crops: "Tomatoes, Corn", temp: "8.4C", risk: "High" },
-    { zone: "B1", utilization: 64, capacity: 130, used: 83, free: 47, crops: "Rice, Pulses", temp: "3.9C", risk: "Low" },
-    { zone: "B2", utilization: 89, capacity: 90, used: 80, free: 10, crops: "Leafy Greens", temp: "6.2C", risk: "Moderate" },
-    { zone: "C1", utilization: 58, capacity: 100, used: 58, free: 42, crops: "Apples, Grapes", temp: "4.8C", risk: "Low" }
-  ];
+  let zoneData = [];
 
   const els = {
     weeklyChart: document.getElementById("weeklyChart"),
     productBars: document.getElementById("productBars"),
-    zoneCapacityGrid: document.getElementById("zoneCapacityGrid")
+    zoneCapacityGrid: document.getElementById("zoneCapacityGrid"),
+    utilizationGauge: document.querySelector(".utilization-gauge-val"),
+    availableCapacity: document.querySelector(".available-capacity-val"),
+    daysUntilFull: document.querySelector(".days-until-full-val"),
+    optimizationOpportunities: document.querySelector(".optimization-val")
   };
 
+  async function fetchStorageData() {
+    try {
+      if (!window.AgriApi) return;
+
+      const res = await window.AgriApi.getStorageCapacity();
+      if (!res || !res.data) return;
+
+      const d = res.data;
+      weeklyUtilization = d.weeklyUtilization || weeklyUtilization;
+      weeklyLine = d.weeklyLine || weeklyLine;
+      topProducts = d.topProducts || topProducts;
+      zoneData = d.zoneData || [];
+
+      // Update Top Metrics
+      if (d.summary) {
+        if (els.utilizationGauge) els.utilizationGauge.textContent = `${d.summary.utilizationPercent}% Full`;
+        updateGauge(d.summary.utilizationPercent);
+
+        if (els.availableCapacity) els.availableCapacity.textContent = `${d.summary.availableCapacityTons} tons`;
+
+        if (els.daysUntilFull) {
+          els.daysUntilFull.textContent = d.summary.daysUntilFull !== null ? `${d.summary.daysUntilFull} days` : "Safe";
+        }
+
+        if (els.optimizationOpportunities) els.optimizationOpportunities.textContent = `${d.summary.optimizationOpportunities} new suggestions`;
+
+        const avgUtilEl = document.querySelectorAll(".stats-row strong")[0];
+        if (avgUtilEl) avgUtilEl.textContent = `${d.summary.avgUtilization}%`;
+
+        const maxUtilEl = document.querySelectorAll(".stats-row strong")[1];
+        if (maxUtilEl) maxUtilEl.textContent = `${d.summary.maxUtilization}%`;
+
+        const totalPalletsEl = document.querySelectorAll(".stats-row strong")[2];
+        if (totalPalletsEl) totalPalletsEl.textContent = d.summary.estimatedPalletsStored.toLocaleString();
+      }
+
+      renderWeeklyChart();
+      renderProducts();
+      renderZoneWise();
+      renderRoadmap();
+    } catch (err) {
+      console.error("Failed to fetch storage capacity data:", err);
+    }
+  }
+
+  function updateGauge(percent) {
+    const gaugeValue = document.querySelector(".gauge-value");
+    const needle = document.querySelector(".needle");
+    if (!gaugeValue || !needle) return;
+
+    // SVG arc for 180 degrees
+    const radius = 90;
+    const circumference = Math.PI * radius;
+    const offset = circumference - (percent / 100) * circumference;
+    gaugeValue.style.strokeDasharray = `${circumference} ${circumference}`;
+    gaugeValue.style.strokeDashoffset = offset;
+
+    const angle = (percent / 100) * 180 - 90;
+    needle.style.transform = `rotate(${angle}deg)`;
+  }
+
   function renderWeeklyChart() {
+    if (!els.weeklyChart) return;
     const max = 100;
     els.weeklyChart.innerHTML = "";
 
@@ -36,8 +95,8 @@
       els.weeklyChart.appendChild(bar);
     });
 
-    const w = els.weeklyChart.clientWidth;
-    const h = els.weeklyChart.clientHeight;
+    const w = els.weeklyChart.clientWidth || 300;
+    const h = els.weeklyChart.clientHeight || 150;
     const step = w / (weeklyLine.length - 1);
 
     const points = weeklyLine.map((value, i) => ({
@@ -72,7 +131,8 @@
   }
 
   function renderProducts() {
-    const max = Math.max(...topProducts.map((p) => p.tons));
+    if (!els.productBars) return;
+    const max = Math.max(...topProducts.map((p) => p.tons), 1);
     els.productBars.innerHTML = "";
 
     topProducts.forEach((p) => {
@@ -132,15 +192,39 @@
     });
   }
 
-  function bindEvents() {
-    window.addEventListener("resize", renderWeeklyChart);
+  function renderRoadmap() {
+    const roadmapGrid = document.querySelector(".roadmap-card .zone-grid");
+    if (!roadmapGrid) return;
+
+    roadmapGrid.innerHTML = "";
+    zoneData.slice(0, 3).forEach(zone => {
+      const div = document.createElement("div");
+      div.className = `zone ${zoneClass(zone.utilization)}`;
+      div.innerHTML = `
+        <h4>${zone.zone}</h4>
+        <p>${zone.utilization}% Full</p>
+        <p>${zone.capacity} tons capacity</p>
+        <p>${zone.free} tons free</p>
+      `;
+      roadmapGrid.appendChild(div);
+    });
   }
 
-  function init() {
+  function bindEvents() {
+    window.addEventListener("resize", () => {
+      renderWeeklyChart();
+    });
+  }
+
+  async function init() {
     bindEvents();
+    // Show mock data first
     renderWeeklyChart();
     renderProducts();
     renderZoneWise();
+
+    // Then load real data
+    await fetchStorageData();
   }
 
   init();

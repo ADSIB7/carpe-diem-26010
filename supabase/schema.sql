@@ -97,7 +97,8 @@ create table if not exists public.batches (
   entry_date timestamptz not null default now(),
   expiry_date timestamptz not null,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  farmer_user_id uuid references auth.users(id) on delete set null
 );
 
 alter table public.warehouses add column if not exists owner_user_id uuid references auth.users(id) on delete cascade;
@@ -277,3 +278,131 @@ create policy "zone_climate_links_delete_own"
 on public.zone_climate_links
 for delete
 using (auth.uid() = owner_user_id);
+-- Farmer Profiles
+create table if not exists public.farmer_profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  name text not null,
+  email text not null unique,
+  phone text,
+  farm_name text,
+  location text,
+  primary_crop text,
+  farmer_id text unique,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.farmer_profiles enable row level security;
+
+create policy "farmer_profiles_select_own" on public.farmer_profiles for select using (auth.uid() = user_id);
+create policy "farmer_profiles_insert_own" on public.farmer_profiles for insert with check (auth.uid() = user_id);
+create policy "farmer_profiles_update_own" on public.farmer_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Merchant Profiles
+create table if not exists public.merchant_profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  name text not null,
+  email text not null unique,
+  phone text,
+  business_name text,
+  business_location text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.merchant_profiles enable row level security;
+
+create policy "merchant_profiles_select_own" on public.merchant_profiles for select using (auth.uid() = user_id);
+create policy "merchant_profiles_insert_own" on public.merchant_profiles for insert with check (auth.uid() = user_id);
+create policy "merchant_profiles_update_own" on public.merchant_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Climate History for AI Trends
+create table if not exists public.climate_history (
+  id uuid primary key default gen_random_uuid(),
+  zone_id uuid not null references public.storage_zones(id) on delete cascade,
+  temperature_c numeric not null,
+  humidity_percent numeric not null,
+  recorded_at timestamptz not null default now()
+);
+
+alter table public.climate_history enable row level security;
+create policy "climate_history_select_all" on public.climate_history for select using (true);
+create policy "climate_history_insert_service" on public.climate_history for insert with check (true); -- Simplified for simulation
+
+-- Merchant Orders
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  merchant_user_id uuid not null references auth.users(id) on delete cascade,
+  batch_id uuid not null references public.batches(id) on delete cascade,
+  product_name text not null,
+  quantity_tons numeric not null,
+  total_price numeric not null,
+  status text not null default 'pending',
+  created_at timestamptz not null default now()
+);
+
+alter table public.orders enable row level security;
+create policy "orders_select_own" on public.orders for select using (auth.uid() = merchant_user_id);
+create policy "orders_insert_own" on public.orders for insert with check (auth.uid() = merchant_user_id);
+create policy "orders_update_own" on public.orders for update using (auth.uid() = merchant_user_id);
+
+
+-- Market Intelligence Tables
+
+create table if not exists public.market_prices (
+  id uuid primary key default gen_random_uuid(),
+  crop text not null,
+  unit_price numeric not null,
+  percent_change numeric not null,
+  region text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.market_prices enable row level security;
+create policy "market_prices_select_all" on public.market_prices for select using (true);
+
+create table if not exists public.market_demands (
+  id uuid primary key default gen_random_uuid(),
+  crop text not null,
+  trend text not null,
+  region text not null,
+  score integer not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.market_demands enable row level security;
+create policy "market_demands_select_all" on public.market_demands for select using (true);
+
+create table if not exists public.market_forecasts (
+  id uuid primary key default gen_random_uuid(),
+  crop text not null,
+  status text not null,
+  points jsonb not null, -- Array of price points
+  region text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.market_forecasts enable row level security;
+create policy "market_forecasts_select_all" on public.market_forecasts for select using (true);
+
+create table if not exists public.market_competitors (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  crop text not null,
+  price numeric not null,
+  region text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.market_competitors enable row level security;
+create policy "market_competitors_select_all" on public.market_competitors for select using (true);
+
+create table if not exists public.market_supply_chain (
+  id uuid primary key default gen_random_uuid(),
+  inbound_stock_percent integer not null,
+  arrival_volume_tons numeric not null,
+  surplus_percent numeric not null,
+  alerts jsonb not null, -- Array of alert objects {icon, text, posted}
+  updated_at timestamptz not null default now()
+);
+
+alter table public.market_supply_chain enable row level security;
+create policy "market_supply_chain_select_all" on public.market_supply_chain for select using (true);
