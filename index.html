@@ -1,21 +1,26 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AgriShield | Smart Warehouse Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
   <header class="topbar-wrap">
     <div class="topbar container">
       <a class="brand" href="index.html" aria-label="AgriShield home">
-        <span class="brand-mark" aria-hidden="true"><span class="leaf leaf-one"></span><span class="leaf leaf-two"></span></span>
+        <span class="brand-mark" aria-hidden="true"><span class="leaf leaf-one"></span><span
+            class="leaf leaf-two"></span></span>
         <span class="brand-text">AgriShield</span>
       </a>
       <nav class="top-links" aria-label="Primary navigation">
@@ -23,6 +28,17 @@
         <a href="#warehouse">Warehouse</a>
         <a href="#in-store">In Store</a>
         <a href="#contact">Contact Us</a>
+        <div class="lang-switch" id="langSwitch">
+          <button class="lang-btn" id="langBtn" aria-expanded="false">
+            EN <span class="chev">&#9662;</span>
+          </button>
+          <div class="lang-menu" id="langMenu">
+            <button class="lang-option active" data-lang="EN">English</button>
+            <button class="lang-option" data-lang="मराठी">मराठी</button>
+            <button class="lang-option" data-lang="हिन्दी">हिन्दी</button>
+            <button class="lang-option" data-lang="தமிழ்">தமிழ்</button>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -44,11 +60,7 @@
       </div>
 
       <aside class="hero-panel hero-image-panel" aria-label="Farmers and farms">
-        <img
-          src="hero-warehouse.jpg"
-          alt="Farmers working in green crop fields"
-          loading="lazy"
-        />
+        <img src="hero-warehouse.jpg" alt="Farmers working in green crop fields" loading="lazy" />
       </aside>
     </section>
 
@@ -153,13 +165,36 @@
 
         history.replaceState(null, "", "#insights");
       });
+
+      const langBtn = document.getElementById('langBtn');
+      const langMenu = document.getElementById('langMenu');
+      const langOptions = langMenu.querySelectorAll('.lang-option');
+
+      langBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const isOpen = langMenu.classList.toggle('open');
+        langBtn.setAttribute('aria-expanded', isOpen);
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+          langMenu.classList.remove('open');
+          langBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      langOptions.forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          const lang = this.getAttribute('data-lang');
+          langOptions.forEach(o => o.classList.remove('active'));
+          this.classList.add('active');
+          langBtn.innerHTML = lang + ' <span class="chev">&#9662;</span>';
+          langMenu.classList.remove('open');
+          langBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
     })();
   </script>
 </body>
+
 </html>
-
-
-
-
-
-

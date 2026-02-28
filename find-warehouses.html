@@ -23,6 +23,7 @@
           <strong>AgriShield</strong>
           <span>Farmer</span>
         </div>
+        <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Close sidebar">&times;</button>
       </div>
 
       <div class="owner-label">Farmer Portal</div>
@@ -383,6 +384,12 @@
 
   <script src="api-client.js"></script>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="runtime-config.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="api-client.js"></script>
   <script>
     (function () {
       let data = [];
@@ -472,7 +479,18 @@
 
       const menuBtn = document.getElementById("menuBtn");
       const sidebar = document.getElementById("sidebar");
+      const closeSidebarBtn = document.getElementById('closeSidebarBtn');
       const profileCard = document.getElementById("profileCard");
+
+      menuBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("sidebar-open");
+      });
+
+      if (closeSidebarBtn) {
+        closeSidebarBtn.addEventListener('click', function () {
+          sidebar.classList.remove('sidebar-open');
+        });
+      }
       const profileToggle = document.getElementById("profileToggle");
       const profileMenu = document.getElementById("profileMenu");
       const themeToggle = document.getElementById("themeToggle");
@@ -897,71 +915,65 @@
         localStorage.setItem(contactStorageKey, JSON.stringify(items));
       }
 
-      function renderPreviousMessages() {
-        const rows = getStoredContactMessages();
-        previousMessages.innerHTML = "";
+      async function renderPreviousMessages() {
+        if (!window.AgriApi) return;
+        try {
+          const res = await AgriApi.listMessages();
+          const rows = res.data || [];
+          previousMessages.innerHTML = "";
 
-        if (!rows.length) {
-          previousMessages.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No messages yet.</p>";
-          return;
+          if (!rows.length) {
+            previousMessages.innerHTML = "<p style='margin:0;color:var(--muted);font-weight:700;'>No messages yet.</p>";
+            return;
+          }
+
+          rows.forEach(function (item) {
+            const row = document.createElement("article");
+            row.className = "message-item";
+            const date = new Date(item.created_at).toLocaleString();
+            row.innerHTML =
+              "<div class='message-top'>" +
+              "<span class='message-meta'>" + date + " | " + item.warehouse_id + "</span>" +
+              "<span class='message-status " + (item.status === "Replied" ? "replied" : "pending") + "'>" + item.status + "</span>" +
+              "</div>" +
+              "<div class='message-meta'>" + item.subject + " | Priority: " + (item.priority || "normal") + "</div>" +
+              "<button class='view-conv-btn' type='button'>View conversation</button>";
+            previousMessages.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Failed to fetch messages", error);
         }
-
-        rows.slice().reverse().forEach(function (item) {
-          const row = document.createElement("article");
-          row.className = "message-item";
-          row.innerHTML =
-            "<div class='message-top'>" +
-            "<span class='message-meta'>" + item.createdAt + " | " + item.warehouseId + "</span>" +
-            "<span class='message-status " + (item.status === "Replied" ? "replied" : "pending") + "'>" + item.status + "</span>" +
-            "</div>" +
-            "<div class='message-meta'>" + item.subject + " | Priority: " + item.priority + "</div>" +
-            "<button class='view-conv-btn' type='button'>View conversation</button>";
-          previousMessages.appendChild(row);
-        });
       }
 
-      function sendContactMessage(priority) {
+      async function sendContactMessage(priority) {
+        if (!window.AgriApi) return;
         const warehouse = contactWarehouse.value;
         const subject = contactSubject.value;
         const message = contactMessage.value.trim();
 
         if (!warehouse || !subject || !message) {
-          if (window.AgriApi) AgriApi.toast.error("Please fill in all fields.");
-          else {
-            contactStatus.textContent = "Please select warehouse, subject, and write your message.";
-            contactStatus.classList.add("error");
-          }
+          AgriApi.toast.error("Please fill in all fields.");
           return;
         }
 
-        const messages = getStoredContactMessages();
-        const now = new Date();
         const payload = {
           farmerId: localStorage.getItem("farmerId") || "farmer-001",
           warehouseId: warehouse,
           subject: subject,
           message: message,
           priority: priority,
-          createdAt: now.toLocaleString(),
-          status: "Pending",
           alsoEmail: contactEmail.checked,
           attachmentName: contactImage.files && contactImage.files[0] ? contactImage.files[0].name : ""
         };
 
-        messages.push(payload);
-        saveStoredContactMessages(messages);
-        renderPreviousMessages();
-
-        const successText = priority === "emergency" ? "Emergency alert sent!" : "Message sent successfully!";
-        if (window.AgriApi) AgriApi.toast.success(successText);
-        else {
-          contactStatus.textContent = successText;
-          contactStatus.classList.remove("error");
+        try {
+          await AgriApi.sendMessage(payload);
+          renderPreviousMessages();
+          contactMessage.value = "";
+          contactImage.value = "";
+        } catch (error) {
+          console.error("Failed to send message", error);
         }
-
-        contactSubject.value = "Spoilage Issue";
-        contactMessage.value = "";
-        contactImage.value = "";
       }
 
       function fillProfileForm() {

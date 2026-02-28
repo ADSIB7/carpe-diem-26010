@@ -185,6 +185,8 @@
    * getDashboardData: () => Promise<any>,
    * getAppState: (userId: string) => Promise<any>,
    * upsertAppState: (userId: string, state: any, options?: {silent?:boolean}) => Promise<any>,
+   * listMessages: () => Promise<any>,
+   * sendMessage: (data: any) => Promise<any>,
    * getWarehouseUserId: () => string|null,
    * toast: { success: (message:string) => void, error: (message:string) => void, info: (message:string) => void }
    * }} */
@@ -302,6 +304,12 @@
       return function unsubscribe() {
         source.close();
       };
+    },
+    listMessages: function () {
+      return request("/messages", { method: "GET", silent: true });
+    },
+    sendMessage: function (data) {
+      return request("/messages", { method: "POST", body: data, successMessage: "Message sent successfully" });
     },
     getWarehouseUserId: getWarehouseUserId,
     toast: {

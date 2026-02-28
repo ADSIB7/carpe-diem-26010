@@ -3,7 +3,7 @@ const { getSupabase } = require("./supabase");
 const SIMULATION_INTERVAL_MS = 10000; // 10 seconds
 
 const MIN_TEMP = 2;
-const MAX_TEMP = 28;
+const MAX_TEMP = 35; // Allow for spikes above critical
 const MAX_HUMIDITY = 85;
 
 // Keep track of our SSE clients
@@ -37,18 +37,21 @@ async function runFluctuation() {
     }
 
     for (const zone of zones) {
-        // Randomly fluctuate temperature between 0 and 32
-        // Baseline is around 20, let's just create random variations
-        const currentTemp = (Math.random() * 32).toFixed(1);
-        const currentHum = Math.floor(Math.random() * 100);
+        // Baseline is around 26°C and 65% Humidity, with small fluctuations
+        // 10% chance to occasionally spike to test thresholds
+        let tOffset = (Math.random() < 0.1) ? (Math.random() * 8) : (Math.random() * 2 - 1);
+        let hOffset = (Math.random() < 0.1) ? (Math.random() * 25) : (Math.random() * 5 - 2.5);
+
+        const currentTemp = (26 + tOffset).toFixed(1);
+        const currentHum = Math.floor(65 + hOffset);
 
         let climateState = "safe";
         let isCritical = false;
 
-        if (currentTemp < MIN_TEMP || currentTemp > MAX_TEMP || currentHum > MAX_HUMIDITY) {
+        if (currentTemp > 32 || currentHum > MAX_HUMIDITY) {
             climateState = "critical";
             isCritical = true;
-        } else if (currentTemp > (MAX_TEMP - 3) || currentHum > (MAX_HUMIDITY - 10)) {
+        } else if (currentTemp > 28 || currentHum > 75) {
             climateState = "warning";
         }
 

@@ -5,6 +5,8 @@
   const isBackgroundMode = query.get("background") === "1";
 
   function hasValidWarehouseSession() {
+    if (isBackgroundMode) return true;
+
     if (localStorage.getItem("warehouseLoggedIn") !== "true") {
       return false;
     }
@@ -97,7 +99,7 @@
   const zoneIds = ["A1", "A2", "B1", "B2", "D1", "C1", "C2", "C3", "D2", "D4"];
 
   let thresholds = {
-    temperature: { warn: 6.5, critical: 8.2 },
+    temperature: { warn: 28, critical: 32 },
     humidity: { warn: 80, critical: 87 },
     co2: { warn: 1250, critical: 1600 },
     moisture: { warn: 14.5, critical: 16 },

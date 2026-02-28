@@ -404,5 +404,22 @@ create table if not exists public.market_supply_chain (
   updated_at timestamptz not null default now()
 );
 
-alter table public.market_supply_chain enable row level security;
-create policy "market_supply_chain_select_all" on public.market_supply_chain for select using (true);
+
+-- Contact Messages
+create table if not exists public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade,
+  farmer_id text,
+  warehouse_id text,
+  subject text,
+  message text,
+  priority text,
+  status text default 'Pending',
+  also_email boolean default false,
+  attachment_name text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_messages enable row level security;
+create policy "contact_messages_select_own" on public.contact_messages for select using (auth.uid() = user_id);
+create policy "contact_messages_insert_own" on public.contact_messages for insert with check (auth.uid() = user_id);
