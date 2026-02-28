@@ -296,8 +296,13 @@ create table if not exists public.farmer_profiles (
 
 alter table public.farmer_profiles enable row level security;
 
+drop policy if exists "farmer_profiles_select_own" on public.farmer_profiles;
 create policy "farmer_profiles_select_own" on public.farmer_profiles for select using (auth.uid() = user_id);
+
+drop policy if exists "farmer_profiles_insert_own" on public.farmer_profiles;
 create policy "farmer_profiles_insert_own" on public.farmer_profiles for insert with check (auth.uid() = user_id);
+
+drop policy if exists "farmer_profiles_update_own" on public.farmer_profiles;
 create policy "farmer_profiles_update_own" on public.farmer_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Merchant Profiles
@@ -317,8 +322,13 @@ create table if not exists public.merchant_profiles (
 
 alter table public.merchant_profiles enable row level security;
 
+drop policy if exists "merchant_profiles_select_own" on public.merchant_profiles;
 create policy "merchant_profiles_select_own" on public.merchant_profiles for select using (auth.uid() = user_id);
+
+drop policy if exists "merchant_profiles_insert_own" on public.merchant_profiles;
 create policy "merchant_profiles_insert_own" on public.merchant_profiles for insert with check (auth.uid() = user_id);
+
+drop policy if exists "merchant_profiles_update_own" on public.merchant_profiles;
 create policy "merchant_profiles_update_own" on public.merchant_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Climate History for AI Trends
@@ -331,7 +341,10 @@ create table if not exists public.climate_history (
 );
 
 alter table public.climate_history enable row level security;
+drop policy if exists "climate_history_select_all" on public.climate_history;
 create policy "climate_history_select_all" on public.climate_history for select using (true);
+
+drop policy if exists "climate_history_insert_service" on public.climate_history;
 create policy "climate_history_insert_service" on public.climate_history for insert with check (true); -- Simplified for simulation
 
 -- Merchant Orders
@@ -347,8 +360,13 @@ create table if not exists public.orders (
 );
 
 alter table public.orders enable row level security;
+drop policy if exists "orders_select_own" on public.orders;
 create policy "orders_select_own" on public.orders for select using (auth.uid() = merchant_user_id);
+
+drop policy if exists "orders_insert_own" on public.orders;
 create policy "orders_insert_own" on public.orders for insert with check (auth.uid() = merchant_user_id);
+
+drop policy if exists "orders_update_own" on public.orders;
 create policy "orders_update_own" on public.orders for update using (auth.uid() = merchant_user_id);
 
 
@@ -364,6 +382,7 @@ create table if not exists public.market_prices (
 );
 
 alter table public.market_prices enable row level security;
+drop policy if exists "market_prices_select_all" on public.market_prices;
 create policy "market_prices_select_all" on public.market_prices for select using (true);
 
 create table if not exists public.market_demands (
@@ -376,6 +395,7 @@ create table if not exists public.market_demands (
 );
 
 alter table public.market_demands enable row level security;
+drop policy if exists "market_demands_select_all" on public.market_demands;
 create policy "market_demands_select_all" on public.market_demands for select using (true);
 
 create table if not exists public.market_forecasts (
@@ -388,6 +408,7 @@ create table if not exists public.market_forecasts (
 );
 
 alter table public.market_forecasts enable row level security;
+drop policy if exists "market_forecasts_select_all" on public.market_forecasts;
 create policy "market_forecasts_select_all" on public.market_forecasts for select using (true);
 
 create table if not exists public.market_competitors (
@@ -400,6 +421,7 @@ create table if not exists public.market_competitors (
 );
 
 alter table public.market_competitors enable row level security;
+drop policy if exists "market_competitors_select_all" on public.market_competitors;
 create policy "market_competitors_select_all" on public.market_competitors for select using (true);
 
 create table if not exists public.market_supply_chain (
@@ -428,5 +450,8 @@ create table if not exists public.contact_messages (
 );
 
 alter table public.contact_messages enable row level security;
+drop policy if exists "contact_messages_select_own" on public.contact_messages;
 create policy "contact_messages_select_own" on public.contact_messages for select using (auth.uid() = user_id);
+
+drop policy if exists "contact_messages_insert_own" on public.contact_messages;
 create policy "contact_messages_insert_own" on public.contact_messages for insert with check (auth.uid() = user_id);
