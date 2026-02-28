@@ -16,7 +16,8 @@ router.post("/merchant/register", async (req, res) => {
         // We assume the user is already "authenticated" as the demo user for simplicity, 
         // or we create a new bucket for them.
 
-        const userId = uuidv4(); // Generate a fake user ID for the profile
+        // Use the demo user ID to avoid foreign key constraint errors
+        const userId = "00000000-0000-0000-0000-000000000001";
 
         const { data, error } = await supabase
             .from("merchant_profiles")
@@ -45,7 +46,8 @@ router.post("/farmer/register", async (req, res) => {
         const { name, email, phone, farmName, location, primaryCrop, farmerId, password } = req.body;
         const supabase = supabaseLib.getSupabase();
 
-        const userId = uuidv4();
+        // Use the demo user ID to avoid foreign key constraint errors
+        const userId = "00000000-0000-0000-0000-000000000001";
 
         const { data, error } = await supabase
             .from("farmer_profiles")
