@@ -47,6 +47,12 @@
           <label for="reg-location">Location</label>
           <input id="reg-location" type="text" placeholder="Modesto, CA" required />
 
+          <label for="reg-address">Farm Address</label>
+          <input id="reg-address" type="text" placeholder="123 Orchard Lane, Modesto, CA" required />
+
+          <label for="reg-company">Company Name</label>
+          <input id="reg-company" type="text" placeholder="Patel Agricultural Services" required />
+
           <label for="reg-crop">Primary Crop</label>
           <input id="reg-crop" type="text" placeholder="Tomato" required />
 
@@ -77,7 +83,7 @@
     </section>
   </main>
 
-  
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="runtime-config.js"></script>
   <script src="supabase-config.js"></script>
@@ -124,12 +130,14 @@
         const phone = document.getElementById("reg-phone").value.trim();
         const farmName = document.getElementById("reg-farm").value.trim();
         const location = document.getElementById("reg-location").value.trim();
+        const address = document.getElementById("reg-address").value.trim();
+        const company = document.getElementById("reg-company").value.trim();
         const primaryCrop = document.getElementById("reg-crop").value.trim();
         const farmerId = document.getElementById("reg-id").value.trim();
         const password = document.getElementById("reg-pass").value;
         const confirm = document.getElementById("reg-confirm").value;
 
-        if (!name || !email || !phone || !farmName || !location || !primaryCrop || !farmerId || !password) {
+        if (!name || !email || !phone || !farmName || !location || !address || !company || !primaryCrop || !farmerId || !password) {
           showMessage("Please fill in all registration fields.", true);
           return;
         }
@@ -140,14 +148,19 @@
         }
 
         try {
+          const memberSince = "Member since " + new Date().getFullYear();
+
           const res = await window.AgriApi.registerFarmer({
             name,
             email,
             phone,
             farmName,
             location,
+            address,
+            company,
             primaryCrop,
             farmerId,
+            memberSince,
             password
           });
 
@@ -157,9 +170,11 @@
             phone,
             farm: farmName,
             location,
+            address,
+            company,
             crop: primaryCrop,
             farmerId,
-            password,
+            memberSince,
             userId: res.data.userId
           };
 
@@ -167,7 +182,10 @@
           localStorage.setItem("farmerName", user.name);
           localStorage.setItem("farmerFarm", user.farm);
           localStorage.setItem("farmerLocation", user.location);
+          localStorage.setItem("farmerAddress", user.address);
+          localStorage.setItem("farmerCompany", user.company);
           localStorage.setItem("farmerCrop", user.crop);
+          localStorage.setItem("farmerMember", user.memberSince);
           document.getElementById("farmer-id").value = farmerId;
 
           showMessage("Registration successful. Please login with your Farmer ID and password.", false);
@@ -195,7 +213,10 @@
           localStorage.setItem("farmerName", savedUser.name);
           localStorage.setItem("farmerFarm", savedUser.farm_name || savedUser.farmName);
           localStorage.setItem("farmerLocation", savedUser.location);
+          localStorage.setItem("farmerAddress", savedUser.address);
+          localStorage.setItem("farmerCompany", savedUser.company);
           localStorage.setItem("farmerCrop", savedUser.primary_crop || savedUser.primaryCrop);
+          localStorage.setItem("farmerMember", savedUser.member_since || savedUser.memberSince);
           localStorage.setItem("farmerLoggedIn", "true");
           window.location.href = "find-warehouses.html";
         } catch (error) {

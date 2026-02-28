@@ -7,7 +7,7 @@ const router = express.Router();
 // Merchant Registration
 router.post("/merchant/register", async (req, res) => {
     try {
-        const { name, email, phone, businessName, businessLocation, password } = req.body;
+        const { name, email, phone, businessName, businessLocation, address, company, merchantId, memberSince, password } = req.body;
         const supabase = supabaseLib.getSupabase();
 
         // In a real app, we'd use supabase.auth.signUp
@@ -29,7 +29,11 @@ router.post("/merchant/register", async (req, res) => {
                         email,
                         phone,
                         business_name: businessName,
-                        business_location: businessLocation
+                        business_location: businessLocation,
+                        address,
+                        company,
+                        merchant_id: merchantId,
+                        member_since: memberSince
                     }
                 ],
                 { onConflict: 'user_id' }
@@ -46,7 +50,7 @@ router.post("/merchant/register", async (req, res) => {
 // Farmer Registration
 router.post("/farmer/register", async (req, res) => {
     try {
-        const { name, email, phone, farmName, location, primaryCrop, farmerId, password } = req.body;
+        const { name, email, phone, farmName, location, address, company, primaryCrop, farmerId, memberSince, password } = req.body;
         const supabase = supabaseLib.getSupabase();
 
         // Use the demo user ID to avoid foreign key constraint errors
@@ -63,8 +67,11 @@ router.post("/farmer/register", async (req, res) => {
                         phone,
                         farm_name: farmName,
                         location,
+                        address,
+                        company,
                         primary_crop: primaryCrop,
-                        farmer_id: farmerId
+                        farmer_id: farmerId,
+                        member_since: memberSince
                     }
                 ],
                 { onConflict: 'user_id' }
@@ -81,16 +88,16 @@ router.post("/farmer/register", async (req, res) => {
 // Merchant Login
 router.post("/merchant/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { merchantId, password } = req.body;
         const supabase = supabaseLib.getSupabase();
 
         const { data, error } = await supabase
             .from("merchant_profiles")
             .select("*")
-            .eq("email", email)
+            .eq("merchant_id", merchantId)
             .single();
 
-        if (error || !data) return res.status(401).json({ error: "Invalid email or password" });
+        if (error || !data) return res.status(401).json({ error: "Invalid Merchant ID or password" });
 
         // In a real app, check password. For demo, we just return the data.
         return res.status(200).json({ message: "Login successful", data });
