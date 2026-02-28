@@ -296,8 +296,13 @@ create table if not exists public.farmer_profiles (
 
 alter table public.farmer_profiles enable row level security;
 
+drop policy if exists "farmer_profiles_select_own" on public.farmer_profiles;
 create policy "farmer_profiles_select_own" on public.farmer_profiles for select using (auth.uid() = user_id);
+
+drop policy if exists "farmer_profiles_insert_own" on public.farmer_profiles;
 create policy "farmer_profiles_insert_own" on public.farmer_profiles for insert with check (auth.uid() = user_id);
+
+drop policy if exists "farmer_profiles_update_own" on public.farmer_profiles;
 create policy "farmer_profiles_update_own" on public.farmer_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Merchant Profiles
@@ -317,8 +322,13 @@ create table if not exists public.merchant_profiles (
 
 alter table public.merchant_profiles enable row level security;
 
+drop policy if exists "merchant_profiles_select_own" on public.merchant_profiles;
 create policy "merchant_profiles_select_own" on public.merchant_profiles for select using (auth.uid() = user_id);
+
+drop policy if exists "merchant_profiles_insert_own" on public.merchant_profiles;
 create policy "merchant_profiles_insert_own" on public.merchant_profiles for insert with check (auth.uid() = user_id);
+
+drop policy if exists "merchant_profiles_update_own" on public.merchant_profiles;
 create policy "merchant_profiles_update_own" on public.merchant_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Climate History for AI Trends
