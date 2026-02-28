@@ -305,6 +305,11 @@ create policy "farmer_profiles_insert_own" on public.farmer_profiles for insert 
 drop policy if exists "farmer_profiles_update_own" on public.farmer_profiles;
 create policy "farmer_profiles_update_own" on public.farmer_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+-- Ensure all columns exist for Farmer Profiles (for existing tables)
+alter table public.farmer_profiles add column if not exists address text;
+alter table public.farmer_profiles add column if not exists company text;
+alter table public.farmer_profiles add column if not exists member_since text;
+
 -- Merchant Profiles
 create table if not exists public.merchant_profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -330,6 +335,12 @@ create policy "merchant_profiles_insert_own" on public.merchant_profiles for ins
 
 drop policy if exists "merchant_profiles_update_own" on public.merchant_profiles;
 create policy "merchant_profiles_update_own" on public.merchant_profiles for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Ensure all columns exist for Merchant Profiles (for existing tables)
+alter table public.merchant_profiles add column if not exists address text;
+alter table public.merchant_profiles add column if not exists company text;
+alter table public.merchant_profiles add column if not exists merchant_id text unique;
+alter table public.merchant_profiles add column if not exists member_since text;
 
 -- Climate History for AI Trends
 create table if not exists public.climate_history (
