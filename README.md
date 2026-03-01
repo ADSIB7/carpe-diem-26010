@@ -4,6 +4,4 @@ Name: AgriShield
 contributers : Shailesh Girnare 
                Aryan Shendge
 
-# Hour 0-1: Home page
 
-# Hour 22: Ok
